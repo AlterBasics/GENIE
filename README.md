@@ -1,0 +1,2 @@
+# GINI
+Stringflow Desktop Agent
