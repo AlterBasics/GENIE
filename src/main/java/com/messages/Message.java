@@ -6,93 +6,92 @@ import java.util.HashMap;
 
 public class Message implements Serializable {
 
-    private String name;
-    private MessageType type;
-    private String msg;
-    private int count;
-    private ArrayList<User> list;
-    private ArrayList<User> users;
+	private String name;
+	private MessageType type;
+	private String msg;
+	private int count;
+	private ArrayList<User> list;
+	private ArrayList<User> users;
 
-    private Status status;
+	private Status status;
 
-    public byte[] getVoiceMsg() {
-        return voiceMsg;
-    }
+	public byte[] getVoiceMsg() {
+		return voiceMsg;
+	}
 
-    private byte[] voiceMsg;
+	private byte[] voiceMsg;
 
-    public String getPicture() {
-        return picture;
-    }
+	public String getPicture() {
+		return picture;
+	}
 
-    private String picture;
+	private String picture;
 
-    public Message() {
-    }
+	public Message() {
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public String getMsg() {
+	public String getMsg() {
 
-        return msg;
-    }
+		return msg;
+	}
 
-    public void setMsg(String msg) {
-        this.msg = msg;
-    }
+	public void setMsg(String msg) {
+		this.msg = msg;
+	}
 
-    public MessageType getType() {
-        return type;
-    }
+	public MessageType getType() {
+		return type;
+	}
 
-    public void setType(MessageType type) {
-        this.type = type;
-    }
+	public void setType(MessageType type) {
+		this.type = type;
+	}
 
-    public ArrayList<User> getUserlist() {
-        return list;
-    }
+	public ArrayList<User> getUserlist() {
+		return list;
+	}
 
-    public void setUserlist(HashMap<String, User> userList) {
-        this.list = new ArrayList<>(userList.values());
-    }
+	public void setUserlist(HashMap<String, User> userList) {
+		this.list = new ArrayList<>(userList.values());
+	}
 
-    public void setOnlineCount(int count){
-        this.count = count;
-    }
+	public void setOnlineCount(int count) {
+		this.count = count;
+	}
 
-    public int getOnlineCount(){
-        return this.count;
-    }
+	public int getOnlineCount() {
+		return this.count;
+	}
 
-    public void setPicture(String picture) {
-        this.picture = picture;
-    }
+	public void setPicture(String picture) {
+		this.picture = picture;
+	}
 
+	public ArrayList<User> getUsers() {
+		return users;
+	}
 
-    public ArrayList<User> getUsers() {
-        return users;
-    }
+	public void setUsers(ArrayList<User> users) {
+		this.users = users;
+	}
 
-    public void setUsers(ArrayList<User> users) {
-        this.users = users;
-    }
+	public void setStatus(Status status) {
+		this.status = status;
+	}
 
-    public void setStatus(Status status) {
-        this.status = status;
-    }
+	public Status getStatus() {
+		return status;
+	}
 
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setVoiceMsg(byte[] voiceMsg) {
-        this.voiceMsg = voiceMsg;
-    }
+	public void setVoiceMsg(byte[] voiceMsg) {
+		this.voiceMsg = voiceMsg;
+	}
 }
