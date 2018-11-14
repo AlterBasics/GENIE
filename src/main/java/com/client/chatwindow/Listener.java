@@ -9,17 +9,14 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.messages.Message;
 import com.messages.MessageType;
 import com.messages.Status;
 
-import abs.sf.client.gini.controller.LoginController;
+import abs.sf.client.gini.ui.controller.LoginController;
 
 public class Listener implements Runnable {
-	private static final Logger logger = LoggerFactory.getLogger(Listener.class);
+	//private static final Logger logger = LoggerFactory.getLogger(Listener.class);
 
 	private static final String HASCONNECTED = "has connected";
 
@@ -51,20 +48,20 @@ public class Listener implements Runnable {
 			input = new ObjectInputStream(is);
 		} catch (IOException e) {
 			LoginController.getInstance().showErrorDialog("Could not connect to server");
-			logger.error("Could not Connect");
+		//	logger.error("Could not Connect");
 		}
-		logger.info("Connection accepted " + socket.getInetAddress() + ":" + socket.getPort());
+		//logger.info("Connection accepted " + socket.getInetAddress() + ":" + socket.getPort());
 
 		try {
 			connect();
-			logger.info("Sockets in and out ready!");
+		//	logger.info("Sockets in and out ready!");
 			while (socket.isConnected()) {
 				Message message = null;
 				message = (Message) input.readObject();
 
 				if (message != null) {
-					logger.debug("Message recieved:" + message.getMsg() + " MessageType:" + message.getType() + "Name:"
-							+ message.getName());
+//					logger.debug("Message recieved:" + message.getMsg() + " MessageType:" + message.getType() + "Name:"
+//							+ message.getName());
 					switch (message.getType()) {
 					case USER:
 						controller.addToChat(message);

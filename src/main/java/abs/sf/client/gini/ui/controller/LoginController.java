@@ -1,4 +1,4 @@
-package abs.sf.client.gini.controller;
+package abs.sf.client.gini.ui.controller;
 
 import java.io.IOException;
 import java.net.URL;
@@ -9,7 +9,7 @@ import com.client.chatwindow.ChatController;
 import com.client.chatwindow.Listener;
 import com.client.util.ResizeHelper;
 
-import abs.sf.client.gini.Launcher;
+import abs.sf.client.gini.ui.Launcher;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;

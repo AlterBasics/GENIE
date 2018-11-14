@@ -1,4 +1,4 @@
-package abs.sf.client.gini;
+package abs.sf.client.gini.ui;
 
 import javafx.application.Application;
 import javafx.application.Platform;

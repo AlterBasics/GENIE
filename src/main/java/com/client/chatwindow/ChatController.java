@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.client.util.VoicePlayback;
 import com.client.util.VoiceRecorder;
 import com.client.util.VoiceUtil;
@@ -19,7 +16,7 @@ import com.messages.bubble.BubbledLabel;
 import com.traynotifications.animations.AnimationType;
 import com.traynotifications.notification.TrayNotification;
 
-import abs.sf.client.gini.Launcher;
+import abs.sf.client.gini.ui.Launcher;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -86,7 +83,6 @@ public class ChatController implements Initializable {
 
 	private double xOffset;
 	private double yOffset;
-	Logger logger = LoggerFactory.getLogger(ChatController.class);
 
 	public void sendButtonAction() throws IOException {
 		String msg = messageBox.getText();
@@ -134,7 +130,6 @@ public class ChatController implements Initializable {
 				HBox x = new HBox();
 				bl6.setBubbleSpec(BubbleSpec.FACE_LEFT_CENTER);
 				x.getChildren().addAll(profileImage, bl6);
-				logger.debug("ONLINE USERS: " + Integer.toString(msg.getUserlist().size()));
 				setOnlineLabel(Integer.toString(msg.getOnlineCount()));
 				return x;
 			}
@@ -199,14 +194,12 @@ public class ChatController implements Initializable {
 	}
 
 	public void setUserList(Message msg) {
-		logger.info("setUserList() method Enter");
 		Platform.runLater(() -> {
 			ObservableList<User> users = FXCollections.observableList(msg.getUsers());
 			userList.setItems(users);
 			userList.setCellFactory(new CellRenderer());
 			setOnlineLabel(String.valueOf(msg.getUserlist().size()));
 		});
-		logger.info("setUserList() method Exit");
 	}
 
 	/* Displays Notification when a user joins */
