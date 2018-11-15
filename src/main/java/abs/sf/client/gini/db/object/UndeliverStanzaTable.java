@@ -1,8 +1,8 @@
 package abs.sf.client.gini.db.object;
 
-import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class UndeliverStanzaTable extends DatabaseTable {
     public static final String TABLE_NAME = "undeliver_stanza";
@@ -23,8 +23,10 @@ public class UndeliverStanzaTable extends DatabaseTable {
         super(TABLE_NAME);
     }
 
-    public void create(SQLiteDatabase database) throws SQLException {
-        Log.d(UndeliverStanzaTable.class.getCanonicalName(), "creating Undeliver_Stanza Table ");
-        database.execSQL(SQL_CREATE);
+    @Override
+    public void create(Connection conn) throws SQLException {
+		try (Statement statement = conn.createStatement()) {
+			statement.executeUpdate(SQL_CREATE);
+		}	
     }
 }

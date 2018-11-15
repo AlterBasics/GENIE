@@ -1,4 +1,4 @@
-package abs.sf.client.gini.db;
+package abs.sf.client.gini.db.h2;
 
 import abs.sf.client.gini.db.object.ChatRoomMemberTable;
 import abs.sf.client.gini.db.object.ChatStoreTable;
@@ -232,5 +232,25 @@ public class SQLQuery {
             ", " + UserProfileTable.COLUMN_AVATAR_MEDIA_TYPE +
             " FROM " + UserProfileTable.TABLE_NAME +
             " WHERE " + UserProfileTable.COLUMN_JID + " = ?";
+    
+    public static final String SQL_INSERT_CONVERSATION = "INSERT INTO " +
+    		ConversationTable.TABLE_NAME +
+    		" (" + ConversationTable.COLUMN_PEER_JID+
+            ", " + ConversationTable.COLUMN_LAST_CHATLINE +
+            ", " + ConversationTable.COLUMN_LAST_CHATLINE_TYPE +
+            ", " + ConversationTable.COLUMN_LAST_UPDATE_TIME +
+            ", " + ConversationTable.COLUMN_UNREAD_CHATLINE_COUNT +
+            ") VALUES (?, ?, ?, ?, ?)";
+        
+    
+    public static final String SQL_UPDATE_CONVERSATION = "UPDATE " +
+    		ConversationTable.TABLE_NAME + "SET " +
+            ConversationTable.COLUMN_LAST_CHATLINE + " = ?, " +
+            ConversationTable.COLUMN_LAST_CHATLINE_TYPE + " = ?, " +
+            ConversationTable.COLUMN_LAST_UPDATE_TIME + " = ?, " + 
+            ConversationTable.COLUMN_UNREAD_CHATLINE_COUNT + " = ? " +
+            " WHERE " + ConversationTable.COLUMN_PEER_JID + " = ?";
+    		
+    
 
 }

@@ -1,12 +1,11 @@
 package abs.sf.client.gini.db.object;
 
-import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
-
-import abs.sf.client.android.db.exception.DbException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
- * Represents a database table in SqlLite
+ * Represents a database table in h2
  */
 public abstract class DatabaseTable {
     protected String tableName;
@@ -27,32 +26,34 @@ public abstract class DatabaseTable {
     /**
      * Creates this table definition in the database
      *
-     * @param database
-     * @throws DbException
+     * @param conn
+     * @throws SQLException
      */
-    public abstract void create(SQLiteDatabase database) throws SQLException;
+    public abstract void create(Connection conn) throws SQLException;
 
     /**
      * drops this table from database
      *
-     * @param database
-     * @throws DbException
+     * @param conn
+     * @throws SQLException
      */
-    public void drop(SQLiteDatabase database) throws SQLException {
-        String sql = "drop table " + this.tableName + ";";
-        database.execSQL(sql);
+    public void drop(Connection conn) throws SQLException {
+        String sql = "drop table if exists " + this.tableName + ";";
+        Statement statement = conn.createStatement();
+    	statement.executeUpdate(sql);
     }
 
 
     /**
      * Truncates all the data from this table
      *
-     * @param database
-     * @throws DbException
+     * @param conn
+     * @throws SQLException
      */
-    public void truncate(SQLiteDatabase database) throws SQLException {
+    public void truncate(Connection conn) throws SQLException {
         String sql = "truncate table " + this.tableName + ";";
-        database.execSQL(sql);
+        Statement statement = conn.createStatement();
+    	statement.executeUpdate(sql);
     }
 
 }

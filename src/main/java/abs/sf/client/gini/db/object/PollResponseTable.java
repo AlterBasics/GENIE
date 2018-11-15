@@ -1,7 +1,8 @@
 package abs.sf.client.gini.db.object;
 
-import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class PollResponseTable extends DatabaseTable{
     public static final String TABLE_NAME = "poll_response";
@@ -24,7 +25,10 @@ public class PollResponseTable extends DatabaseTable{
         super(TABLE_NAME);
     }
 
-    public void create(SQLiteDatabase database) throws SQLException {
-        database.execSQL(SQL_CREATE);
+    @Override
+    public void create(Connection conn) throws SQLException {
+		try (Statement statement = conn.createStatement()) {
+			statement.executeUpdate(SQL_CREATE);
+		}	
     }
 }

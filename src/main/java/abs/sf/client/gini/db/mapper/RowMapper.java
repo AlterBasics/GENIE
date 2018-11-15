@@ -1,12 +1,12 @@
 package abs.sf.client.gini.db.mapper;
 
-import android.database.Cursor;
-import android.database.SQLException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 
 /**
  * Interface to map a database table row to an object instance.
  */
 public interface RowMapper<T> {
-    public T map(Cursor cursor) throws SQLException;
+    public T map(ResultSet rs) throws SQLException;
 }

@@ -1,8 +1,5 @@
 package abs.sf.client.gini.db.mapper;
 
-import android.database.Cursor;
-import android.database.SQLException;
-
 import abs.ixi.client.xmpp.JID;
 import abs.ixi.client.xmpp.packet.UserProfileData;
 

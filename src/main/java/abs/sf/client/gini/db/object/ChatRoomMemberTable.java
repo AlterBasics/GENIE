@@ -1,8 +1,8 @@
 package abs.sf.client.gini.db.object;
 
-import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class ChatRoomMemberTable extends DatabaseTable {
     public static final String TABLE_NAME = "chatroom_members";
@@ -31,9 +31,10 @@ public class ChatRoomMemberTable extends DatabaseTable {
     }
 
     @Override
-    public void create(SQLiteDatabase database) throws SQLException {
-        Log.d(ChatRoomMemberTable.class.getCanonicalName(), "creating Chatroom Members table");
-        database.execSQL(SQL_CREATE);
+    public void create(Connection conn) throws SQLException {
+		try (Statement statement = conn.createStatement()) {
+			statement.executeUpdate(SQL_CREATE);
+		}	
     }
 
 }

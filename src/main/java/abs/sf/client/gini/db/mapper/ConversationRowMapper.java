@@ -1,7 +1,7 @@
 package abs.sf.client.gini.db.mapper;
 
-import android.database.Cursor;
-import android.database.SQLException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import abs.ixi.client.util.DateUtils;
 import abs.ixi.client.util.StringUtils;
@@ -11,42 +11,41 @@ import abs.sf.client.gini.messaging.Conversation;
 
 public class ConversationRowMapper implements RowMapper<Conversation> {
 
+	@Override
+	public Conversation map(ResultSet rs) throws SQLException {
+		int conversationId = rs.getInt(1);
+		String jid = rs.getString(2);
+		String chatLine = rs.getString(3);
+		String chatLineType = rs.getString(4);
+		long lastUpdateTime = rs.getLong(5);
+		int unreadChatlines = rs.getInt(6);
+		int isGroup = rs.getShort(9);
 
-    @Override
-    public Conversation map(Cursor cursor) throws SQLException {
-        int conversationId = cursor.getInt(0);
-        String jid = cursor.getString(1);
-        String chatLine = cursor.getString(2);
-        String chatLineType = cursor.getString(3);
-        long lastUpdateTime = cursor.getLong(4);
-        int unreadChatlines = cursor.getInt(5);
-        int isGroup = cursor.getShort(8);
+		String name;
 
-        String name;
+		if (isGroup == 1) {
+			name = rs.getString(8);
 
-        if(isGroup == 1) {
-            name = cursor.getString(7);
+		} else {
+			name = rs.getString(7);
+		}
 
-        } else {
-            name = cursor.getString(6);
-        }
+		if (StringUtils.isNullOrEmpty(name)) {
+			try {
+				name = new JID(jid).getNode();
 
-        if (StringUtils.isNullOrEmpty(name)) {
-            try {
-                name = new JID(jid).getNode();
+			} catch (InvalidJabberId invalidJabberId) {
+				name = "unknown";
+			}
+		}
 
-            } catch (InvalidJabberId invalidJabberId) {
-                name = "unknown";
-            }
-        }
+		Conversation conv = new Conversation(jid, name, isGroup == 1);
+		conv.setUnreadChatLines(unreadChatlines);
+		conv.setLastChatLine(chatLine);
+		conv.setLastChatLineType(chatLineType);
+		conv.setLastUpdateTime(lastUpdateTime);
+		conv.setDisplayTime(DateUtils.displayTime(lastUpdateTime));
 
-        Conversation conv = new Conversation(jid, name, isGroup == 1);
-        conv.setUnreadChatLines(unreadChatlines);
-        conv.setLastChatLine(chatLine);
-        conv.setLastChatLineType(chatLineType);
-        conv.setLastUpdateTime(lastUpdateTime);
-        conv.setDisplayTime(DateUtils.displayTime(lastUpdateTime));
-
-        return conv;
-    }
+		return conv;
+	}
 }
