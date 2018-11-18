@@ -5,8 +5,10 @@ import java.util.List;
 import abs.ixi.client.core.Initializable;
 import abs.ixi.client.xmpp.JID;
 import abs.sf.client.gini.db.exception.DbException;
+import abs.sf.client.gini.db.object.ChatStoreTable;
 import abs.sf.client.gini.db.object.ConversationTable;
 import abs.sf.client.gini.db.object.RosterTable;
+import abs.sf.client.gini.messaging.ChatLine;
 import abs.sf.client.gini.messaging.Conversation;
 
 public interface Database extends Initializable {
@@ -80,7 +82,7 @@ public interface Database extends Initializable {
 	 * @param unreadConversationCount
 	 */
 	void updateUnreadConversationCount(String peerJID, int unreadConversationCount) throws DbException;
-	
+
 	/**
 	 * Check if there an active conversation with a given {@link JID}. If there
 	 * is an entry found inside {@link ConversationTable}, it is assumed that
@@ -90,5 +92,14 @@ public interface Database extends Initializable {
 	 * @return
 	 */
 	boolean conversationExists(String peerJID) throws DbException;
+
+	/**
+	 * Add {@link ChatLine} in {@link ChatStoreTable}.
+	 *
+	 * @param line
+	 * @return
+	 * @throws SQLException
+	 */
+	void addToChatStore(ChatLine line) throws DbException;
 
 }

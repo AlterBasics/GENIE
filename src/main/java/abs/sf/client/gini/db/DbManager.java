@@ -193,12 +193,10 @@ public final class DbManager {
 	 * 
 	 * @param peerJID
 	 * @param unreadConversationCount
+	 * @throws DbException
 	 */
-	public void updateUnreadConversationCount(String peerJID, int unreadConversationCount) {
-		ContentValues contentValues = new ContentValues();
-		contentValues.put(ConversationTable.COLUMN_UNREAD_CHATLINE_COUNT, unreadConversationCount);
-		dbHelper.update(ConversationTable.TABLE_NAME, contentValues, ConversationTable.COLUMN_PEER_JID + "= ?",
-				new String[] { peerJid });
+	public void updateUnreadConversationCount(String peerJID, int unreadConversationCount) throws DbException {
+		this.database.updateUnreadConversationCount(peerJID, unreadConversationCount);
 	}
 
 	/**
@@ -208,14 +206,10 @@ public final class DbManager {
 	 *
 	 * @param peerJid
 	 * @return
-	 * @throws DbException 
+	 * @throws DbException
 	 */
 	public boolean conversationExists(String peerJID) throws DbException {
 		return this.database.conversationExists(peerJID);
-	}
-
-	public void deleteConversation(String peerJid) {
-		dbHelper.delete(ConversationTable.TABLE_NAME, ConversationTable.COLUMN_PEER_JID, peerJid);
 	}
 
 	/**
@@ -223,25 +217,10 @@ public final class DbManager {
 	 *
 	 * @param line
 	 * @return
-	 * @throws SQLException
+	 * @throws DbException
 	 */
-	public long addToChatStore(ChatLine line) throws SQLException {
-		ContentValues contentValues = new ContentValues();
-		contentValues.put(ChatStoreTable.COL_CONVERSATION_ID, line.getConversationId());
-		contentValues.put(ChatStoreTable.COL_MESSAGE_ID, line.getMessageId());
-		contentValues.put(ChatStoreTable.COL_PEER_JID, line.getPeerBareJid());
-		contentValues.put(ChatStoreTable.COL_PEER_RESOURCE, line.getPeerResource());
-		contentValues.put(ChatStoreTable.COL_DIRECTION, line.getDirection().val());
-		contentValues.put(ChatStoreTable.COL_CHATLINE, line.getText());
-		contentValues.put(ChatStoreTable.COL_CHATLINE_TYPE, line.getContentType().name());
-		contentValues.put(ChatStoreTable.COL_CHATLINE_CONTENT_ID, line.getContentId());
-		contentValues.put(ChatStoreTable.COL_CREATE_TIME, line.getCreateTime());
-		contentValues.put(ChatStoreTable.COL_DELIVERY_STATUS, line.getMessageStatus().getValue());
-		contentValues.put(ChatStoreTable.COL_IS_MARKABLE, line.isMarkable());
-		contentValues.put(ChatStoreTable.COL_HAVE_SEAN, line.haveSean());
-		contentValues.put(ChatStoreTable.COL_IS_CSN_ACTIVE, line.isCsnActive());
-
-		return dbHelper.insert(ChatStoreTable.TABLE_NAME, contentValues);
+	public void addToChatStore(ChatLine line) throws DbException {
+		this.database.addToChatStore(line);
 	}
 
 	/**
@@ -783,6 +762,10 @@ public final class DbManager {
 			contentValues.put(UserProfileTable.COLUMN_AVATAR_MEDIA_TYPE, avtar.getImageType());
 		}
 
+        if(userProfileData.getDescription() != null) {
+            contentValues.put(UserProfileTable.COLUMN_ABOUT, userProfileData.getDescription());
+        }
+        
 		return dbHelper.insert(UserProfileTable.TABLE_NAME, contentValues);
 	}
 
@@ -851,6 +834,10 @@ public final class DbManager {
 
 			contentValues.put(UserProfileTable.COLUMN_AVATAR_MEDIA_TYPE, avtar.getImageType());
 		}
+		
+        if(userProfileData.getDescription() != null) {
+            contentValues.put(UserProfileTable.COLUMN_ABOUT, userProfileData.getDescription());
+        }
 
 		return dbHelper.update(UserProfileTable.TABLE_NAME, contentValues, UserProfileTable.COLUMN_JID + " = ?",
 				new String[] { userProfileData.getJabberId().getBareJID() });

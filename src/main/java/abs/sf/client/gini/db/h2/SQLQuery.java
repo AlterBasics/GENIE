@@ -224,6 +224,7 @@ public class SQLQuery {
             ", " + UserProfileTable.COLUMN_ADDRESS_STATE +
             ", " + UserProfileTable.COLUMN_ADDRESS_COUNTRY +
             ", " + UserProfileTable.COLUMN_ADDRESS_PCODE +
+            ", " + UserProfileTable.COLUMN_ABOUT +
             " FROM " + UserProfileTable.TABLE_NAME +
             " WHERE " + UserProfileTable.COLUMN_JID + " = ?";
 
@@ -240,17 +241,38 @@ public class SQLQuery {
             ", " + ConversationTable.COLUMN_LAST_CHATLINE_TYPE +
             ", " + ConversationTable.COLUMN_LAST_UPDATE_TIME +
             ", " + ConversationTable.COLUMN_UNREAD_CHATLINE_COUNT +
-            ") VALUES (?, ?, ?, ?, ?)";
+            " ) VALUES (?, ?, ?, ?, ?)";
         
     
     public static final String SQL_UPDATE_CONVERSATION = "UPDATE " +
-    		ConversationTable.TABLE_NAME + "SET " +
+    		ConversationTable.TABLE_NAME + " SET " +
             ConversationTable.COLUMN_LAST_CHATLINE + " = ?, " +
             ConversationTable.COLUMN_LAST_CHATLINE_TYPE + " = ?, " +
             ConversationTable.COLUMN_LAST_UPDATE_TIME + " = ?, " + 
             ConversationTable.COLUMN_UNREAD_CHATLINE_COUNT + " = ? " +
             " WHERE " + ConversationTable.COLUMN_PEER_JID + " = ?";
-    		
+    
+    public static final String SQL_UPDATE_UNREAD_CONVERSATION_COUNT = "UPDATE " +
+    		ConversationTable.TABLE_NAME + " SET " +
+            ConversationTable.COLUMN_UNREAD_CHATLINE_COUNT + " = ? " +
+            " WHERE " + ConversationTable.COLUMN_PEER_JID + " = ?";
+    
+    public static final String SQL_INSERT_CHATLINE_TO_CHATSTORE =  "INSERT INTO " +
+    		ChatStoreTable.TABLE_NAME +
+    		" (" + ChatStoreTable.COL_CONVERSATION_ID+ 
+            ", " + ChatStoreTable.COL_MESSAGE_ID +
+            ", " + ChatStoreTable.COL_PEER_JID +
+            ", " + ChatStoreTable.COL_PEER_RESOURCE +
+            ", " + ChatStoreTable.COL_DIRECTION +
+            ", " + ChatStoreTable.COL_CHATLINE +
+            ", " + ChatStoreTable.COL_CHATLINE_TYPE +
+            ", " + ChatStoreTable.COL_CHATLINE_CONTENT_ID +
+            ", " + ChatStoreTable.COL_CREATE_TIME +
+            ", " + ChatStoreTable.COL_DELIVERY_STATUS +
+            ", " + ChatStoreTable.COL_IS_MARKABLE +
+            ", " + ChatStoreTable.COL_HAVE_SEAN +
+            ", " + ChatStoreTable.COL_IS_CSN_ACTIVE +
+            " ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
 
 }

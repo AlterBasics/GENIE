@@ -26,6 +26,8 @@ public class UserProfileTable extends DatabaseTable {
     public static final String COLUMN_ADDRESS_PCODE = "address_pcode";
     public static final String COLUMN_AVATAR = "avatar";
     public static final String COLUMN_AVATAR_MEDIA_TYPE= "avatar_media_type";
+    public static final String COLUMN_ABOUT = "about";
+
 
     // Database creation SQL statement
     private static final String SQL_CREATE = "create table "
@@ -47,11 +49,12 @@ public class UserProfileTable extends DatabaseTable {
             + COLUMN_ADDRESS_CITY + " TEXT, "
             + COLUMN_ADDRESS_STATE + " TEXT, "
             + COLUMN_ADDRESS_COUNTRY + " TEXT, "
-            + COLUMN_ADDRESS_PCODE + " TEXT,"
+            + COLUMN_ADDRESS_PCODE + " TEXT, "
             + COLUMN_AVATAR + " BLOB, "
-            + COLUMN_AVATAR_MEDIA_TYPE + " TEXT"
+            + COLUMN_AVATAR_MEDIA_TYPE + " TEXT, "
+            + COLUMN_ABOUT + " TEXT "
             + ");";
-
+    
     public UserProfileTable() {
         super(TABLE_NAME);
     }

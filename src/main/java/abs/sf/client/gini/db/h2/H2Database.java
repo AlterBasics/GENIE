@@ -26,6 +26,7 @@ import abs.sf.client.gini.db.object.PresenceTable;
 import abs.sf.client.gini.db.object.RosterTable;
 import abs.sf.client.gini.db.object.UndeliverStanzaTable;
 import abs.sf.client.gini.db.object.UserProfileTable;
+import abs.sf.client.gini.messaging.ChatLine;
 import abs.sf.client.gini.messaging.Conversation;
 
 public class H2Database implements Database {
@@ -265,8 +266,26 @@ public class H2Database implements Database {
 
 	@Override
 	public void updateUnreadConversationCount(String peerJID, int unreadConversationCount) throws DbException {
-		// TODO Auto-generated method stub
-		
+		LOGGER.info("Updating unread Conversation count for jid : " + peerJID);
+		Connection conn = this.getConnection();
+
+		PreparedStatement ps = null;
+
+		try {
+			ps = SqlHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_UNREAD_CONVERSATION_COUNT,
+					new Object[] { unreadConversationCount, peerJID });
+
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+			LOGGER.warning("Failed to update unread Conversation count");
+			throw new DbException("Failed to update unread Conversation count", e);
+
+		} finally {
+			SqlHelper.closeConnection(conn);
+			SqlHelper.closeStatement(ps);
+		}
+
 	}
 
 	@Override
@@ -282,6 +301,35 @@ public class H2Database implements Database {
 		} finally {
 			SqlHelper.closeConnection(conn);
 		}
+
+	}
+
+	@Override
+	public void addToChatStore(ChatLine line) throws DbException {
+		LOGGER.info("Adding new chatline for jid for user" + line.getPeerBareJid());
+		Connection conn = this.getConnection();
+
+		PreparedStatement ps = null;
+
+		try {
+			ps = SqlHelper.createPreparedStatement(conn, SQLQuery.SQL_INSERT_CHATLINE_TO_CHATSTORE,
+					new Object[] { line.getConversationId(), line.getMessageId(), line.getPeerBareJid(),
+							line.getPeerResource(), line.getDirection().val(), line.getText(),
+							line.getContentType().name(), line.getContentId(), line.getCreateTime(),
+							line.getMessageStatus().getValue(), line.isMarkable(), line.haveSean(),
+							line.isCsnActive() });
+
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+			LOGGER.warning("Failed to add new chatline for userJID");
+			throw new DbException("Failed to add new chaline", e);
+
+		} finally {
+			SqlHelper.closeConnection(conn);
+			SqlHelper.closeStatement(ps);
+		}
+
 	}
 
 }

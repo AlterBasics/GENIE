@@ -36,6 +36,8 @@ public class UserProfileRowMapper implements RowMapper<UserProfileData> {
         address.setCountry(cursor.getString(14));
         address.setPcode(cursor.getString(15));
 
+        userProfileData.setDescription(cursor.getString(16));
+        
         return userProfileData;
     }
 }
