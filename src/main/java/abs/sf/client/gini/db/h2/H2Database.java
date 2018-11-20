@@ -100,7 +100,7 @@ public class H2Database implements Database {
 			}
 
 		} finally {
-			SqlHelper.closeConnection(conn);
+			SQLHelper.closeConnection(conn);
 		}
 	}
 
@@ -130,7 +130,7 @@ public class H2Database implements Database {
 			}
 
 		} finally {
-			SqlHelper.closeConnection(conn);
+			SQLHelper.closeConnection(conn);
 		}
 
 	}
@@ -155,7 +155,7 @@ public class H2Database implements Database {
 			}
 
 		} finally {
-			SqlHelper.closeConnection(conn);
+			SQLHelper.closeConnection(conn);
 		}
 	}
 
@@ -167,13 +167,13 @@ public class H2Database implements Database {
 
 		try {
 
-			List<Conversation> conversations = SqlHelper.query(conn, SQLQuery.FETCH_CONVERSATIONS,
+			List<Conversation> conversations = SQLHelper.query(conn, SQLQuery.FETCH_CONVERSATIONS,
 					new ConversationRowMapper());
 
 			return conversations;
 
 		} finally {
-			SqlHelper.closeConnection(conn);
+			SQLHelper.closeConnection(conn);
 		}
 
 	}
@@ -190,12 +190,12 @@ public class H2Database implements Database {
 		Connection conn = this.getConnection();
 		try {
 
-			String presence = SqlHelper.queryString(conn, SQLQuery.FETCH_PRESENCE_STATUS, new Object[] { userJID });
+			String presence = SQLHelper.queryString(conn, SQLQuery.FETCH_PRESENCE_STATUS, new Object[] { userJID });
 
 			return StringUtils.safeEquals(presence, PresenceType.AVAILABLE.val(), false);
 
 		} finally {
-			SqlHelper.closeConnection(conn);
+			SQLHelper.closeConnection(conn);
 		}
 
 	}
@@ -208,7 +208,7 @@ public class H2Database implements Database {
 		PreparedStatement ps = null;
 
 		try {
-			ps = SqlHelper.createPreparedStatement(conn, SQLQuery.SQL_INSERT_CONVERSATION,
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_INSERT_CONVERSATION,
 					new Object[] { conv.getPeerJid(), conv.getLastChatLine(), conv.getLastChatLineType().name(),
 							DateUtils.currentTimeInMiles(), conv.getUnreadChatLines() });
 
@@ -219,8 +219,8 @@ public class H2Database implements Database {
 			throw new DbException("Failed to add new Conversation", e);
 
 		} finally {
-			SqlHelper.closeConnection(conn);
-			SqlHelper.closeStatement(ps);
+			SQLHelper.closeConnection(conn);
+			SQLHelper.closeStatement(ps);
 		}
 
 	}
@@ -233,7 +233,7 @@ public class H2Database implements Database {
 		PreparedStatement ps = null;
 
 		try {
-			ps = SqlHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_CONVERSATION,
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_CONVERSATION,
 					new Object[] { conv.getLastChatLine(), conv.getLastChatLineType().name(),
 							DateUtils.currentTimeInMiles(), conv.getUnreadChatLines(), conv.getPeerJid() });
 
@@ -244,8 +244,8 @@ public class H2Database implements Database {
 			throw new DbException("Failed to update a Conversation", e);
 
 		} finally {
-			SqlHelper.closeConnection(conn);
-			SqlHelper.closeStatement(ps);
+			SQLHelper.closeConnection(conn);
+			SQLHelper.closeStatement(ps);
 		}
 
 	}
@@ -257,10 +257,10 @@ public class H2Database implements Database {
 
 		try {
 
-			return SqlHelper.queryInt(conn, SQLQuery.FETCH_UNREAD_CHATLINE_COUNT, new String[] { peerJID });
+			return SQLHelper.queryInt(conn, SQLQuery.FETCH_UNREAD_CHATLINE_COUNT, new String[] { peerJID });
 
 		} finally {
-			SqlHelper.closeConnection(conn);
+			SQLHelper.closeConnection(conn);
 		}
 	}
 
@@ -272,7 +272,7 @@ public class H2Database implements Database {
 		PreparedStatement ps = null;
 
 		try {
-			ps = SqlHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_UNREAD_CONVERSATION_COUNT,
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_UNREAD_CONVERSATION_COUNT,
 					new Object[] { unreadConversationCount, peerJID });
 
 			ps.executeUpdate();
@@ -282,8 +282,8 @@ public class H2Database implements Database {
 			throw new DbException("Failed to update unread Conversation count", e);
 
 		} finally {
-			SqlHelper.closeConnection(conn);
-			SqlHelper.closeStatement(ps);
+			SQLHelper.closeConnection(conn);
+			SQLHelper.closeStatement(ps);
 		}
 
 	}
@@ -295,11 +295,11 @@ public class H2Database implements Database {
 
 		try {
 
-			int count = SqlHelper.queryInt(conn, SQLQuery.FETCH_CONVERSATION_COUNT, new String[] { peerJID });
+			int count = SQLHelper.queryInt(conn, SQLQuery.FETCH_CONVERSATION_COUNT, new String[] { peerJID });
 			return count > 0 ? true : false;
 
 		} finally {
-			SqlHelper.closeConnection(conn);
+			SQLHelper.closeConnection(conn);
 		}
 
 	}
@@ -312,7 +312,7 @@ public class H2Database implements Database {
 		PreparedStatement ps = null;
 
 		try {
-			ps = SqlHelper.createPreparedStatement(conn, SQLQuery.SQL_INSERT_CHATLINE_TO_CHATSTORE,
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_INSERT_CHATLINE_TO_CHATSTORE,
 					new Object[] { line.getConversationId(), line.getMessageId(), line.getPeerBareJid(),
 							line.getPeerResource(), line.getDirection().val(), line.getText(),
 							line.getContentType().name(), line.getContentId(), line.getCreateTime(),
@@ -326,8 +326,8 @@ public class H2Database implements Database {
 			throw new DbException("Failed to add new chaline", e);
 
 		} finally {
-			SqlHelper.closeConnection(conn);
-			SqlHelper.closeStatement(ps);
+			SQLHelper.closeConnection(conn);
+			SQLHelper.closeStatement(ps);
 		}
 
 	}

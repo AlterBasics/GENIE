@@ -1,4 +1,4 @@
-package abs.sf.client.gini.managers;
+package abs.sf.client.android.managers;
 
 
 import abs.ixi.client.PresenceManager;
@@ -6,7 +6,7 @@ import abs.ixi.client.core.Packet;
 import abs.ixi.client.core.Platform;
 import abs.ixi.client.io.XMPPStreamManager;
 import abs.ixi.client.xmpp.packet.Presence;
-import abs.sf.client.gini.db.DbManager;
+import abs.sf.client.android.db.DbManager;
 
 public class AndroidPresenceManager extends PresenceManager {
 

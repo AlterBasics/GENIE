@@ -13,8 +13,8 @@ import abs.ixi.client.util.CollectionUtils;
 import abs.sf.client.gini.db.exception.DbException;
 import abs.sf.client.gini.db.mapper.RowMapper;
 
-public class SqlHelper {
-	private static final Logger LOGGER = Logger.getLogger(SqlHelper.class.getName());
+public class SQLHelper {
+	private static final Logger LOGGER = Logger.getLogger(SQLHelper.class.getName());
 
 	public static PreparedStatement createPreparedStatement(Connection con, String sql, Object... param)
 			throws DbException {
@@ -171,7 +171,7 @@ public class SqlHelper {
 		ResultSet rs = null;
 
 		try {
-			ps = SqlHelper.createPreparedStatement(conn, sql, selectionArgs);
+			ps = SQLHelper.createPreparedStatement(conn, sql, selectionArgs);
 			rs = ps.executeQuery();
 
 			if (rs != null) {
@@ -215,7 +215,7 @@ public class SqlHelper {
 		ResultSet rs = null;
 
 		try {
-			ps = SqlHelper.createPreparedStatement(conn, sql, selectionArgs);
+			ps = SQLHelper.createPreparedStatement(conn, sql, selectionArgs);
 			rs = ps.executeQuery();
 
 			if (rs != null && rs.next()) {

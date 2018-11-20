@@ -1,4 +1,4 @@
-package abs.sf.client.gini.managers;
+package abs.sf.client.android.managers;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,14 +16,11 @@ import abs.ixi.client.ChatManager;
 import abs.ixi.client.core.Callback;
 import abs.ixi.client.core.Packet;
 import abs.ixi.client.core.Platform;
-import abs.ixi.client.core.Session;
 import abs.ixi.client.core.event.Event;
 import abs.ixi.client.core.event.EventHandler;
 import abs.ixi.client.file.sfcm.ContentType;
 import abs.ixi.client.file.sfcm.FileTransfer;
-import abs.ixi.client.file.sfcm.FileTransferFuture;
 import abs.ixi.client.io.XMPPStreamManager;
-import abs.ixi.client.io.multipart.FileContentSource;
 import abs.ixi.client.util.CollectionUtils;
 import abs.ixi.client.util.DateUtils;
 import abs.ixi.client.util.StringUtils;
@@ -41,15 +38,14 @@ import abs.ixi.client.xmpp.packet.MessageDelay;
 import abs.ixi.client.xmpp.packet.MessageMedia;
 import abs.ixi.client.xmpp.packet.MessageSubject;
 import abs.ixi.client.xmpp.packet.MessageThread;
-import abs.sf.client.gini.db.DbManager;
-import abs.sf.client.gini.db.object.ChatStoreTable;
-import abs.sf.client.gini.messaging.ChatLine;
-import abs.sf.client.gini.messaging.ChatListener;
-import abs.sf.client.gini.messaging.Conversation;
-import abs.sf.client.gini.messaging.MediaContent;
-import abs.sf.client.gini.utils.ContextProvider;
-import abs.sf.client.gini.utils.SFConstants;
-import abs.sf.client.gini.utils.SharedPrefProxy;
+import abs.sf.client.android.db.DbManager;
+import abs.sf.client.android.db.object.ChatStoreTable;
+import abs.sf.client.android.messaging.ChatLine;
+import abs.sf.client.android.messaging.ChatListener;
+import abs.sf.client.android.messaging.Conversation;
+import abs.sf.client.android.utils.ContextProvider;
+import abs.sf.client.android.utils.SFConstants;
+import abs.sf.client.android.utils.SharedPrefProxy;
 
 public class AndroidChatManager extends ChatManager {
     private static final Logger LOGGER = Logger.getLogger(AndroidChatManager.class.getName());
@@ -58,16 +54,17 @@ public class AndroidChatManager extends ChatManager {
     private static final String MEDIA_SENT_TEXT = "You sent a media message";
 
     private List<ChatListener> chatListeners;
-    private boolean isChatMarkersSupported;
-    private boolean isCSNSupported;
-    private boolean isMDRSupported;
+    private boolean isChatMarkersEnabled;
+    private boolean isChatStateNotificationEnabled;
+    private boolean isMessageDeliveryReceiptEnabled;
+
 
     public AndroidChatManager(XMPPStreamManager streamManager) {
         super(streamManager);
         this.chatListeners = Collections.synchronizedList(new ArrayList<ChatListener>());
-        this.isChatMarkersSupported = SharedPrefProxy.getInstance().isChatMarkersSupported();
-        this.isCSNSupported = SharedPrefProxy.getInstance().isChatStateNotificationSupported();
-        this.isMDRSupported = SharedPrefProxy.getInstance().isMessageDeliveryReceiptSupported();
+        this.isChatMarkersEnabled = SharedPrefProxy.getInstance().isChatMarkersEnabled();
+        this.isChatStateNotificationEnabled = SharedPrefProxy.getInstance().isChatStateNotificationEnabled();
+        this.isMessageDeliveryReceiptEnabled = SharedPrefProxy.getInstance().isMessageDeliveryReceiptEnabled();
     }
 
     /**
@@ -86,6 +83,18 @@ public class AndroidChatManager extends ChatManager {
      */
     public void removeChatListener(ChatListener chatListener) {
         this.chatListeners.remove(chatListener);
+    }
+
+    public void setChatMarkersEnabled(boolean chatMarkersEnabled) {
+        isChatMarkersEnabled = chatMarkersEnabled;
+    }
+
+    public void setChatStateNotificationEnabled(boolean chatStateNotificationEnabled) {
+        isChatStateNotificationEnabled = chatStateNotificationEnabled;
+    }
+
+    public void setMessageDeliveryReceiptEnabled(boolean messageDeliveryReceiptEnabled) {
+        isMessageDeliveryReceiptEnabled = messageDeliveryReceiptEnabled;
     }
 
     /**
@@ -123,7 +132,7 @@ public class AndroidChatManager extends ChatManager {
 
         this.storeChatLine(chatLine);
 
-        this.sendTextMessage(conversationId, chatLine.getMessageId(), chatLine.getText(), toJID, isGroup, isChatMarkersSupported, isMDRSupported, isCSNSupported);
+        this.sendTextMessage(conversationId, chatLine.getMessageId(), chatLine.getText(), toJID, isGroup, isChatMarkersEnabled, isMessageDeliveryReceiptEnabled, isChatStateNotificationEnabled);
 
         return chatLine;
     }
@@ -179,7 +188,7 @@ public class AndroidChatManager extends ChatManager {
 
         this.storeChatLine(chatLine);
 
-        this.sendMediaMessage(conversationId, mediaMessageId, contentType, Base64.encodeToString(mediaThumb, Base64.DEFAULT), toJID, isGroup, isChatMarkersSupported, isMDRSupported, isCSNSupported);
+        this.sendMediaMessage(conversationId, mediaMessageId, contentType, Base64.encodeToString(mediaThumb, Base64.DEFAULT), toJID, isGroup, isChatMarkersEnabled, isMessageDeliveryReceiptEnabled, isChatStateNotificationEnabled);
 
         this.uploadFile(mediaMessageId, mediaFile, contentType, toJID, callback);
 

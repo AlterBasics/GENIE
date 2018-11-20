@@ -1,5 +1,10 @@
-package abs.sf.client.gini.managers;
+package abs.sf.client.android.managers;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import abs.ixi.client.DeviceType;
@@ -11,16 +16,15 @@ import abs.ixi.client.io.StreamNegotiator;
 import abs.ixi.client.io.XMPPStreamManager;
 import abs.ixi.client.util.CollectionUtils;
 import abs.ixi.client.util.StringUtils;
+
 import abs.ixi.client.util.UUIDGenerator;
 import abs.ixi.client.xmpp.JID;
 import abs.ixi.client.xmpp.packet.ChatRoom;
 import abs.ixi.client.xmpp.packet.Roster;
 import abs.ixi.client.xmpp.packet.UserProfileData;
-import abs.sf.client.gini.db.DbManager;
-import abs.sf.client.gini.utils.SDKLoader;
-import abs.sf.client.gini.utils.SharedPrefProxy;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import abs.sf.client.android.db.DbManager;
+import abs.sf.client.android.utils.SDKLoader;
+import abs.sf.client.android.utils.SharedPrefProxy;
 
 public class AndroidUserManager extends UserManager {
     public AndroidUserManager(XMPPStreamManager streamManager) {
@@ -164,9 +168,9 @@ public class AndroidUserManager extends UserManager {
 
     @Override
     public boolean sendLeaveChatRoomRequest(JID roomJID) {
-        boolean requestSent =  super.sendLeaveChatRoomRequest(roomJID);
+        boolean requestSent = super.sendLeaveChatRoomRequest(roomJID);
 
-        if(requestSent) {
+        if (requestSent) {
             DbManager.getInstance().removeRoomMember(roomJID.getBareJID(), Platform.getInstance().getUserJID().getBareJID());
         }
 
@@ -175,9 +179,9 @@ public class AndroidUserManager extends UserManager {
 
     @Override
     public boolean updateRoomSubject(JID roomJID, String subject) {
-        boolean requestSent =  super.updateRoomSubject(roomJID, subject);
+        boolean requestSent = super.updateRoomSubject(roomJID, subject);
 
-        if(requestSent) {
+        if (requestSent) {
             DbManager.getInstance().updateChatRoomSubject(roomJID.getBareJID(), subject);
         }
 
@@ -185,7 +189,6 @@ public class AndroidUserManager extends UserManager {
     }
 
     /**
-     *
      * Reloads logged in user's Profile data from server.
      */
     public void reloadUserData() {
@@ -234,9 +237,58 @@ public class AndroidUserManager extends UserManager {
     }
 
     /**
+     * return true if user data is updated successfully. Please refer V-Card
+     * XEP-0054.
+     *
+     * @param userProfileData
+     */
+    @Override
+    public boolean updateUserProfileData(UserProfileData userProfileData) {
+        boolean isUpdated = super.updateUserProfileData(userProfileData);
+
+        if (isUpdated) {
+            userProfileData.setJabberId(Platform.getInstance().getUserJID());
+            DbManager.getInstance().addOrUpdateUserProfileData(userProfileData);
+        }
+
+        return isUpdated;
+    }
+
+    /**
+     * User it to change user avatar.
+     *
+     * <p>
+     * The image SHOULD use less than eight kilobytes (8k) of data; And it's
+     * height and width SHOULD be between thirty-two (32) and ninety-six (96)
+     * pixels; the recommended size is sixty-four (64) pixels high and
+     * sixty-four (64) pixels wide.
+     * </p>
+     *
+     * <p>
+     * We Only verify total size of file which should be less than eight
+     * kilobytes (8k). and other verifications like height, width, pixels client
+     * have to do.
+     * </p>
+     *
+     * Please refer XEP-0153: vCard-Based Avatars.
+     *
+     * @param file
+     * @param imageType
+     * @return true if user avtar is changes successfully.
+     */
+    public boolean changeUserAvatar(final File file, final String imageType){
+        boolean isChanged = changeUserAvatar(file, imageType);
+
+        if(isChanged) {
+           // DbManager.getInstance().updateUserProfileImage(Platform.getInstance().getUserJID().getBareJID(), file, imageType);
+        }
+
+        return isChanged;
+    }
+
+    /**
      * It will return cached user profile data from local DB.
      * To refresh data first use {@link #reloadUserData()}. which will reload user data from server.
-     *
      *
      * @return
      */
@@ -248,12 +300,12 @@ public class AndroidUserManager extends UserManager {
      * It will return cached user data for given userJID from local DB.
      * To refresh data first use {@link #reloadUserData(JID)}. which will reload user data from server.
      *
-     *
      * @return
      */
     public UserProfileData getCachedUserProfileData(JID userJID) {
         return DbManager.getInstance().getUserProfileData(userJID.getBareJID());
     }
+
     /**
      * It will return cached user avtar from local DB.
      * To refresh data first use {@link #reloadUserData()}. which will reload user data from server.
@@ -276,7 +328,7 @@ public class AndroidUserManager extends UserManager {
         byte[] avtarBytes = DbManager.getInstance().getUserAvatarBytes(useeJID.getBareJID());
 
         if (avtarBytes != null) {
-           return BitmapFactory.decodeByteArray(avtarBytes, 0, avtarBytes.length);
+            return BitmapFactory.decodeByteArray(avtarBytes, 0, avtarBytes.length);
         }
 
         return null;
