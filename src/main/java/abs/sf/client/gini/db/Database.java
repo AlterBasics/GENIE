@@ -127,5 +127,11 @@ public interface Database extends Initializable {
 	 * @return
 	 */
 	List<ChatLine> getAllUnreadChatLines(String pearJID) throws DbException;
+	/**
+	 * 
+	 * @param messageId
+	 * @throws DbException
+	 */
+     void setMessageIsViewed(String messageId) throws DbException ;
 
 }
