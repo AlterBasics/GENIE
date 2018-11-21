@@ -21,7 +21,6 @@ import abs.sf.client.gini.db.object.ChatStoreTable;
 import abs.sf.client.gini.db.object.ConversationTable;
 import abs.sf.client.gini.db.object.DatabaseTable;
 import abs.sf.client.gini.db.object.MediaStoreTable;
-import abs.sf.client.gini.db.object.PollResponseTable;
 import abs.sf.client.gini.db.object.PresenceTable;
 import abs.sf.client.gini.db.object.RosterTable;
 import abs.sf.client.gini.db.object.UndeliverStanzaTable;
@@ -47,7 +46,6 @@ public class H2Database implements Database {
 		tables.add(new ChatStoreTable());
 		tables.add(new ConversationTable());
 		tables.add(new MediaStoreTable());
-		tables.add(new PollResponseTable());
 		tables.add(new PresenceTable());
 		tables.add(new RosterTable());
 		tables.add(new UserProfileTable());

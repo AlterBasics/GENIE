@@ -1,4 +1,4 @@
-package abs.sf.client.android.managers;
+package abs.sf.client.gini.managers;
 
 import android.content.Context;
 import android.content.Intent;
@@ -48,7 +48,7 @@ import abs.sf.client.android.utils.SFConstants;
 import abs.sf.client.android.utils.SharedPrefProxy;
 
 public class AndroidChatManager extends ChatManager {
-    private static final Logger LOGGER = Logger.getLogger(AndroidChatManager.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(AndroidChatManager.getName());
 
     private static final String MEDIA_RECEIVED_TEXT = "You received a media message";
     private static final String MEDIA_SENT_TEXT = "You sent a media message";

@@ -701,15 +701,6 @@ public final class DbManager {
 		dbHelper.delete(PresenceTable.TABLE_NAME, PresenceTable.COLUMN_JID, userJID);
 	}
 
-	public void storePollResponse(Long pollId, String pollResponse, JID responsor) {
-		ContentValues contentValues = new ContentValues();
-		contentValues.put(PollResponseTable.COL_POLL_ID, pollId.toString());
-		contentValues.put(PollResponseTable.COL_RESPONSE, pollResponse);
-		contentValues.put(PollResponseTable.COL_RESPONSOR_JID, responsor.getBareJID());
-
-		dbHelper.insert(PollResponseTable.TABLE_NAME, contentValues);
-	}
-
 	public void addOrUpdateUserProfileData(UserProfileData userProfileData) {
 		synchronized (UserProfileTable.class) {
 			long count = dbHelper.queryInt(SQLQuery.FETCH_USER_PROFILE_COUNT,
