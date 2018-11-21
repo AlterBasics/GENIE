@@ -102,4 +102,30 @@ public interface Database extends Initializable {
 	 */
 	void addToChatStore(ChatLine line) throws DbException;
 
+	/**
+	 * Update delivery status for a {@link ChatLine} in {@link ChatStoreTable}
+	 *
+	 * @param messageId
+	 * @param messageStatus
+	 * @throws SQLException
+	 */
+	void updateDeliveryStatus(String messageId, ChatLine.MessageStatus messageStatus) throws DbException;
+	
+	/**
+	 * Check message is delivered or not
+	 * 
+	 * @param messageId
+	 * @return
+	 * @throws DbException
+	 */
+	boolean isMessageAlreadyDelivered(String messageId) throws DbException;
+	
+	/**
+	 * Fetch All unRead chatLines for a given pear {@link JID}
+	 *
+	 * @param pearJID
+	 * @return
+	 */
+	List<ChatLine> getAllUnreadChatLines(String pearJID) throws DbException;
+
 }

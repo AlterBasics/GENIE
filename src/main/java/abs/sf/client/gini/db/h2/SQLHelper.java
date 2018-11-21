@@ -189,9 +189,8 @@ public class SQLHelper {
 			throw new DbException("Failed to execute Query", e);
 
 		} finally {
-			closeConnection(conn);
-			closeStatement(ps);
 			closeResultSet(rs);
+			closeStatement(ps);
 		}
 
 		return null;
@@ -227,8 +226,8 @@ public class SQLHelper {
 			throw new DbException("Failed to execute Query", e);
 
 		} finally {
-			closeStatement(ps);
 			closeResultSet(rs);
+			closeStatement(ps);
 		}
 
 		return null;

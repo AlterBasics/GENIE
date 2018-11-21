@@ -230,42 +230,31 @@ public final class DbManager {
 	 * @param messageStatus
 	 * @throws SQLException
 	 */
-	public void updateDeliveryStatus(String messageId, ChatLine.MessageStatus messageStatus) throws SQLException {
-		ContentValues contentValues = new ContentValues();
-		contentValues.put(ChatStoreTable.COL_MESSAGE_ID, messageId);
-		contentValues.put(ChatStoreTable.COL_DELIVERY_STATUS, messageStatus.getValue());
-		dbHelper.update(ChatStoreTable.TABLE_NAME, contentValues, ChatStoreTable.COL_MESSAGE_ID + "= ?",
-				new String[] { messageId });
+	public void updateDeliveryStatus(String messageId, ChatLine.MessageStatus messageStatus) throws DbException {
+		this.database.updateDeliveryStatus(messageId, messageStatus);
 	}
 
-	public boolean isMessageAlreadyDelivered(String messageId) {
-		int deliveryStatus = dbHelper.queryInt(SQLQuery.FETCH_MESSAGE_DELIVERY_STATUS, new String[] { messageId });
-		return deliveryStatus != ChatLine.MessageStatus.NOT_DELIVERED_TO_SERVER.getValue();
+	/**
+	 * Check message is delivered or not
+	 * 
+	 * @param messageId
+	 * @return
+	 * @throws DbException
+	 */
+	public boolean isMessageAlreadyDelivered(String messageId)throws DbException {
+		return this.database.isMessageAlreadyDelivered(messageId);
 	}
 
-	public void markAsReceived(String messageId) throws SQLException {
+	public void markAsReceived(String messageId) throws DbException {
 		this.updateDeliveryStatus(messageId, ChatLine.MessageStatus.DELIVERED_TO_RECEIVER);
 	}
 
-	public void markAsAcknowledged(String messageId) throws SQLException {
+	public void markAsAcknowledged(String messageId) throws DbException {
 		this.updateDeliveryStatus(messageId, ChatLine.MessageStatus.RECEIVER_IS_ACKNOWLEDGED);
 	}
 
-	public void markAsDisplayed(String messageId, String pearJID) throws SQLException {
+	public void markAsDisplayed(String messageId, String pearJID) throws DbException {
 		this.updateDeliveryStatus(messageId, ChatLine.MessageStatus.RECEIVER_HAS_VIEWED);
-
-		// Long uuid = dbHelper.queryLong(SQLQuery.FETCH_MESSAGE_UUID, new
-		// String[]{messageId});
-		// TODO: For now testing purpose we are not markinng all reads. In
-		// future afetr all set we will enable it.
-		// ContentValues contentValues = new ContentValues();
-		// contentValues.put(ChatStoreTable.COL_DELIVERY_STATUS,
-		// ChatLine.MessageStatus.RECEIVER_HAS_VIEWED.getValue());
-		//
-		// dbHelper.update(ChatStoreTable.TABLE_NAME, contentValues,
-		// ChatStoreTable.COL_UUID + " <= ? AND "
-		// + ChatStoreTable.COLUMN_PEER_JID + " = ?", new
-		// String[]{uuid.toString(), pearJID});
 	}
 
 	/**
@@ -288,9 +277,8 @@ public final class DbManager {
 	 * @param pearJID
 	 * @return
 	 */
-	public List<ChatLine> getAllUnreadChatLines(String pearJID) {
-		return this.dbHelper.query(SQLQuery.FETCH_UNREAD_CONVERSATION_CHAT_LINES, new String[] { pearJID },
-				new ChatLineRowMapper());
+	public List<ChatLine> getAllUnreadChatLines(String pearJID) throws DbException {
+		return this.database.getAllUnreadChatLines(pearJID);
 	}
 
 	/**
@@ -753,10 +741,10 @@ public final class DbManager {
 			contentValues.put(UserProfileTable.COLUMN_AVATAR_MEDIA_TYPE, avtar.getImageType());
 		}
 
-        if(userProfileData.getDescription() != null) {
-            contentValues.put(UserProfileTable.COLUMN_ABOUT, userProfileData.getDescription());
-        }
-        
+		if (userProfileData.getDescription() != null) {
+			contentValues.put(UserProfileTable.COLUMN_ABOUT, userProfileData.getDescription());
+		}
+
 		return dbHelper.insert(UserProfileTable.TABLE_NAME, contentValues);
 	}
 
@@ -825,10 +813,10 @@ public final class DbManager {
 
 			contentValues.put(UserProfileTable.COLUMN_AVATAR_MEDIA_TYPE, avtar.getImageType());
 		}
-		
-        if(userProfileData.getDescription() != null) {
-            contentValues.put(UserProfileTable.COLUMN_ABOUT, userProfileData.getDescription());
-        }
+
+		if (userProfileData.getDescription() != null) {
+			contentValues.put(UserProfileTable.COLUMN_ABOUT, userProfileData.getDescription());
+		}
 
 		return dbHelper.update(UserProfileTable.TABLE_NAME, contentValues, UserProfileTable.COLUMN_JID + " = ?",
 				new String[] { userProfileData.getJabberId().getBareJID() });

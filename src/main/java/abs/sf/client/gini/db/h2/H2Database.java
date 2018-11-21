@@ -14,6 +14,7 @@ import abs.ixi.client.util.StringUtils;
 import abs.ixi.client.xmpp.packet.Presence.PresenceType;
 import abs.sf.client.gini.db.Database;
 import abs.sf.client.gini.db.exception.DbException;
+import abs.sf.client.gini.db.mapper.ChatLineRowMapper;
 import abs.sf.client.gini.db.mapper.ConversationRowMapper;
 import abs.sf.client.gini.db.object.ChatArchiveTable;
 import abs.sf.client.gini.db.object.ChatRoomMemberTable;
@@ -27,6 +28,7 @@ import abs.sf.client.gini.db.object.UndeliverStanzaTable;
 import abs.sf.client.gini.db.object.UserProfileTable;
 import abs.sf.client.gini.messaging.ChatLine;
 import abs.sf.client.gini.messaging.Conversation;
+import abs.sf.client.gini.messaging.ChatLine.MessageStatus;
 
 public class H2Database implements Database {
 	private static final Logger LOGGER = Logger.getLogger(H2Database.class.getName());
@@ -217,8 +219,8 @@ public class H2Database implements Database {
 			throw new DbException("Failed to add new Conversation", e);
 
 		} finally {
-			SQLHelper.closeConnection(conn);
 			SQLHelper.closeStatement(ps);
+			SQLHelper.closeConnection(conn);
 		}
 
 	}
@@ -242,8 +244,8 @@ public class H2Database implements Database {
 			throw new DbException("Failed to update a Conversation", e);
 
 		} finally {
-			SQLHelper.closeConnection(conn);
 			SQLHelper.closeStatement(ps);
+			SQLHelper.closeConnection(conn);
 		}
 
 	}
@@ -294,7 +296,7 @@ public class H2Database implements Database {
 		try {
 
 			int count = SQLHelper.queryInt(conn, SQLQuery.FETCH_CONVERSATION_COUNT, new String[] { peerJID });
-			return count > 0 ? true : false;
+			return count > 0;
 
 		} finally {
 			SQLHelper.closeConnection(conn);
@@ -328,6 +330,66 @@ public class H2Database implements Database {
 			SQLHelper.closeStatement(ps);
 		}
 
+	}
+
+	@Override
+	public void updateDeliveryStatus(String messageId, MessageStatus messageStatus) throws DbException {
+		LOGGER.info("Updating delivery status for messageId :  " + messageId + " status : " + messageStatus);
+		Connection conn = this.getConnection();
+
+		PreparedStatement ps = null;
+
+		try {
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_MESSAGE_DELIVERY_STATUS,
+					new Object[] { messageStatus.getValue(), messageId });
+
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+			LOGGER.warning("Failed to update message delivery status Conversation count");
+			throw new DbException("Failed to update message delivery status Conversation count", e);
+
+		} finally {
+			SQLHelper.closeConnection(conn);
+			SQLHelper.closeStatement(ps);
+		}
+
+	}
+
+	@Override
+	public boolean isMessageAlreadyDelivered(String messageId) throws DbException {
+		LOGGER.info("Checking message is delivered or not for mesageId :" + messageId);
+		Connection conn = this.getConnection();
+
+		try {
+
+			int deliveryStatus = SQLHelper.queryInt(conn, SQLQuery.FETCH_MESSAGE_DELIVERY_STATUS,
+					new String[] { messageId });
+			
+			return deliveryStatus != ChatLine.MessageStatus.NOT_DELIVERED_TO_SERVER.getValue();
+
+		} finally {
+			SQLHelper.closeConnection(conn);
+		}
+
+	}
+	
+	@Override
+	public List<ChatLine> getAllUnreadChatLines(String pearJID) throws DbException {
+		LOGGER.info("Fetching All unread chatlines for pear jid : " + pearJID);
+
+		Connection conn = this.getConnection();
+
+		try {
+
+			List<ChatLine> chatlines = SQLHelper.query(conn, SQLQuery.FETCH_UNREAD_CONVERSATION_CHAT_LINES, new Object[] {pearJID},
+					new ChatLineRowMapper());
+
+			return chatlines;
+
+		} finally {
+			SQLHelper.closeConnection(conn);
+		}
 	}
 
 }

@@ -274,5 +274,10 @@ public class SQLQuery {
             ", " + ChatStoreTable.COL_IS_CSN_ACTIVE +
             " ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
+    
+    public static final String SQL_UPDATE_MESSAGE_DELIVERY_STATUS = "UPDATE " +
+    		ChatStoreTable.TABLE_NAME + " SET " +
+            ChatStoreTable.COL_DELIVERY_STATUS + " = ? " +
+            " WHERE " + ChatStoreTable.COL_MESSAGE_ID + " = ?";    
 
 }
