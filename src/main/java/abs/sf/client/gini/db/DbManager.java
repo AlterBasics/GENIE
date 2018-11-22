@@ -263,12 +263,8 @@ public final class DbManager {
 	 * @param messageId
 	 * @throws SQLException
 	 */
-	public void setMessageIsViewed(String messageId) throws SQLException {
-		ContentValues contentValues = new ContentValues();
-		contentValues.put(ChatStoreTable.COL_MESSAGE_ID, messageId);
-		contentValues.put(ChatStoreTable.COL_HAVE_SEAN, 1);
-		dbHelper.update(ChatStoreTable.TABLE_NAME, contentValues, ChatStoreTable.COL_MESSAGE_ID + "= ?",
-				new String[] { messageId });
+	public void setMessageIsViewed(String messageId) throws DbException {
+		this.database.setMessageIsViewed(messageId);
 	}
 
 	/**
@@ -288,7 +284,9 @@ public final class DbManager {
 	 * @param pearJID {@link JID }of the peer
 	 * @return List of chatLine objects
 	 */
-	public List<ChatLine> fetchConversationChatlines(String pearJID, boolean isGroup) {
+	public List<ChatLine> fetchConversationChatlines(String pearJID, boolean isGroup) throws DbException {
+		
+	
 		List<ChatLine> chatLines = this.dbHelper.query(SQLQuery.FETCH_CONVERSATION_CHAT_LINES, new String[] { pearJID },
 				new ChatLineRowMapper());
 

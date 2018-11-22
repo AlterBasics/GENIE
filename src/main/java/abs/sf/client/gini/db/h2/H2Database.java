@@ -392,4 +392,30 @@ public class H2Database implements Database {
 		}
 	}
 
+	@Override
+	public void setMessageIsViewed(String messageId) throws DbException {
+		LOGGER.info("Set Message is Viewed by the user or not :" + messageId);
+		Connection conn = this.getConnection();
+
+		PreparedStatement ps = null;
+
+		try {
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_IS_MESSAGE_VIEWED,
+					new Object[] {1,messageId});
+
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+			LOGGER.warning("Failed to set the Message is Viewed or not");
+			throw new DbException("Failed to set the Message is Viewed or not ", e);
+
+		} finally {
+			SQLHelper.closeStatement(ps);
+			SQLHelper.closeConnection(conn);
+		}
+		
+	}
+	
+	
+
 }

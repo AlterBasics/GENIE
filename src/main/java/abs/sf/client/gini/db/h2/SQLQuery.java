@@ -278,6 +278,11 @@ public class SQLQuery {
     public static final String SQL_UPDATE_MESSAGE_DELIVERY_STATUS = "UPDATE " +
     		ChatStoreTable.TABLE_NAME + " SET " +
             ChatStoreTable.COL_DELIVERY_STATUS + " = ? " +
-            " WHERE " + ChatStoreTable.COL_MESSAGE_ID + " = ?";    
+            " WHERE " + ChatStoreTable.COL_MESSAGE_ID + " = ?";  
+    
+    public static final String SQL_IS_MESSAGE_VIEWED = "UPDATE " +
+    		ChatStoreTable.TABLE_NAME + " SET " +
+            ChatStoreTable.COL_HAVE_SEAN + " = ? " +
+            " WHERE " + ChatStoreTable.COL_MESSAGE_ID + " = ?";  
 
 }
