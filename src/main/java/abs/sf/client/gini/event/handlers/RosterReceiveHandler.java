@@ -9,39 +9,39 @@ import abs.ixi.client.xmpp.packet.Roster;
 import abs.sf.client.gini.db.DbManager;
 import abs.sf.client.gini.db.object.RosterTable;
 import abs.sf.client.gini.managers.AndroidUserManager;
-import abs.sf.client.gini.utils.SharedPrefProxy;
+import abs.sf.client.gini.utils.SFSDKProperties;
 
 /**
  * An {@link EventHandler} implementation to handle
  * {@link EventType#ROSTER_RECEIVE} events.
  */
 public class RosterReceiveHandler implements EventHandler {
-    @Override
-    public void handle(Event event) {
-        Object source = event.getSource();
+	@Override
+	public void handle(Event event) {
+		Object source = event.getSource();
 
-        if (source instanceof Roster) {
-            Roster roster = (Roster) source;
+		if (source instanceof Roster) {
+			Roster roster = (Roster) source;
 
-            int newVer = roster.getVersion();
-            int oldVer = SharedPrefProxy.getInstance().getRosterVersion();
+			int newVer = roster.getVersion();
+			int oldVer = SFSDKProperties.getInstance().getRosterVersion();
 
-            if (oldVer < newVer) {
-                synchronized (RosterTable.class) {
-                    DbManager.getInstance().truncateTable(RosterTable.TABLE_NAME);
+			if (oldVer < newVer) {
+				synchronized (RosterTable.class) {
+					DbManager.getInstance().truncateTable(RosterTable.TABLE_NAME);
 
-                    if (!CollectionUtils.isNullOrEmpty(roster.getItems())) {
-                        AndroidUserManager userManager = (AndroidUserManager) Platform.getInstance().getUserManager();
+					if (!CollectionUtils.isNullOrEmpty(roster.getItems())) {
+						AndroidUserManager userManager = (AndroidUserManager) Platform.getInstance().getUserManager();
 
-                        for (Roster.RosterItem rosterItem : roster.getItems()) {
-                            DbManager.getInstance().addRosterItem(rosterItem);
-                        }
+						for (Roster.RosterItem rosterItem : roster.getItems()) {
+							DbManager.getInstance().addRosterItem(rosterItem);
+						}
 
-                    }
+					}
 
-                    SharedPrefProxy.getInstance().setRosterVersion(newVer);
-                }
-            }
-        }
-    }
+					SFSDKProperties.getInstance().setRosterVersion(newVer);
+				}
+			}
+		}
+	}
 }

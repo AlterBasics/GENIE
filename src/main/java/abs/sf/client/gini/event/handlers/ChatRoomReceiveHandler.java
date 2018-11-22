@@ -21,7 +21,8 @@ public class ChatRoomReceiveHandler implements EventHandler {
     @Override
     public void handle(Event event) {
 
-        List<ChatRoom> chatRooms = (List<ChatRoom>) event.getSource();
+        @SuppressWarnings("unchecked")
+		List<ChatRoom> chatRooms = (List<ChatRoom>) event.getSource();
 
         if (CollectionUtils.isNullOrEmpty(chatRooms)) {
             return;
