@@ -284,5 +284,39 @@ public class SQLQuery {
     		ChatStoreTable.TABLE_NAME + " SET " +
             ChatStoreTable.COL_HAVE_SEAN + " = ? " +
             " WHERE " + ChatStoreTable.COL_MESSAGE_ID + " = ?";  
+    
+    public static final String SQL_INSERT_ROSTER_ITEM = "INSERT INTO " +
+    		RosterTable.TABLE_NAME +
+    		" (" + RosterTable.COLUMN_JID+
+            ", " + RosterTable.COLUMN_NAME +
+            ", " + RosterTable.COLUMN_IS_GROUP +
+            " ) VALUES (?, ?, ?)";
+    
+    public static final String SQL_UPDATE_ROSTER_ITEM = "UPDATE " +
+    		RosterTable.TABLE_NAME + " SET " +
+    		RosterTable.COLUMN_JID + " = ?, " +
+    		RosterTable.COLUMN_NAME + " = ?, " +
+    		RosterTable.COLUMN_IS_GROUP + " = ?, " + 
+            " WHERE " + RosterTable.COLUMN_JID + " = ?";
+    
+    public static final String DELETE_ROSTER_ITEM = "DELETE " +
+            " FROM " + RosterTable.TABLE_NAME +
+            " WHERE " + RosterTable.COLUMN_JID + " = ? " ;
+            //" AND " + RosterTable.COLUMN_ + " = ?";
+    
+    public static final String SQL_INSERT_CHAT_ROOM = "INSERT INTO " +
+    		RosterTable.TABLE_NAME +
+    		" (" + RosterTable.COLUMN_JID+
+            ", " + RosterTable.COLUMN_NAME +
+            ", " + RosterTable.COLUMN_ROOM_SUBJECT +
+             ", " + RosterTable.COLUMN_ACCESS_MODE +
+              ", " + RosterTable.COLUMN_IS_GROUP +
+            " ) VALUES (?, ?, ?, ?, ? )";
+    
+    public static final String SQL_UPDATE_CHAT_ROOM_SUBJECT = "UPDATE " +
+    		RosterTable.TABLE_NAME + " SET " +
+    		RosterTable.COLUMN_ROOM_SUBJECT + " = ?, " + 
+            " WHERE " + RosterTable.COLUMN_JID + " = ?";
 
+    
 }

@@ -285,10 +285,11 @@ public final class DbManager {
 	 * @return List of chatLine objects
 	 */
 	public List<ChatLine> fetchConversationChatlines(String pearJID, boolean isGroup) throws DbException {
+		List<ChatLine> chatLines = this.database.fetchConversationChatlines(pearJID);
 		
 	
-		List<ChatLine> chatLines = this.dbHelper.query(SQLQuery.FETCH_CONVERSATION_CHAT_LINES, new String[] { pearJID },
-				new ChatLineRowMapper());
+//		List<ChatLine> chatLines = this.dbHelper.query(SQLQuery.FETCH_CONVERSATION_CHAT_LINES, new String[] { pearJID },
+//				new ChatLineRowMapper());
 
 		if (isGroup) {
 			for (ChatLine line : chatLines) {
@@ -318,10 +319,11 @@ public final class DbManager {
 		return chatLines;
 	}
 
-	public boolean isMessageAlreadyExist(String peerJID, String messageId) {
+	public boolean isMessageAlreadyExist(String peerJID, String messageId) throws DbException{
+		return this.database.isMessageAlreadyExist(peerJID,messageId);
 
-		long count = dbHelper.queryInt(SQLQuery.FETCH_CHAT_LINE_COUNT, new String[] { messageId, peerJID });
-		return count > 0 ? true : false;
+//		long count = dbHelper.queryInt(SQLQuery.FETCH_CHAT_LINE_COUNT, new String[] { messageId, peerJID });
+//		return count > 0 ? true : false;
 	}
 
 	/**
@@ -330,8 +332,9 @@ public final class DbManager {
 	 *
 	 * @return
 	 */
-	public List<ChatLine> getUndeliveredMessages() {
-		return this.dbHelper.query(SQLQuery.FETCH_UNDELIVERED_CHAT_LINES, new ChatLineRowMapper());
+	public List<ChatLine> getUndeliveredMessages()throws DbException{
+		return this.database.getUndeliveredMessages();
+//		return this.dbHelper.query(SQLQuery.FETCH_UNDELIVERED_CHAT_LINES, new ChatLineRowMapper());
 	}
 
 	/**
@@ -341,13 +344,14 @@ public final class DbManager {
 	 *
 	 * @param item
 	 */
-	public void addRosterItem(RosterItem item) {
-		ContentValues rosterContent = new ContentValues();
-		rosterContent.put(RosterTable.COLUMN_JID, item.getJid().getBareJID());
-		rosterContent.put(RosterTable.COLUMN_NAME, item.getName());
-		rosterContent.put(RosterTable.COLUMN_IS_GROUP, 0);
+	public void addRosterItem(RosterItem item) throws DbException {
+		this.database.addRosterItem(item);
+//		ContentValues rosterContent = new ContentValues();
+//		rosterContent.put(RosterTable.COLUMN_JID, item.getJid().getBareJID());
+//		rosterContent.put(RosterTable.COLUMN_NAME, item.getName());
+//		rosterContent.put(RosterTable.COLUMN_IS_GROUP, 0);
 
-		dbHelper.insert(RosterTable.TABLE_NAME, rosterContent);
+//		dbHelper.insert(RosterTable.TABLE_NAME, rosterContent);
 	}
 
 	/**
@@ -357,84 +361,94 @@ public final class DbManager {
 	 *
 	 * @param item
 	 */
-	public void updateRosterItem(RosterItem item) {
-		ContentValues contentValues = new ContentValues();
-		contentValues.put(RosterTable.COLUMN_JID, item.getJid().getBareJID());
-		contentValues.put(RosterTable.COLUMN_NAME, item.getName());
-		contentValues.put(RosterTable.COLUMN_IS_GROUP, 0);
-
-		dbHelper.update(RosterTable.TABLE_NAME, contentValues, RosterTable.COLUMN_JID + " = ?",
-				new String[] { item.getJid().getBareJID() });
+	public void updateRosterItem(RosterItem item) throws DbException{
+		this.database.updateRosterItem(item);
+//		ContentValues contentValues = new ContentValues();
+//		contentValues.put(RosterTable.COLUMN_JID, item.getJid().getBareJID());
+//		contentValues.put(RosterTable.COLUMN_NAME, item.getName());
+//		contentValues.put(RosterTable.COLUMN_IS_GROUP, 0);
+//
+//		dbHelper.update(RosterTable.TABLE_NAME, contentValues, RosterTable.COLUMN_JID + " = ?",
+//				new String[] { item.getJid().getBareJID() });
 	}
 
-	public List<RosterItem> getRosterList() {
-		return this.dbHelper.query(SQLQuery.FETCH_ROSTER_ITEMS, null, new RosterItemRowMapper());
+	public List<RosterItem> getRosterList() throws DbException{
+		return this.database.getRosterList();
+		//return this.dbHelper.query(SQLQuery.FETCH_ROSTER_ITEMS, null, new RosterItemRowMapper());
 	}
 
-	public void deleteRosterItem(RosterItem item) {
-		dbHelper.delete(RosterTable.TABLE_NAME, RosterTable.COLUMN_JID, item.getJid().getBareJID());
+	public void deleteRosterItem(RosterItem item) throws DbException{
+		this.database.deleteRosterItem(item);
+		//dbHelper.delete(RosterTable.TABLE_NAME, RosterTable.COLUMN_JID, item.getJid().getBareJID());
 	}
 
-	public void deleteRosterItem(String jid) {
-		dbHelper.delete(RosterTable.TABLE_NAME, RosterTable.COLUMN_JID, jid);
+	public void deleteRosterItem(String jid) throws DbException{
+		this.database.deleteRosterItem(jid);
+		//dbHelper.delete(RosterTable.TABLE_NAME, RosterTable.COLUMN_JID, jid);
 	}
 
-	public String getRosterItemName(String itemJID) {
-		return dbHelper.queryString(SQLQuery.FETCH_USER_NAME, new String[] { itemJID });
+	public String getRosterItemName(String itemJID) throws DbException {
+		return this.database.getRosterItemName(itemJID);
+		//return dbHelper.queryString(SQLQuery.FETCH_USER_NAME, new String[] { itemJID });
 	}
 
-	public void addOrUpdateRoster(List<RosterItem> list) throws SQLException {
+	public void addOrUpdateRoster(List<RosterItem> list) throws DbException {
 		for (RosterItem item : list) {
 			addOrUpdateRosterItem(item);
 		}
 	}
 
-	public void addOrUpdateRosterItem(RosterItem item) {
+	public void addOrUpdateRosterItem(RosterItem item) throws DbException{
 		synchronized (RosterTable.class) {
-			long count = dbHelper.queryInt(SQLQuery.FETCH_ROSTER_ITEM_COUNT,
-					new String[] { item.getJid().getBareJID() });
-
-			if (count == 0) {
-				addRosterItem(item);
-
-			} else {
-				updateRosterItem(item);
-			}
+		this.database.addOrUpdateRosterItem(item);
+////			long count = dbHelper.queryInt(SQLQuery.FETCH_ROSTER_ITEM_COUNT,
+////					new String[] { item.getJid().getBareJID() });
+//
+//			if (count == 0) {
+//				addRosterItem(item);
+//
+//			} else {
+//				updateRosterItem(item);
+//			}
 		}
 	}
 
-	public boolean isRosterGroup(String jid) {
-		long count = dbHelper.queryInt(SQLQuery.FETCH_GROUP_COUNT, new String[] { jid });
-		return count > 0 ? true : false;
+	public boolean isRosterGroup(String jid) throws DbException {
+     	return this.database.isRosterGroup(jid);
+//		long count = dbHelper.queryInt(SQLQuery.FETCH_GROUP_COUNT, new String[] { jid });
+//		return count > 0 ? true : false;
 	}
 
-	public void addOrUpdateChatRoom(ChatRoom chatRoom) {
+	public void addOrUpdateChatRoom(ChatRoom chatRoom) throws DbException {
 		synchronized (RosterTable.class) {
-			long count = dbHelper.queryInt(SQLQuery.FETCH_CHAT_ROOM_COUNT,
-					new String[] { chatRoom.getRoomJID().getBareJID() });
-
-			if (count == 0) {
-				addChatRoom(chatRoom);
-
-			} else {
-				updateChatRoom(chatRoom);
-			}
+			this.database.addOrUpdateChatRoom(chatRoom);
+//			long count = dbHelper.queryInt(SQLQuery.FETCH_CHAT_ROOM_COUNT,
+//					new String[] { chatRoom.getRoomJID().getBareJID() });
+//
+//			if (count == 0) {
+//				addChatRoom(chatRoom);
+//
+//			} else {
+//				updateChatRoom(chatRoom);
+//			}
 		}
 	}
 
-	public void addChatRoom(ChatRoom chatRoom) {
-		ContentValues contentValues = new ContentValues();
-		contentValues.put(RosterTable.COLUMN_JID, chatRoom.getRoomJID().getBareJID());
-		contentValues.put(RosterTable.COLUMN_NAME, chatRoom.getName());
-		contentValues.put(RosterTable.COLUMN_ROOM_SUBJECT, chatRoom.getSubject());
-		contentValues.put(RosterTable.COLUMN_ACCESS_MODE,
-				chatRoom.getAccessMode() == null ? ChatRoom.AccessMode.PUBLIC.val() : chatRoom.getAccessMode().val());
-		contentValues.put(RosterTable.COLUMN_IS_GROUP, 1);
-
-		dbHelper.insert(RosterTable.TABLE_NAME, contentValues);
+	public void addChatRoom(ChatRoom chatRoom) throws DbException {
+		this.database.addChatRoom(chatRoom);
+//		ContentValues contentValues = new ContentValues();
+//		contentValues.put(RosterTable.COLUMN_JID, chatRoom.getRoomJID().getBareJID());
+//		contentValues.put(RosterTable.COLUMN_NAME, chatRoom.getName());
+//		contentValues.put(RosterTable.COLUMN_ROOM_SUBJECT, chatRoom.getSubject());
+//		contentValues.put(RosterTable.COLUMN_ACCESS_MODE,
+//				chatRoom.getAccessMode() == null ? ChatRoom.AccessMode.PUBLIC.val() : chatRoom.getAccessMode().val());
+//		contentValues.put(RosterTable.COLUMN_IS_GROUP, 1);
+//
+//		dbHelper.insert(RosterTable.TABLE_NAME, contentValues);
 	}
 
-	public void updateChatRoomSubject(String roomJID, String subject) {
+	public void updateChatRoomSubject(String roomJID, String subject) throws DbException {
+		this.database.updateChatRoomSubject(roomJID,subject);
 		ContentValues contentValues = new ContentValues();
 
 		if (!StringUtils.isNullOrEmpty(subject)) {

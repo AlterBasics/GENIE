@@ -11,11 +11,16 @@ import java.util.logging.Logger;
 import abs.ixi.client.core.InitializationErrorException;
 import abs.ixi.client.util.DateUtils;
 import abs.ixi.client.util.StringUtils;
+import abs.ixi.client.xmpp.JID;
+import abs.ixi.client.xmpp.packet.ChatRoom;
 import abs.ixi.client.xmpp.packet.Presence.PresenceType;
+import abs.ixi.client.xmpp.packet.Roster.RosterItem;
+import abs.ixi.client.xmpp.packet.UserSearchData.Item;
 import abs.sf.client.gini.db.Database;
 import abs.sf.client.gini.db.exception.DbException;
 import abs.sf.client.gini.db.mapper.ChatLineRowMapper;
 import abs.sf.client.gini.db.mapper.ConversationRowMapper;
+import abs.sf.client.gini.db.mapper.RosterItemRowMapper;
 import abs.sf.client.gini.db.object.ChatArchiveTable;
 import abs.sf.client.gini.db.object.ChatRoomMemberTable;
 import abs.sf.client.gini.db.object.ChatStoreTable;
@@ -415,6 +420,303 @@ public class H2Database implements Database {
 		}
 		
 	}
+	
+	@Override
+	public List<ChatLine> fetchConversationChatlines(String pearJID) throws DbException{
+		LOGGER.info(" Fetch all the Conversation ChatLines :" + pearJID);
+
+		Connection conn = this.getConnection();
+
+		try {
+
+			List<ChatLine> chatlines = SQLHelper.query(conn, SQLQuery.FETCH_CONVERSATION_CHAT_LINES, new Object[] {pearJID},
+					new ChatLineRowMapper());
+
+			return chatlines;
+
+		} finally {
+			SQLHelper.closeConnection(conn);
+		}
+	}
+
+	@Override
+	public boolean isMessageAlreadyExist(String peerJID, String messageId) throws DbException {
+		LOGGER.info("Checking message is delivered or not for mesageId :" + messageId);
+		Connection conn = this.getConnection();
+
+		try {
+
+			int Count = SQLHelper.queryInt(conn, SQLQuery.FETCH_CHAT_LINE_COUNT,
+					new String[] {peerJID, messageId });
+			
+			return Count >0;
+
+		} finally {
+			SQLHelper.closeConnection(conn);
+		}
+	}
+
+	@Override
+	public List<ChatLine> getUndeliveredMessages() throws DbException {
+		LOGGER.info("Fetching All Undeliverd Message : " );
+
+		Connection conn = this.getConnection();
+
+		try {
+
+			List<ChatLine> chatlines = SQLHelper.query(conn, SQLQuery.FETCH_UNDELIVERED_CHAT_LINES, new Object[] {},
+					new ChatLineRowMapper());
+
+			return chatlines;
+
+		} finally {
+			SQLHelper.closeConnection(conn);
+		}
+	}
+
+	@Override
+	public void addRosterItem(RosterItem item) throws DbException {
+		LOGGER.info("Adding new Item for jid" + item.getJid());
+		Connection conn = this.getConnection();
+
+		PreparedStatement ps = null;
+
+		try {
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_INSERT_CONVERSATION,
+					new Object[] { item.getJid(), item.getName(), 0, });
+
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+			LOGGER.warning("Failed to add new Item");
+			throw new DbException("Failed to add new Item", e);
+
+		} finally {
+			SQLHelper.closeStatement(ps);
+			SQLHelper.closeConnection(conn);
+		}
+		
+	}
+
+	@Override
+	public void updateRosterItem(RosterItem item) throws DbException {
+		LOGGER.info("Updating Roster Item for jid :" + item.getJid().getBareJID());
+		Connection conn = this.getConnection();
+
+		PreparedStatement ps = null;
+
+		try {
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_ROSTER_ITEM,
+					new Object[] { item.getJid().getBareJID(),item.getName(),0 });
+
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+			LOGGER.warning("Failed to update Roster Item");
+			throw new DbException("Failed to update a Roster Item", e);
+
+		} finally {
+			SQLHelper.closeStatement(ps);
+			SQLHelper.closeConnection(conn);
+		}
+		
+	}
+
+	@Override
+	public List<RosterItem> getRosterList() throws DbException {
+		LOGGER.info("Fetching All Roster List : " );
+
+		Connection conn = this.getConnection();
+
+		try {
+
+			List<RosterItem> rosterItems = SQLHelper.query(conn, SQLQuery.FETCH_ROSTER_ITEMS ,new Object[] {},
+					new RosterItemRowMapper());
+
+			return rosterItems;
+
+		} finally {
+			SQLHelper.closeConnection(conn);
+		}
+	
+	}
+
+	@Override
+	public void deleteRosterItem(RosterItem item) throws DbException {
+		LOGGER.info("Deleting Roster Item  :" + item.getJid().getBareJID());
+		Connection conn = this.getConnection();
+
+		PreparedStatement ps = null;
+
+		try {
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.DELETE_ROSTER_ITEM,
+					new Object[] { item.getJid().getBareJID()});
+
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+			LOGGER.warning("Failed to delete Roster Item");
+			throw new DbException("Failed to delete a Roster Item", e);
+
+		} finally {
+			SQLHelper.closeStatement(ps);
+			SQLHelper.closeConnection(conn);
+		}
+		
+	}
+	
+	@Override
+	public void deleteRosterItem(String jid) throws DbException {
+		LOGGER.info("Deleting Roster Item for jid :" + jid);
+		Connection conn = this.getConnection();
+
+		PreparedStatement ps = null;
+
+		try {
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.DELETE_ROSTER_ITEM,
+					new Object[] {jid});
+
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+			LOGGER.warning("Failed to delete Roster Item");
+			throw new DbException("Failed to delete a Roster Item", e);
+
+		} finally {
+			SQLHelper.closeStatement(ps);
+			SQLHelper.closeConnection(conn);
+		}
+		
+	}
+
+	@Override
+	public String getRosterItemName(String itemJID) throws DbException {
+		LOGGER.info("Fetching  Roster Item Name : " + itemJID );
+
+		Connection conn = this.getConnection();
+
+		try {
+
+			return SQLHelper.queryString(conn, SQLQuery.FETCH_USER_NAME ,new Object[] {itemJID});
+
+
+		} finally {
+			SQLHelper.closeConnection(conn);
+		}
+	}
+
+	@Override
+	public void addOrUpdateRosterItem(RosterItem item) throws DbException {
+		LOGGER.info("Add or Update Roster Item :" + item);
+		Connection conn = this.getConnection();
+
+		try {
+
+			int count = SQLHelper.queryInt(conn, SQLQuery.FETCH_ROSTER_ITEM_COUNT,
+					new String[] {item.getJid().getBareJID() });
+			
+			if (count == 0) {
+				addRosterItem(item);
+
+			} else {
+				updateRosterItem(item);
+			}
+
+		} finally {
+			SQLHelper.closeConnection(conn);
+		}
+		
+	}
+
+	@Override
+	public boolean isRosterGroup(String jid) throws DbException {
+		LOGGER.info("Checking it is Roster group or not :" + jid);
+		Connection conn = this.getConnection();
+
+		try {
+
+			int Count = SQLHelper.queryInt(conn, SQLQuery.FETCH_GROUP_COUNT,
+					new String[] {jid });
+			
+			return Count >0;
+
+		} finally {
+			SQLHelper.closeConnection(conn);
+		}
+	}
+
+	@Override
+	public void addOrUpdateChatRoom(ChatRoom chatRoom) throws DbException {
+		LOGGER.info("Add or Update Roster Item :" + chatRoom);
+		Connection conn = this.getConnection();
+
+		try {
+
+			int count = SQLHelper.queryInt(conn, SQLQuery.FETCH_CHAT_ROOM_COUNT,
+					new String[] {chatRoom.getRoomJID().getBareJID() });
+			
+			if (count == 0) {
+				addChatRoom(chatRoom);
+
+			} else {
+				updateChatRoom(chatRoom);
+			}
+
+		} finally {
+			SQLHelper.closeConnection(conn);
+		}
+		
+	}
+
+	@Override
+	public void addChatRoom(ChatRoom chatRoom) throws DbException {
+		LOGGER.info("Adding new Chat Room " + chatRoom);
+		Connection conn = this.getConnection();
+
+		PreparedStatement ps = null;
+
+		try {
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_INSERT_CHAT_ROOM,
+					new Object[] {chatRoom.getRoomJID().getBareJID(),chatRoom.getName(),chatRoom.getSubject(),chatRoom.getAccessMode().PUBLIC,
+							chatRoom.getAccessMode().PRIVATE, 1});
+
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+			LOGGER.warning("Failed to add new chatRoom");
+			throw new DbException("Failed to add new chatRoom", e);
+
+		} finally {
+			SQLHelper.closeStatement(ps);
+			SQLHelper.closeConnection(conn);
+		}
+		
+	}
+
+	@Override
+	public void updateChatRoomSubject(String roomJID, String subject) throws DbException {
+		LOGGER.info("Updating Chat Room Subject for roomJID :" + roomJID + subject);
+		Connection conn = this.getConnection();
+
+		PreparedStatement ps = null;
+
+		try {
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_CHAT_ROOM_SUBJECT,
+					new Object[] {subject,roomJID });
+
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+			LOGGER.warning("Failed to update Chat Room Subject");
+			throw new DbException("Failed to update Chat Room Subject", e);
+
+		} finally {
+			SQLHelper.closeStatement(ps);
+			SQLHelper.closeConnection(conn);
+		}
+		
+	}
+	
 	
 	
 
