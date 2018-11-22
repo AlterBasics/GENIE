@@ -113,7 +113,7 @@ public interface Database extends Initializable {
 	 * @throws SQLException
 	 */
 	void updateDeliveryStatus(String messageId, ChatLine.MessageStatus messageStatus) throws DbException;
-	
+
 	/**
 	 * Check message is delivered or not
 	 * 
@@ -122,7 +122,7 @@ public interface Database extends Initializable {
 	 * @throws DbException
 	 */
 	boolean isMessageAlreadyDelivered(String messageId) throws DbException;
-	
+
 	/**
 	 * Fetch All unRead chatLines for a given pear {@link JID}
 	 *
@@ -130,100 +130,118 @@ public interface Database extends Initializable {
 	 * @return
 	 */
 	List<ChatLine> getAllUnreadChatLines(String pearJID) throws DbException;
-	
+
 	/**
-	 * Set Message is Viewed by the user or not 
+	 * mark Message is Viewed by the user
+	 * 
 	 * @param messageId
 	 * @throws DbException
 	 */
-     void setMessageIsViewed(String messageId) throws DbException ;
-     
-     /**
-      * Fetch Conversation chat line for a given pear {@link JID}} 
-	 *  @param messageId
-	 *  @throws DbException
-      */
-     List<ChatLine> fetchConversationChatlines(String pearJID) throws DbException;
-     
-     /**
-      * Check Message is exist or not
-      * @param messageId
-      * @return
-      * throw DbException
-      */
-     boolean isMessageAlreadyExist(String peerJID, String messageId) throws DbException;
-     
-     /**
-      * Get all undelivered message
-      */
-     List<ChatLine> getUndeliveredMessages()throws DbException;
-     
-     /**
-      * Add Roster Item
-      * @param item
-      */
-     void addRosterItem(RosterItem item) throws DbException;
-     
-     /**
-      * Update Roster Item
-      * @param item
-      * @throws DbException
-      */
-     
-     void updateRosterItem(RosterItem item) throws DbException;
-     
-     /**
-      * Get Roster List
-      * @return
-      * @throws DbException
-      */
-     List<RosterItem> getRosterList() throws DbException;
-     
-     /**
-      * Delete Roster Item
-      * {@link Item} 
-      */
-     void deleteRosterItem(RosterItem item) throws DbException;
-     
-     /**
-      * Deleting Roster Item 
-      * @param jid
-      */
-     void deleteRosterItem(String jid) throws DbException;
+	void markMessageViewed(String messageId) throws DbException;
 
-     /**
-      * Getting Roster Item Name
-      * @param itemJID
-      */
-     String getRosterItemName(String itemJID) throws DbException;
-     
-     /**
-      * Add or Update Roster Item 
-     * @param item
-      */
-    void addOrUpdateRosterItem(RosterItem item) throws DbException;
-    
-    /**
-     * Checking it is Roster group or not
-     * @param jid
-     */
-    boolean isRosterGroup(String jid) throws DbException;
-    
-    /**
-     * Add or Update Chat Room 
-     * {@link ChatRoom}
-     */
-    void addOrUpdateChatRoom(ChatRoom chatRoom) throws DbException;
-    
-    /**
-     * Add new  Chat Room  
-     * {@link ChatRoom}
-     */
-    void addChatRoom(ChatRoom chatRoom) throws DbException;
-    
-    /**
-     * 
-     * 
-     */
-    void updateChatRoomSubject(String roomJID, String subject) throws DbException;
+	/**
+	 * Fetch Conversation chat line for a given pear {@link JID}}
+	 * 
+	 * @param messageId
+	 * @throws DbException
+	 */
+	List<ChatLine> fetchConversationChatlines(String pearJID) throws DbException;
+
+	/**
+	 * Check message with given messageId for that pearJID already exist or not.
+	 * 
+	 * @param messageId
+	 * @return throw DbException
+	 */
+	boolean isMessageAlreadyExist(String pearJID, String messageId) throws DbException;
+
+	/**
+	 *
+	 * Fetch all the chatlines which have not been delivered to server as yet. A
+	 * {@link ChatLine} with delivery status 0 indicates undelivered chatline.
+	 *
+	 * @return
+	 */
+	List<ChatLine> getUndeliveredMessages() throws DbException;
+
+	/**
+	 * Add Roster Item
+	 * 
+	 * @param item
+	 */
+	void addRosterItem(RosterItem item) throws DbException;
+
+	/**
+	 * Update Roster Item
+	 * 
+	 * @param item
+	 * @throws DbException
+	 */
+
+	void updateRosterItem(RosterItem item) throws DbException;
+
+	/**
+	 * Get Roster Item List
+	 * 
+	 * @return
+	 * @throws DbException
+	 */
+	List<RosterItem> getRosterList() throws DbException;
+
+	/**
+	 * Delete Roster Item {@link Item}
+	 */
+	void deleteRosterItem(RosterItem item) throws DbException;
+
+	/**
+	 * Deleting Roster Item
+	 * 
+	 * @param jid
+	 */
+	void deleteRosterItem(String jid) throws DbException;
+
+	/**
+	 * Getting Roster Item Name
+	 * 
+	 * @param itemJID
+	 */
+	String getRosterItemName(String itemJID) throws DbException;
+
+	/**
+	 * Add or Update Roster Item
+	 * 
+	 * @param item
+	 */
+	void addOrUpdateRosterItem(RosterItem item) throws DbException;
+
+	/**
+	 * Checking it is Roster group or not
+	 * 
+	 * @param jid
+	 */
+	boolean isRosterGroup(String jid) throws DbException;
+
+	/**
+	 * Add or Update Chat Room {@link ChatRoom}
+	 */
+	void addOrUpdateChatRoom(ChatRoom chatRoom) throws DbException;
+
+	/**
+	 * Add new Chat Room {@link ChatRoom}
+	 */
+	void addChatRoom(ChatRoom chatRoom) throws DbException;
+
+	/**
+	 * Updating ChatRoom
+	 * 
+	 * @param chatRoom
+	 * @throws DbException
+	 */
+	void updateChatRoom(ChatRoom chatRoom) throws DbException;
+
+	/**
+	 * Updating chat room subject
+	 * 
+	 */
+	void updateChatRoomSubject(String roomJID, String subject) throws DbException;
 }

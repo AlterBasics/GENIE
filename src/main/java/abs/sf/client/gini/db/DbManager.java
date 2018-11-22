@@ -1,12 +1,13 @@
 package abs.sf.client.gini.db;
 
+import java.sql.SQLException;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import abs.ixi.client.core.Platform;
 import abs.ixi.client.core.Session;
-import abs.ixi.client.file.sfcm.ContentType;
 import abs.ixi.client.util.CollectionUtils;
 import abs.ixi.client.util.DateUtils;
 import abs.ixi.client.util.ObjectUtils;
@@ -20,13 +21,10 @@ import abs.ixi.client.xmpp.packet.Stanza;
 import abs.ixi.client.xmpp.packet.UserProfileData;
 import abs.sf.client.gini.db.exception.DbException;
 import abs.sf.client.gini.db.h2.SQLQuery;
-import abs.sf.client.gini.db.mapper.ChatLineRowMapper;
 import abs.sf.client.gini.db.mapper.ChatRoomMemberRowMapper;
 import abs.sf.client.gini.db.mapper.ChatRoomRowMapper;
-import abs.sf.client.gini.db.mapper.ConversationRowMapper;
 import abs.sf.client.gini.db.mapper.MediaRowMapper;
 import abs.sf.client.gini.db.mapper.PresenceRowMapper;
-import abs.sf.client.gini.db.mapper.RosterItemRowMapper;
 import abs.sf.client.gini.db.mapper.RowMapper;
 import abs.sf.client.gini.db.mapper.UndeliverStanzaRowMapper;
 import abs.sf.client.gini.db.mapper.UserProfileRowMapper;
@@ -34,7 +32,6 @@ import abs.sf.client.gini.db.object.ChatRoomMemberTable;
 import abs.sf.client.gini.db.object.ChatStoreTable;
 import abs.sf.client.gini.db.object.ConversationTable;
 import abs.sf.client.gini.db.object.MediaStoreTable;
-import abs.sf.client.gini.db.object.PollResponseTable;
 import abs.sf.client.gini.db.object.PresenceTable;
 import abs.sf.client.gini.db.object.RosterTable;
 import abs.sf.client.gini.db.object.UndeliverStanzaTable;
@@ -43,7 +40,6 @@ import abs.sf.client.gini.messaging.ChatLine;
 import abs.sf.client.gini.messaging.Conversation;
 import abs.sf.client.gini.messaging.MediaContent;
 import abs.sf.client.gini.messaging.UserPresence;
-import abs.sf.client.gini.utils.ContextProvider;
 
 /**
  * Manages database operations. Encapsulates database instance and it's one
@@ -241,7 +237,7 @@ public final class DbManager {
 	 * @return
 	 * @throws DbException
 	 */
-	public boolean isMessageAlreadyDelivered(String messageId)throws DbException {
+	public boolean isMessageAlreadyDelivered(String messageId) throws DbException {
 		return this.database.isMessageAlreadyDelivered(messageId);
 	}
 
@@ -263,8 +259,8 @@ public final class DbManager {
 	 * @param messageId
 	 * @throws SQLException
 	 */
-	public void setMessageIsViewed(String messageId) throws DbException {
-		this.database.setMessageIsViewed(messageId);
+	public void markMessageViewed(String messageId) throws DbException {
+		this.database.markMessageViewed(messageId);
 	}
 
 	/**
@@ -285,45 +281,19 @@ public final class DbManager {
 	 * @return List of chatLine objects
 	 */
 	public List<ChatLine> fetchConversationChatlines(String pearJID, boolean isGroup) throws DbException {
-		List<ChatLine> chatLines = this.database.fetchConversationChatlines(pearJID);
-		
-	
-//		List<ChatLine> chatLines = this.dbHelper.query(SQLQuery.FETCH_CONVERSATION_CHAT_LINES, new String[] { pearJID },
-//				new ChatLineRowMapper());
-
-		if (isGroup) {
-			for (ChatLine line : chatLines) {
-				if (line.getDirection() == ChatLine.Direction.RECEIVE) {
-					String memberNickName = null;
-
-					if (line.getPeerResource() != null) {
-						memberNickName = line.getPeerResource().trim();
-					}
-
-					JID memberJID = new JID(memberNickName,
-							Platform.getInstance().getSession().get(Session.KEY_DOMAIN).toString());
-
-					String userName = getRosterItemName(memberJID.getBareJID());
-
-					if (StringUtils.isNullOrEmpty(userName)) {
-						line.setPeerName(memberNickName);
-
-					} else {
-						line.setPeerName(userName);
-					}
-				}
-
-			}
-		}
-
-		return chatLines;
+		return this.database.fetchConversationChatlines(pearJID);
 	}
 
-	public boolean isMessageAlreadyExist(String peerJID, String messageId) throws DbException{
-		return this.database.isMessageAlreadyExist(peerJID,messageId);
-
-//		long count = dbHelper.queryInt(SQLQuery.FETCH_CHAT_LINE_COUNT, new String[] { messageId, peerJID });
-//		return count > 0 ? true : false;
+	/**
+	 * Check message with given messageId for that pearJID already exist or not.
+	 * 
+	 * @param peerJID
+	 * @param messageId
+	 * @return
+	 * @throws DbException
+	 */
+	public boolean isMessageAlreadyExist(String pearJID, String messageId) throws DbException {
+		return this.database.isMessageAlreadyExist(pearJID, messageId);
 	}
 
 	/**
@@ -332,9 +302,8 @@ public final class DbManager {
 	 *
 	 * @return
 	 */
-	public List<ChatLine> getUndeliveredMessages()throws DbException{
+	public List<ChatLine> getUndeliveredMessages() throws DbException {
 		return this.database.getUndeliveredMessages();
-//		return this.dbHelper.query(SQLQuery.FETCH_UNDELIVERED_CHAT_LINES, new ChatLineRowMapper());
 	}
 
 	/**
@@ -346,12 +315,6 @@ public final class DbManager {
 	 */
 	public void addRosterItem(RosterItem item) throws DbException {
 		this.database.addRosterItem(item);
-//		ContentValues rosterContent = new ContentValues();
-//		rosterContent.put(RosterTable.COLUMN_JID, item.getJid().getBareJID());
-//		rosterContent.put(RosterTable.COLUMN_NAME, item.getName());
-//		rosterContent.put(RosterTable.COLUMN_IS_GROUP, 0);
-
-//		dbHelper.insert(RosterTable.TABLE_NAME, rosterContent);
 	}
 
 	/**
@@ -361,102 +324,123 @@ public final class DbManager {
 	 *
 	 * @param item
 	 */
-	public void updateRosterItem(RosterItem item) throws DbException{
+	public void updateRosterItem(RosterItem item) throws DbException {
 		this.database.updateRosterItem(item);
-//		ContentValues contentValues = new ContentValues();
-//		contentValues.put(RosterTable.COLUMN_JID, item.getJid().getBareJID());
-//		contentValues.put(RosterTable.COLUMN_NAME, item.getName());
-//		contentValues.put(RosterTable.COLUMN_IS_GROUP, 0);
-//
-//		dbHelper.update(RosterTable.TABLE_NAME, contentValues, RosterTable.COLUMN_JID + " = ?",
-//				new String[] { item.getJid().getBareJID() });
 	}
 
-	public List<RosterItem> getRosterList() throws DbException{
+	/**
+	 * Fetching all Roster items
+	 * 
+	 * @return
+	 * @throws DbException
+	 */
+	public List<RosterItem> getRosterList() throws DbException {
 		return this.database.getRosterList();
-		//return this.dbHelper.query(SQLQuery.FETCH_ROSTER_ITEMS, null, new RosterItemRowMapper());
 	}
 
-	public void deleteRosterItem(RosterItem item) throws DbException{
-		this.database.deleteRosterItem(item);
-		//dbHelper.delete(RosterTable.TABLE_NAME, RosterTable.COLUMN_JID, item.getJid().getBareJID());
+	/**
+	 * Deleting Roster item
+	 * 
+	 * @param item
+	 * @throws DbException
+	 */
+	public void deleteRosterItem(RosterItem item) throws DbException {
+		this.deleteRosterItem(item.getJid().getBareJID());
 	}
 
-	public void deleteRosterItem(String jid) throws DbException{
+	/**
+	 * Deleting Roster item
+	 * 
+	 * @param jid
+	 * @throws DbException
+	 */
+	public void deleteRosterItem(String jid) throws DbException {
 		this.database.deleteRosterItem(jid);
-		//dbHelper.delete(RosterTable.TABLE_NAME, RosterTable.COLUMN_JID, jid);
 	}
 
+	/**
+	 * Getting roster item name
+	 * 
+	 * @param itemJID
+	 * @return
+	 * @throws DbException
+	 */
 	public String getRosterItemName(String itemJID) throws DbException {
 		return this.database.getRosterItemName(itemJID);
-		//return dbHelper.queryString(SQLQuery.FETCH_USER_NAME, new String[] { itemJID });
 	}
 
+	/**
+	 * updating roster items
+	 * 
+	 * @param list
+	 * @throws DbException
+	 */
 	public void addOrUpdateRoster(List<RosterItem> list) throws DbException {
 		for (RosterItem item : list) {
 			addOrUpdateRosterItem(item);
 		}
 	}
 
-	public void addOrUpdateRosterItem(RosterItem item) throws DbException{
-		synchronized (RosterTable.class) {
+	/**
+	 * updating Roster item
+	 * 
+	 * @param item
+	 * @throws DbException
+	 */
+	public void addOrUpdateRosterItem(RosterItem item) throws DbException {
 		this.database.addOrUpdateRosterItem(item);
-////			long count = dbHelper.queryInt(SQLQuery.FETCH_ROSTER_ITEM_COUNT,
-////					new String[] { item.getJid().getBareJID() });
-//
-//			if (count == 0) {
-//				addRosterItem(item);
-//
-//			} else {
-//				updateRosterItem(item);
-//			}
-		}
 	}
 
+	/**
+	 * Check is given {@link JID} item is group.
+	 * 
+	 * @param jid
+	 * @return
+	 * @throws DbException
+	 */
 	public boolean isRosterGroup(String jid) throws DbException {
-     	return this.database.isRosterGroup(jid);
-//		long count = dbHelper.queryInt(SQLQuery.FETCH_GROUP_COUNT, new String[] { jid });
-//		return count > 0 ? true : false;
+		return this.database.isRosterGroup(jid);
 	}
 
+	/**
+	 * Updating ChatRooms
+	 * 
+	 * @param chatRoom
+	 * @throws DbException
+	 */
 	public void addOrUpdateChatRoom(ChatRoom chatRoom) throws DbException {
-		synchronized (RosterTable.class) {
-			this.database.addOrUpdateChatRoom(chatRoom);
-//			long count = dbHelper.queryInt(SQLQuery.FETCH_CHAT_ROOM_COUNT,
-//					new String[] { chatRoom.getRoomJID().getBareJID() });
-//
-//			if (count == 0) {
-//				addChatRoom(chatRoom);
-//
-//			} else {
-//				updateChatRoom(chatRoom);
-//			}
-		}
+		this.database.addOrUpdateChatRoom(chatRoom);
 	}
 
+	/**
+	 * Adding new chat room
+	 * 
+	 * @param chatRoom
+	 * @throws DbException
+	 */
 	public void addChatRoom(ChatRoom chatRoom) throws DbException {
 		this.database.addChatRoom(chatRoom);
-//		ContentValues contentValues = new ContentValues();
-//		contentValues.put(RosterTable.COLUMN_JID, chatRoom.getRoomJID().getBareJID());
-//		contentValues.put(RosterTable.COLUMN_NAME, chatRoom.getName());
-//		contentValues.put(RosterTable.COLUMN_ROOM_SUBJECT, chatRoom.getSubject());
-//		contentValues.put(RosterTable.COLUMN_ACCESS_MODE,
-//				chatRoom.getAccessMode() == null ? ChatRoom.AccessMode.PUBLIC.val() : chatRoom.getAccessMode().val());
-//		contentValues.put(RosterTable.COLUMN_IS_GROUP, 1);
-//
-//		dbHelper.insert(RosterTable.TABLE_NAME, contentValues);
 	}
 
+	/**
+	 * Updating Chat room data
+	 * 
+	 * @param chatRoom
+	 * @throws DbException
+	 */
+	public void updateChatRoom(ChatRoom chatRoom) throws DbException {
+		this.database.updateChatRoom(chatRoom);
+	}
+
+	/**
+	 * Updating ChatRoom Subject
+	 * 
+	 * @param roomJID
+	 * @param subject
+	 * @throws DbException
+	 */
 	public void updateChatRoomSubject(String roomJID, String subject) throws DbException {
-		this.database.updateChatRoomSubject(roomJID,subject);
-		ContentValues contentValues = new ContentValues();
-
-		if (!StringUtils.isNullOrEmpty(subject)) {
-			contentValues.put(RosterTable.COLUMN_ROOM_SUBJECT, subject);
-		}
-
-		dbHelper.update(RosterTable.TABLE_NAME, contentValues, RosterTable.COLUMN_JID + " = ?",
-				new String[] { roomJID });
+		this.database.updateChatRoomSubject(roomJID, subject);
 	}
 
 	public String getChatRoomSubject(String roomJID) {
@@ -465,27 +449,6 @@ public final class DbManager {
 
 	public String getChatRoomMemberJID(String roomJID, String memberNickName) {
 		return dbHelper.queryString(SQLQuery.FETCH_ROOM_MEMBER_JID, new String[] { roomJID, memberNickName });
-	}
-
-	public void updateChatRoom(ChatRoom chatRoom) {
-		ContentValues contentValues = new ContentValues();
-
-		if (chatRoom.getName() != null) {
-			contentValues.put(RosterTable.COLUMN_NAME, chatRoom.getName());
-		}
-
-		if (chatRoom.getSubject() != null) {
-			contentValues.put(RosterTable.COLUMN_ROOM_SUBJECT, chatRoom.getSubject());
-		}
-
-		if (chatRoom.getAccessMode() != null) {
-			contentValues.put(RosterTable.COLUMN_ACCESS_MODE, chatRoom.getAccessMode().name());
-		}
-
-		contentValues.put(RosterTable.COLUMN_IS_GROUP, 1);
-
-		dbHelper.update(RosterTable.TABLE_NAME, contentValues, RosterTable.COLUMN_JID + " = ?",
-				new String[] { chatRoom.getRoomJID().getBareJID() });
 	}
 
 	public void deleteChatRoom(ChatRoom chatRoom) {

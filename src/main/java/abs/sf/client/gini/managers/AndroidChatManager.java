@@ -266,7 +266,7 @@ public class AndroidChatManager extends ChatManager {
                         new JID(chatLine.getPeerBareJid()),
                         DbManager.getInstance().isRosterGroup(chatLine.getPeerBareJid()));
 
-                DbManager.getInstance().setMessageIsViewed(chatLine.getMessageId());
+                DbManager.getInstance().markMessageViewed(chatLine.getMessageId());
             }
         } catch (Exception e) {
             LOGGER.warning("Failed to send read receipt for messageId : " + chatLine.getMessageId());

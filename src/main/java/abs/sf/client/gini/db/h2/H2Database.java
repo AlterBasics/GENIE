@@ -11,11 +11,9 @@ import java.util.logging.Logger;
 import abs.ixi.client.core.InitializationErrorException;
 import abs.ixi.client.util.DateUtils;
 import abs.ixi.client.util.StringUtils;
-import abs.ixi.client.xmpp.JID;
 import abs.ixi.client.xmpp.packet.ChatRoom;
 import abs.ixi.client.xmpp.packet.Presence.PresenceType;
 import abs.ixi.client.xmpp.packet.Roster.RosterItem;
-import abs.ixi.client.xmpp.packet.UserSearchData.Item;
 import abs.sf.client.gini.db.Database;
 import abs.sf.client.gini.db.exception.DbException;
 import abs.sf.client.gini.db.mapper.ChatLineRowMapper;
@@ -32,8 +30,8 @@ import abs.sf.client.gini.db.object.RosterTable;
 import abs.sf.client.gini.db.object.UndeliverStanzaTable;
 import abs.sf.client.gini.db.object.UserProfileTable;
 import abs.sf.client.gini.messaging.ChatLine;
-import abs.sf.client.gini.messaging.Conversation;
 import abs.sf.client.gini.messaging.ChatLine.MessageStatus;
+import abs.sf.client.gini.messaging.Conversation;
 
 public class H2Database implements Database {
 	private static final Logger LOGGER = Logger.getLogger(H2Database.class.getName());
@@ -370,7 +368,7 @@ public class H2Database implements Database {
 
 			int deliveryStatus = SQLHelper.queryInt(conn, SQLQuery.FETCH_MESSAGE_DELIVERY_STATUS,
 					new String[] { messageId });
-			
+
 			return deliveryStatus != ChatLine.MessageStatus.NOT_DELIVERED_TO_SERVER.getValue();
 
 		} finally {
@@ -378,7 +376,7 @@ public class H2Database implements Database {
 		}
 
 	}
-	
+
 	@Override
 	public List<ChatLine> getAllUnreadChatLines(String pearJID) throws DbException {
 		LOGGER.info("Fetching All unread chatlines for pear jid : " + pearJID);
@@ -387,8 +385,8 @@ public class H2Database implements Database {
 
 		try {
 
-			List<ChatLine> chatlines = SQLHelper.query(conn, SQLQuery.FETCH_UNREAD_CONVERSATION_CHAT_LINES, new Object[] {pearJID},
-					new ChatLineRowMapper());
+			List<ChatLine> chatlines = SQLHelper.query(conn, SQLQuery.FETCH_UNREAD_CONVERSATION_CHAT_LINES,
+					new Object[] { pearJID }, new ChatLineRowMapper());
 
 			return chatlines;
 
@@ -398,15 +396,14 @@ public class H2Database implements Database {
 	}
 
 	@Override
-	public void setMessageIsViewed(String messageId) throws DbException {
+	public void markMessageViewed(String messageId) throws DbException {
 		LOGGER.info("Set Message is Viewed by the user or not :" + messageId);
 		Connection conn = this.getConnection();
 
 		PreparedStatement ps = null;
 
 		try {
-			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_IS_MESSAGE_VIEWED,
-					new Object[] {1,messageId});
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_MARK_MESSAGE_VIEWED, new Object[] { messageId });
 
 			ps.executeUpdate();
 
@@ -418,19 +415,19 @@ public class H2Database implements Database {
 			SQLHelper.closeStatement(ps);
 			SQLHelper.closeConnection(conn);
 		}
-		
+
 	}
-	
+
 	@Override
-	public List<ChatLine> fetchConversationChatlines(String pearJID) throws DbException{
+	public List<ChatLine> fetchConversationChatlines(String pearJID) throws DbException {
 		LOGGER.info(" Fetch all the Conversation ChatLines :" + pearJID);
 
 		Connection conn = this.getConnection();
 
 		try {
 
-			List<ChatLine> chatlines = SQLHelper.query(conn, SQLQuery.FETCH_CONVERSATION_CHAT_LINES, new Object[] {pearJID},
-					new ChatLineRowMapper());
+			List<ChatLine> chatlines = SQLHelper.query(conn, SQLQuery.FETCH_CONVERSATION_CHAT_LINES,
+					new Object[] { pearJID }, new ChatLineRowMapper());
 
 			return chatlines;
 
@@ -440,16 +437,17 @@ public class H2Database implements Database {
 	}
 
 	@Override
-	public boolean isMessageAlreadyExist(String peerJID, String messageId) throws DbException {
-		LOGGER.info("Checking message is delivered or not for mesageId :" + messageId);
+	public boolean isMessageAlreadyExist(String pearJID, String messageId) throws DbException {
+		LOGGER.info("Checking message with messageID : " + messageId + " for pearJID : " + pearJID
+				+ " already exist or not");
+
 		Connection conn = this.getConnection();
 
 		try {
 
-			int Count = SQLHelper.queryInt(conn, SQLQuery.FETCH_CHAT_LINE_COUNT,
-					new String[] {peerJID, messageId });
-			
-			return Count >0;
+			int Count = SQLHelper.queryInt(conn, SQLQuery.FETCH_CHAT_LINE_COUNT, new String[] { messageId, pearJID });
+
+			return Count > 0;
 
 		} finally {
 			SQLHelper.closeConnection(conn);
@@ -458,13 +456,13 @@ public class H2Database implements Database {
 
 	@Override
 	public List<ChatLine> getUndeliveredMessages() throws DbException {
-		LOGGER.info("Fetching All Undeliverd Message : " );
+		LOGGER.info("Fetching All Undeliverd Message : ");
 
 		Connection conn = this.getConnection();
 
 		try {
 
-			List<ChatLine> chatlines = SQLHelper.query(conn, SQLQuery.FETCH_UNDELIVERED_CHAT_LINES, new Object[] {},
+			List<ChatLine> chatlines = SQLHelper.query(conn, SQLQuery.FETCH_UNDELIVERED_CHAT_LINES, null,
 					new ChatLineRowMapper());
 
 			return chatlines;
@@ -482,7 +480,7 @@ public class H2Database implements Database {
 		PreparedStatement ps = null;
 
 		try {
-			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_INSERT_CONVERSATION,
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_INSERT_ROSTER_ITEM,
 					new Object[] { item.getJid(), item.getName(), 0, });
 
 			ps.executeUpdate();
@@ -495,7 +493,7 @@ public class H2Database implements Database {
 			SQLHelper.closeStatement(ps);
 			SQLHelper.closeConnection(conn);
 		}
-		
+
 	}
 
 	@Override
@@ -507,7 +505,7 @@ public class H2Database implements Database {
 
 		try {
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_ROSTER_ITEM,
-					new Object[] { item.getJid().getBareJID(),item.getName(),0 });
+					new Object[] { item.getName(), item.getJid().getBareJID() });
 
 			ps.executeUpdate();
 
@@ -519,18 +517,18 @@ public class H2Database implements Database {
 			SQLHelper.closeStatement(ps);
 			SQLHelper.closeConnection(conn);
 		}
-		
+
 	}
 
 	@Override
 	public List<RosterItem> getRosterList() throws DbException {
-		LOGGER.info("Fetching All Roster List : " );
+		LOGGER.info("Fetching All Roster List : ");
 
 		Connection conn = this.getConnection();
 
 		try {
 
-			List<RosterItem> rosterItems = SQLHelper.query(conn, SQLQuery.FETCH_ROSTER_ITEMS ,new Object[] {},
+			List<RosterItem> rosterItems = SQLHelper.query(conn, SQLQuery.FETCH_ROSTER_ITEMS, null,
 					new RosterItemRowMapper());
 
 			return rosterItems;
@@ -538,7 +536,7 @@ public class H2Database implements Database {
 		} finally {
 			SQLHelper.closeConnection(conn);
 		}
-	
+
 	}
 
 	@Override
@@ -550,7 +548,7 @@ public class H2Database implements Database {
 
 		try {
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.DELETE_ROSTER_ITEM,
-					new Object[] { item.getJid().getBareJID()});
+					new Object[] { item.getJid().getBareJID() });
 
 			ps.executeUpdate();
 
@@ -562,9 +560,9 @@ public class H2Database implements Database {
 			SQLHelper.closeStatement(ps);
 			SQLHelper.closeConnection(conn);
 		}
-		
+
 	}
-	
+
 	@Override
 	public void deleteRosterItem(String jid) throws DbException {
 		LOGGER.info("Deleting Roster Item for jid :" + jid);
@@ -573,8 +571,7 @@ public class H2Database implements Database {
 		PreparedStatement ps = null;
 
 		try {
-			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.DELETE_ROSTER_ITEM,
-					new Object[] {jid});
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.DELETE_ROSTER_ITEM, new Object[] { jid });
 
 			ps.executeUpdate();
 
@@ -586,19 +583,18 @@ public class H2Database implements Database {
 			SQLHelper.closeStatement(ps);
 			SQLHelper.closeConnection(conn);
 		}
-		
+
 	}
 
 	@Override
 	public String getRosterItemName(String itemJID) throws DbException {
-		LOGGER.info("Fetching  Roster Item Name : " + itemJID );
+		LOGGER.info("Fetching  Roster Item Name : " + itemJID);
 
 		Connection conn = this.getConnection();
 
 		try {
 
-			return SQLHelper.queryString(conn, SQLQuery.FETCH_USER_NAME ,new Object[] {itemJID});
-
+			return SQLHelper.queryString(conn, SQLQuery.FETCH_USER_NAME, new Object[] { itemJID });
 
 		} finally {
 			SQLHelper.closeConnection(conn);
@@ -613,8 +609,8 @@ public class H2Database implements Database {
 		try {
 
 			int count = SQLHelper.queryInt(conn, SQLQuery.FETCH_ROSTER_ITEM_COUNT,
-					new String[] {item.getJid().getBareJID() });
-			
+					new String[] { item.getJid().getBareJID() });
+
 			if (count == 0) {
 				addRosterItem(item);
 
@@ -625,7 +621,7 @@ public class H2Database implements Database {
 		} finally {
 			SQLHelper.closeConnection(conn);
 		}
-		
+
 	}
 
 	@Override
@@ -635,10 +631,9 @@ public class H2Database implements Database {
 
 		try {
 
-			int Count = SQLHelper.queryInt(conn, SQLQuery.FETCH_GROUP_COUNT,
-					new String[] {jid });
-			
-			return Count >0;
+			int Count = SQLHelper.queryInt(conn, SQLQuery.FETCH_GROUP_COUNT, new String[] { jid });
+
+			return Count > 0;
 
 		} finally {
 			SQLHelper.closeConnection(conn);
@@ -653,8 +648,8 @@ public class H2Database implements Database {
 		try {
 
 			int count = SQLHelper.queryInt(conn, SQLQuery.FETCH_CHAT_ROOM_COUNT,
-					new String[] {chatRoom.getRoomJID().getBareJID() });
-			
+					new String[] { chatRoom.getRoomJID().getBareJID() });
+
 			if (count == 0) {
 				addChatRoom(chatRoom);
 
@@ -665,7 +660,7 @@ public class H2Database implements Database {
 		} finally {
 			SQLHelper.closeConnection(conn);
 		}
-		
+
 	}
 
 	@Override
@@ -677,8 +672,8 @@ public class H2Database implements Database {
 
 		try {
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_INSERT_CHAT_ROOM,
-					new Object[] {chatRoom.getRoomJID().getBareJID(),chatRoom.getName(),chatRoom.getSubject(),chatRoom.getAccessMode().PUBLIC,
-							chatRoom.getAccessMode().PRIVATE, 1});
+					new Object[] { chatRoom.getRoomJID().getBareJID(), chatRoom.getName(), chatRoom.getSubject(),
+							chatRoom.getAccessMode().val(), 1 });
 
 			ps.executeUpdate();
 
@@ -690,19 +685,45 @@ public class H2Database implements Database {
 			SQLHelper.closeStatement(ps);
 			SQLHelper.closeConnection(conn);
 		}
-		
+
+	}
+
+	@Override
+	public void updateChatRoom(ChatRoom chatRoom) throws DbException {
+		LOGGER.info("Adding new Chat Room " + chatRoom);
+		Connection conn = this.getConnection();
+
+		PreparedStatement ps = null;
+
+		try {
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_CHAT_ROOM,
+					new Object[] { chatRoom.getName(), chatRoom.getSubject(),
+							chatRoom.getAccessMode() != null ? chatRoom.getAccessMode().val() : null,
+							chatRoom.getRoomJID().getBareJID() });
+
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+			LOGGER.warning("Failed to add new chatRoom");
+			throw new DbException("Failed to add new chatRoom", e);
+
+		} finally {
+			SQLHelper.closeStatement(ps);
+			SQLHelper.closeConnection(conn);
+		}
+
 	}
 
 	@Override
 	public void updateChatRoomSubject(String roomJID, String subject) throws DbException {
-		LOGGER.info("Updating Chat Room Subject for roomJID :" + roomJID + subject);
+		LOGGER.info("Updating Chat Room Subject for roomJID :" + roomJID);
 		Connection conn = this.getConnection();
 
 		PreparedStatement ps = null;
 
 		try {
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_CHAT_ROOM_SUBJECT,
-					new Object[] {subject,roomJID });
+					new Object[] { subject, roomJID });
 
 			ps.executeUpdate();
 
@@ -714,10 +735,7 @@ public class H2Database implements Database {
 			SQLHelper.closeStatement(ps);
 			SQLHelper.closeConnection(conn);
 		}
-		
+
 	}
-	
-	
-	
 
 }

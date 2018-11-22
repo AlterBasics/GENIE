@@ -9,6 +9,10 @@ import java.util.Properties;
 
 import abs.ixi.client.util.TaskExecutor;
 
+/**
+ * Wrapper around {@link Properties}. For proper handling of properties
+ *
+ */
 public class SFProperties {
 	private String propertiesFilePath;
 	private Properties properties;
