@@ -7,8 +7,7 @@ import abs.ixi.client.core.event.Event;
 import abs.ixi.client.core.event.EventHandler;
 import abs.ixi.client.util.StringUtils;
 import abs.sf.client.gini.managers.AndroidUserManager;
-import abs.sf.client.gini.utils.SharedPrefProxy;
-
+import abs.sf.client.gini.utils.SFSDKProperties;
 
 /**
  * {@link EventHandler} implementation to handle {@link Event.EventType#STREAM_START}
@@ -29,10 +28,10 @@ public class StreamStartHandler implements EventHandler {
     }
 
     private void updateDeviceToken() {
-        PushNotificationService notificationSrevice = SharedPrefProxy.getInstance().getNotificationService();
+        PushNotificationService notificationSrevice = SFSDKProperties.getInstance().getNotificationService();
 
         if (notificationSrevice != null) {
-            String deviceToken = SharedPrefProxy.getInstance().getDeviceToken();
+            String deviceToken = SFSDKProperties.getInstance().getDeviceToken();
 
             if (!StringUtils.isNullOrEmpty(deviceToken)) {
                 Platform.getInstance().getUserManager().updateDeviceToken(deviceToken, notificationSrevice, DeviceType.ANDROID);
@@ -41,7 +40,7 @@ public class StreamStartHandler implements EventHandler {
     }
 
     private void sendGetRosterRequest() {
-        int prevRosterVersion = SharedPrefProxy.getInstance().getRosterVersion();
+        int prevRosterVersion = SFSDKProperties.getInstance().getRosterVersion();
         Platform.getInstance().getUserManager().sendGetRosterRequest(prevRosterVersion);
     }
 

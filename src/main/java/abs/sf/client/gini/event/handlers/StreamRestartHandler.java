@@ -4,7 +4,7 @@ import abs.ixi.client.core.Platform;
 import abs.ixi.client.core.event.Event;
 import abs.ixi.client.core.event.EventHandler;
 import abs.sf.client.gini.managers.AndroidUserManager;
-import abs.sf.client.gini.utils.SharedPrefProxy;
+import abs.sf.client.gini.utils.SFSDKProperties;
 
 public class StreamRestartHandler implements EventHandler{
     @Override
@@ -20,7 +20,7 @@ public class StreamRestartHandler implements EventHandler{
     }
 
     private void sendGetRosterRequest() {
-        int prevRosterVersion =  SharedPrefProxy.getInstance().getRosterVersion();
+        int prevRosterVersion =  SFSDKProperties.getInstance().getRosterVersion();
         Platform.getInstance().getUserManager().sendGetRosterRequest(prevRosterVersion);
     }
 

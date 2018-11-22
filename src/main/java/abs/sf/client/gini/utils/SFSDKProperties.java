@@ -1,5 +1,7 @@
 package abs.sf.client.gini.utils;
 
+import java.io.IOException;
+
 import abs.ixi.client.PushNotificationService;
 import abs.ixi.client.util.StringUtils;
 
@@ -18,8 +20,10 @@ public class SFSDKProperties {
 
 	/**
 	 * Restricting access to local
+	 * 
+	 * @throws IOException
 	 */
-	private SFSDKProperties() {
+	private SFSDKProperties() throws IOException {
 		this.sfProperties = new SFProperties(SDK_PROPERTIES_FILE);
 	}
 
@@ -28,7 +32,14 @@ public class SFSDKProperties {
 	 */
 	public static SFSDKProperties getInstance() {
 		if (instance == null) {
-			instance = new SFSDKProperties();
+			try {
+
+				instance = new SFSDKProperties();
+
+			} catch (IOException e) {
+				
+				throw new RuntimeException(e);
+			}
 		}
 
 		return instance;

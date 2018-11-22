@@ -7,7 +7,7 @@ import abs.ixi.client.xmpp.PresenceSubscription;
 import abs.ixi.client.xmpp.packet.Roster;
 import abs.sf.client.gini.db.DbManager;
 import abs.sf.client.gini.db.object.RosterTable;
-import abs.sf.client.gini.utils.SharedPrefProxy;
+import abs.sf.client.gini.utils.SFSDKProperties;
 
 /**
  * {@link EventHandler} implementation to handle
@@ -22,7 +22,7 @@ public class RosterUpdateHandler implements EventHandler {
             Roster roster = (Roster) source;
 
             int newVer = roster.getVersion();
-            int oldVer = SharedPrefProxy.getInstance().getRosterVersion();
+            int oldVer = SFSDKProperties.getInstance().getRosterVersion();
 
             if (oldVer < newVer && roster.getItems() != null) {
                 synchronized (RosterTable.class) {
@@ -36,7 +36,7 @@ public class RosterUpdateHandler implements EventHandler {
                         }
                     }
 
-                    SharedPrefProxy.getInstance().setRosterVersion(newVer);
+                    SFSDKProperties.getInstance().setRosterVersion(newVer);
 
                 }
             }

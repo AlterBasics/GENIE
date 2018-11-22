@@ -146,7 +146,7 @@ public class SDKLoader {
 
 	public static void unloadSdk() {
 		DbManager.getInstance().cleanUpAllData();
-		SharedPrefProxy.getInstance().setRosterVersion(0);
+		SFSDKProperties.getInstance().setRosterVersion(0);
 		isSDKLoaded = false;
 	}
 }
