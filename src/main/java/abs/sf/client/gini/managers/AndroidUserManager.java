@@ -1,7 +1,4 @@
-package abs.sf.client.android.managers;
-
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+package abs.sf.client.gini.managers;
 
 import java.io.File;
 import java.io.IOException;

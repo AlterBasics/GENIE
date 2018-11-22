@@ -1,4 +1,4 @@
-package abs.sf.client.android.managers;
+package abs.sf.client.gini.managers;
 
 
 import abs.ixi.client.PresenceManager;
