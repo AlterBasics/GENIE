@@ -227,6 +227,13 @@ public interface Database extends Initializable {
 	void addOrUpdateChatRoom(ChatRoom chatRoom) throws DbException;
 
 	/**
+	 * Clear Roster Data
+	 * 
+	 * @throws DbException
+	 */
+	void clearRosterData() throws DbException;
+
+	/**
 	 * Add new Chat Room {@link ChatRoom}
 	 */
 	void addChatRoom(ChatRoom chatRoom) throws DbException;
@@ -244,4 +251,5 @@ public interface Database extends Initializable {
 	 * 
 	 */
 	void updateChatRoomSubject(String roomJID, String subject) throws DbException;
+
 }

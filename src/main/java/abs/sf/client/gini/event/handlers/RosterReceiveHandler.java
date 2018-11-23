@@ -28,7 +28,7 @@ public class RosterReceiveHandler implements EventHandler {
 
 			if (oldVer < newVer) {
 				synchronized (RosterTable.class) {
-					DbManager.getInstance().truncateTable(RosterTable.TABLE_NAME);
+					DbManager.getInstance().clearRosterData();
 
 					if (!CollectionUtils.isNullOrEmpty(roster.getItems())) {
 						AndroidUserManager userManager = (AndroidUserManager) Platform.getInstance().getUserManager();

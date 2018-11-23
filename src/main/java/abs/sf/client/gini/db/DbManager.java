@@ -392,6 +392,13 @@ public final class DbManager {
 	}
 
 	/**
+	 * Clear Roster data
+	 */
+	public void clearRosterData() throws DbException {
+		this.database.clearRosterData();
+	}
+
+	/**
 	 * Check is given {@link JID} item is group.
 	 * 
 	 * @param jid

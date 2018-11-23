@@ -738,4 +738,26 @@ public class H2Database implements Database {
 
 	}
 
+	@Override
+	public void clearRosterData() throws DbException {
+		LOGGER.info("Truncating Roster Data");
+		Connection conn = this.getConnection();
+
+		PreparedStatement ps = null;
+
+		try {
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_TRUNCATE_ROSTER, new Object[] {});
+
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+			LOGGER.warning("Failed to truncte roster table");
+			throw new DbException("Failed to truncate roster table", e);
+
+		} finally {
+			SQLHelper.closeStatement(ps);
+			SQLHelper.closeConnection(conn);
+		}
+	}
+
 }

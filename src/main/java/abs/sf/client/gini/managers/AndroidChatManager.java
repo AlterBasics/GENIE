@@ -53,7 +53,7 @@ public class AndroidChatManager extends ChatManager {
     private static final String MEDIA_RECEIVED_TEXT = "You received a media message";
     private static final String MEDIA_SENT_TEXT = "You sent a media message";
 
-    private List<ChatListener> chatListeners;
+    private List<ChatListene> chatListeners;
     private boolean isChatMarkersEnabled;
     private boolean isChatStateNotificationEnabled;
     private boolean isMessageDeliveryReceiptEnabled;
