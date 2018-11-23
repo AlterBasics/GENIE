@@ -3,7 +3,9 @@ package abs.sf.client.gini.utils;
 import java.io.IOException;
 
 import abs.ixi.client.PushNotificationService;
+import abs.ixi.client.core.Platform;
 import abs.ixi.client.util.StringUtils;
+import abs.sf.client.gini.managers.AndroidChatManager;
 
 public class SFSDKProperties {
 	public static final String SDK_PROPERTIES_FILE = "sf_android.properties";
@@ -11,9 +13,10 @@ public class SFSDKProperties {
 	public static final String DEVIICE_TOKEN = "device_token";
 	public static final String NOTIFICATION_SERVICE = "notification_service";
 	public static final String DOMAIN_NAME = "domain_name";
-	public static final String IS_CHAT_MARKERS_SUPPORTED = "is_chat_markers_supported";
-	public static final String IS_MESSAGE_DELIVERY_RECEIPT_SUPPORTED = "is_message_delivery_receipt_supported";
-	public static final String IS_CHAT_STATE_NOTIFICATION_SUPPORTED = "is_chat_state_notification_supported";
+	public static final String IS_CHAT_MARKERS_ENABLED = "is_chat_markers_enabled";
+	public static final String IS_MESSAGE_DELIVERY_RECEIPT_ENABLED = "is_message_delivery_receipt_enabled";
+	public static final String IS_CHAT_STATE_NOTIFICATION_ENABLED = "is_chat_state_notification_enabled";
+	public static final String IS_MEDIA_TRANSFER_ENABLED = "is_media_transfer_enabled";
 
 	private SFProperties sfProperties;
 	public static SFSDKProperties instance;
@@ -37,7 +40,7 @@ public class SFSDKProperties {
 				instance = new SFSDKProperties();
 
 			} catch (IOException e) {
-				
+
 				throw new RuntimeException(e);
 			}
 		}
@@ -91,7 +94,14 @@ public class SFSDKProperties {
 	 * </p>
 	 */
 	public void enableChatStateNotification() {
-		this.setIsChatStateNotificationSupported(true);
+		this.setIsChatStateNotificationEnabled(true);
+
+		AndroidChatManager chatManager = (AndroidChatManager) Platform.getInstance().getChatManager();
+
+		if (chatManager != null) {
+			chatManager.setChatStateNotificationEnabled(true);
+		}
+
 	}
 
 	/**
@@ -102,7 +112,12 @@ public class SFSDKProperties {
 	 * </p>
 	 */
 	public void enableMessageDeliveryReceipt() {
-		this.setIsMessageDeliveryReceiptSupported(true);
+		this.setIsMessageDeliveryReceiptEnabled(true);
+		AndroidChatManager chatManager = (AndroidChatManager) Platform.getInstance().getChatManager();
+
+		if (chatManager != null) {
+			chatManager.setMessageDeliveryReceiptEnabled(true);
+		}
 	}
 
 	/**
@@ -111,7 +126,7 @@ public class SFSDKProperties {
 	 * <p>
 	 * Please refer XEP-0333.
 	 * </p>
-	 *
+	 * <p>
 	 * <p>
 	 * This XEP is deferred by xmpp org. But we still support it. If we are not
 	 * interested in message sean by receiver and only interested to delivery
@@ -119,7 +134,19 @@ public class SFSDKProperties {
 	 * </p>
 	 */
 	public void enableChatMarkers() {
-		this.setIsChatMarkersSupported(true);
+		this.setIsChatMarkersEnabled(true);
+		AndroidChatManager chatManager = (AndroidChatManager) Platform.getInstance().getChatManager();
+
+		if (chatManager != null) {
+			chatManager.setChatMarkersEnabled(true);
+		}
+	}
+
+	/**
+	 * Enable Media Transfer
+	 */
+	public void enableMediaTransfer() {
+		this.setIsMediaTransferEnabledsEnabled(true);
 	}
 
 	/**
@@ -130,7 +157,12 @@ public class SFSDKProperties {
 	 * </p>
 	 */
 	public void disableChatStateNotification() {
-		this.setIsChatStateNotificationSupported(false);
+		this.setIsChatStateNotificationEnabled(false);
+		AndroidChatManager chatManager = (AndroidChatManager) Platform.getInstance().getChatManager();
+
+		if (chatManager != null) {
+			chatManager.setChatStateNotificationEnabled(false);
+		}
 	}
 
 	/**
@@ -141,7 +173,12 @@ public class SFSDKProperties {
 	 * </p>
 	 */
 	public void disableMessageDeliveryReceipt() {
-		this.setIsMessageDeliveryReceiptSupported(false);
+		this.setIsMessageDeliveryReceiptEnabled(false);
+		AndroidChatManager chatManager = (AndroidChatManager) Platform.getInstance().getChatManager();
+
+		if (chatManager != null) {
+			chatManager.setMessageDeliveryReceiptEnabled(false);
+		}
 	}
 
 	/**
@@ -150,10 +187,21 @@ public class SFSDKProperties {
 	 * <p>
 	 * Please refer XEP-0333.
 	 * </p>
-	 *
 	 */
 	public void disableChatMarkers() {
-		this.setIsChatMarkersSupported(false);
+		this.setIsChatMarkersEnabled(false);
+		AndroidChatManager chatManager = (AndroidChatManager) Platform.getInstance().getChatManager();
+
+		if (chatManager != null) {
+			chatManager.setChatMarkersEnabled(false);
+		}
+	}
+
+	/**
+	 * disable Media Transfer
+	 */
+	public void disableMediaTransfer() {
+		this.setIsMediaTransferEnabledsEnabled(false);
 	}
 
 	/**
@@ -162,10 +210,9 @@ public class SFSDKProperties {
 	 * <p>
 	 * Please refer XEP-0085.
 	 * </p>
-	 *
 	 */
-	public void setIsChatStateNotificationSupported(boolean isChatStateNotificationSupported) {
-		this.sfProperties.getEditor().putBoolean(IS_CHAT_STATE_NOTIFICATION_SUPPORTED, isChatStateNotificationSupported)
+	private void setIsChatStateNotificationEnabled(boolean isChatStateNotificationEnabled) {
+		this.sfProperties.getEditor().putBoolean(IS_CHAT_STATE_NOTIFICATION_ENABLED, isChatStateNotificationEnabled)
 				.apply();
 	}
 
@@ -176,9 +223,9 @@ public class SFSDKProperties {
 	 * Please refer XEP-0184.
 	 * </p>
 	 */
-	public void setIsMessageDeliveryReceiptSupported(boolean isMessageDeliveryReceiptSupported) {
-		this.sfProperties.getEditor()
-				.putBoolean(IS_MESSAGE_DELIVERY_RECEIPT_SUPPORTED, isMessageDeliveryReceiptSupported).apply();
+	private void setIsMessageDeliveryReceiptEnabled(boolean isMessageDeliveryReceiptEnabled) {
+		this.sfProperties.getEditor().putBoolean(IS_MESSAGE_DELIVERY_RECEIPT_ENABLED, isMessageDeliveryReceiptEnabled)
+				.apply();
 	}
 
 	/**
@@ -187,27 +234,40 @@ public class SFSDKProperties {
 	 * <p>
 	 * Please refer XEP-0333.
 	 * </p>
-	 *
+	 * <p>
 	 * <p>
 	 * This XEP is deferred by xmpp org. But we still support it. If we are not
 	 * interested in message sean by receiver and only interested to delivery
 	 * status then use {@link #enableMessageDeliveryReceipt()}.
 	 * </p>
 	 */
-	public void setIsChatMarkersSupported(boolean isChatMarkersSupported) {
-		this.sfProperties.getEditor().putBoolean(IS_CHAT_MARKERS_SUPPORTED, isChatMarkersSupported).apply();
+	private void setIsChatMarkersEnabled(boolean isChatMarkersEnabled) {
+		this.sfProperties.getEditor().putBoolean(IS_CHAT_MARKERS_ENABLED, isChatMarkersEnabled).apply();
 	}
 
-	public boolean isChatStateNotificationSupported() {
-		return this.sfProperties.getBoolean(IS_CHAT_STATE_NOTIFICATION_SUPPORTED, false);
+	/**
+	 * Enable Media Transfer
+	 *
+	 * @param isMediaTransferEnabledsEnabled
+	 */
+	private void setIsMediaTransferEnabledsEnabled(boolean isMediaTransferEnabledsEnabled) {
+		this.sfProperties.getEditor().putBoolean(IS_MEDIA_TRANSFER_ENABLED, isMediaTransferEnabledsEnabled).apply();
 	}
 
-	public boolean isMessageDeliveryReceiptSupported() {
-		return this.sfProperties.getBoolean(IS_MESSAGE_DELIVERY_RECEIPT_SUPPORTED, false);
+	public boolean isChatStateNotificationEnabled() {
+		return this.sfProperties.getBoolean(IS_CHAT_STATE_NOTIFICATION_ENABLED, false);
 	}
 
-	public boolean isChatMarkersSupported() {
-		return this.sfProperties.getBoolean(IS_CHAT_MARKERS_SUPPORTED, false);
+	public boolean isMessageDeliveryReceiptEnabled() {
+		return this.sfProperties.getBoolean(IS_MESSAGE_DELIVERY_RECEIPT_ENABLED, false);
+	}
+
+	public boolean isChatMarkersEnabled() {
+		return this.sfProperties.getBoolean(IS_CHAT_MARKERS_ENABLED, false);
+	}
+
+	public boolean isMediaTransferEnabled() {
+		return this.sfProperties.getBoolean(IS_MEDIA_TRANSFER_ENABLED, false);
 	}
 
 	public String get(String key) {

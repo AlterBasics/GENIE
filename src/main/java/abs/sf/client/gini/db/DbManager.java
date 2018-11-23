@@ -280,7 +280,7 @@ public final class DbManager {
 	 * @param pearJID {@link JID }of the peer
 	 * @return List of chatLine objects
 	 */
-	public List<ChatLine> fetchConversationChatlines(String pearJID, boolean isGroup) throws DbException {
+	public List<ChatLine> fetchConversationChatlines(String pearJID) throws DbException {
 		return this.database.fetchConversationChatlines(pearJID);
 	}
 
