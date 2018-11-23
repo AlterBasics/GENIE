@@ -1,7 +1,6 @@
 package abs.sf.client.gini.managers;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import abs.ixi.client.DeviceType;
@@ -13,7 +12,6 @@ import abs.ixi.client.io.StreamNegotiator;
 import abs.ixi.client.io.XMPPStreamManager;
 import abs.ixi.client.util.CollectionUtils;
 import abs.ixi.client.util.StringUtils;
-
 import abs.ixi.client.util.UUIDGenerator;
 import abs.ixi.client.xmpp.JID;
 import abs.ixi.client.xmpp.packet.ChatRoom;
@@ -325,15 +323,16 @@ public class AndroidUserManager extends UserManager {
 	 * @param useeJID
 	 * @return avatar
 	 */
-	public Bitmap getUserAvatar(JID useeJID) {
-		byte[] avtarBytes = DbManager.getInstance().getUserAvatarBytes(useeJID.getBareJID());
-
-		if (avtarBytes != null) {
-			return BitmapFactory.decodeByteArray(avtarBytes, 0, avtarBytes.length);
-		}
-
-		return null;
-	}
+	// public Bitmap getUserAvatar(JID useeJID) {
+	// byte[] avtarBytes =
+	// DbManager.getInstance().getUserAvatarBytes(useeJID.getBareJID());
+	//
+	// if (avtarBytes != null) {
+	// return BitmapFactory.decodeByteArray(avtarBytes, 0, avtarBytes.length);
+	// }
+	//
+	// return null;
+	// }
 
 	/**
 	 * After Sdk loading call this method to login.
