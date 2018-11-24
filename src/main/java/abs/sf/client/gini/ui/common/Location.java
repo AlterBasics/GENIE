@@ -1,4 +1,4 @@
-package com.traynotifications.models;
+package abs.sf.client.gini.ui.common;
 
 public class Location {
 	private double x, y;

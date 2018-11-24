@@ -42,11 +42,8 @@ public class SDKLoader {
 	 * @param xmppServerPort xmpp server port
 	 * @param mediaServerIP media server ip address
 	 * @param mediaServerPort media server port
-	 * @param provider {@link ContextProvider} instance. This is injected into
-	 *            SDK by Application
 	 */
-	public static void loadSDK(String xmppServerIP, int xmppServerPort, String mediaServerIP, int mediaServerPort,
-			ContextProvider provider) {
+	public static void loadSDK(String xmppServerIP, int xmppServerPort, String mediaServerIP, int mediaServerPort) {
 		if (isSDKLoaded || loadingSDK) {
 			while (loadingSDK)
 				;
@@ -57,7 +54,7 @@ public class SDKLoader {
 			XMPPConnection con = ConnectionManager.getInstance().getXmppConnection();
 
 			LOGGER.info("initializing SDK objects...");
-			initializeSDKObjects(con, provider);
+			initializeSDKObjects(con);
 			sdkLoaded();
 		}
 	}
@@ -70,8 +67,7 @@ public class SDKLoader {
 	 * @param mimeConnectionconfig
 	 * @param provider
 	 */
-	public static void loadSDK(ConnectionConfig xmppConnectionconfig, ConnectionConfig mimeConnectionconfig,
-			ContextProvider provider) {
+	public static void loadSDK(ConnectionConfig xmppConnectionconfig, ConnectionConfig mimeConnectionconfig) {
 		if (isSDKLoaded || loadingSDK) {
 			while (loadingSDK)
 				;
@@ -82,7 +78,7 @@ public class SDKLoader {
 			XMPPConnection con = ConnectionManager.getInstance().getXmppConnection();
 
 			LOGGER.info("initializing SDK objects...");
-			initializeSDKObjects(con, provider);
+			initializeSDKObjects(con);
 			sdkLoaded();
 		}
 	}
@@ -96,9 +92,7 @@ public class SDKLoader {
 		loadingSDK = false;
 	}
 
-	private static void initializeSDKObjects(XMPPConnection connection, ContextProvider provider) {
-		Platform.getInstance().getSession().put(ContextProvider.KEY_CONTEXT, provider);
-
+	private static void initializeSDKObjects(XMPPConnection connection) {
 		setupUndeliveredStanzaManager();
 
 		XMPPStreamManager streamManager = new XMPPStreamManager(connection);

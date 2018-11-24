@@ -36,12 +36,10 @@ public class SFSDKProperties {
 	public static SFSDKProperties getInstance() {
 		if (instance == null) {
 			try {
-
 				instance = new SFSDKProperties();
-
 			} catch (IOException e) {
-
-				throw new RuntimeException(e);
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 

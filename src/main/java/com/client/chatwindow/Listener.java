@@ -13,6 +13,7 @@ import com.messages.Message;
 import com.messages.MessageType;
 import com.messages.Status;
 
+import abs.sf.client.gini.ui.controller.ChatController;
 import abs.sf.client.gini.ui.controller.LoginController;
 
 public class Listener implements Runnable {

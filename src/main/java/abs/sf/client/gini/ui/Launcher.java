@@ -1,11 +1,11 @@
 package abs.sf.client.gini.ui;
 
+import abs.sf.client.gini.ui.utils.AppProperties;
+import abs.sf.client.gini.ui.utils.ResourceLoader;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -15,16 +15,27 @@ public class Launcher extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		pStage = primaryStage;
-		Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("views/LoginView.fxml"));
-		primaryStage.initStyle(StageStyle.UNDECORATED);
-		primaryStage.setTitle("GINI v1.0");
-		primaryStage.getIcons().add(new Image(getClass().getClassLoader().getResource("images/plug.png").toString()));
-		Scene mainScene = new Scene(root, 350, 420);
+
+		setupPrimaryStage();
+
+		Parent root = ResourceLoader.getInstance().loadLoginController();
+		Scene mainScene = new Scene(root);
 		mainScene.setRoot(root);
-		primaryStage.setResizable(false);
+
 		primaryStage.setScene(mainScene);
+
 		primaryStage.show();
-		primaryStage.setOnCloseRequest(e -> Platform.exit());
+	}
+
+	private void setupPrimaryStage() {
+		pStage.initStyle(StageStyle.UNDECORATED);
+		pStage.setResizable(true);
+		pStage.setTitle(AppProperties.getInstance().getApplicationName());
+		pStage.getIcons().add(ResourceLoader.getInstance().loadApplicationIconImage());
+		pStage.setOnCloseRequest((e) -> {
+			Platform.exit();
+			System.exit(0);
+		});
 	}
 
 	public static void main(String[] args) {

@@ -16,7 +16,7 @@ public class FadeAnimation implements TrayAnimation {
 	private boolean trayIsShowing;
 
 	/**
-	 * Initializes a fade type animation on a stage
+	 * Initialises a fade type animation on a stage
 	 * 
 	 * @param customStage The stage associate the fade animation with
 	 */

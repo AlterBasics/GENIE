@@ -1,9 +1,11 @@
-package com.client.chatwindow;
+package abs.sf.client.gini.ui.controller;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import com.client.chatwindow.CellRenderer;
+import com.client.chatwindow.Listener;
 import com.client.util.VoicePlayback;
 import com.client.util.VoiceRecorder;
 import com.client.util.VoiceUtil;

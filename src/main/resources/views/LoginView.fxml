@@ -14,7 +14,7 @@
 
 <BorderPane fx:id="borderPane" maxWidth="350.0" minWidth="350.0"
 	prefHeight="420.0" prefWidth="350.0" xmlns="http://javafx.com/javafx/8.0.171"
-	xmlns:fx="http://javafx.com/fxml/1" fx:controller="abs.sf.client.gini.controller.LoginController">
+	xmlns:fx="http://javafx.com/fxml/1" fx:controller="abs.sf.client.gini.ui.controller.LoginController">
 	<center>
 		<GridPane BorderPane.alignment="CENTER">
 			<columnConstraints>
@@ -67,7 +67,7 @@
 					<children>
 						<Button id="MinimizedBtn" contentDisplay="GRAPHIC_ONLY"
 							graphicTextGap="0.0" maxHeight="24.0" maxWidth="68.0" minWidth="45.0"
-							mnemonicParsing="false" onAction="#minimizeWindow" prefHeight="24.0"
+							mnemonicParsing="false"  prefHeight="24.0"
 							prefWidth="45.0" stylesheets="@../styles/Login.css">
 							<cursor>
 								<Cursor fx:constant="HAND" />
