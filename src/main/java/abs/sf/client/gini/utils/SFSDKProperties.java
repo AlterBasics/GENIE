@@ -8,7 +8,8 @@ import abs.ixi.client.util.StringUtils;
 import abs.sf.client.gini.managers.AndroidChatManager;
 
 public class SFSDKProperties {
-	public static final String SDK_PROPERTIES_FILE = "sf_android.properties";
+	public static final String SDK_PROPERTIES_RESOURCE = "conf/sf_sdk.properties";
+
 	public static final String ROSTER_VERSION = "roster_version";
 	public static final String DEVIICE_TOKEN = "device_token";
 	public static final String NOTIFICATION_SERVICE = "notification_service";
@@ -27,7 +28,7 @@ public class SFSDKProperties {
 	 * @throws IOException
 	 */
 	private SFSDKProperties() throws IOException {
-		this.sfProperties = new SFProperties(SDK_PROPERTIES_FILE);
+		this.sfProperties = new SFProperties(SDK_PROPERTIES_RESOURCE);
 	}
 
 	/**

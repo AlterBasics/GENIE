@@ -14,20 +14,21 @@ import abs.ixi.client.util.TaskExecutor;
  *
  */
 public class SFProperties {
-	private String propertiesFilePath;
-	private Properties properties;
+	private String propertiesResource;
+	protected Properties properties;
 	protected Editor editor;
 
-	public SFProperties(String propertiesFilePath) throws IOException {
-		this.propertiesFilePath = propertiesFilePath;
-		this.editor = new Editor();
+	public SFProperties(String propertiesResource) throws IOException {
+		this.propertiesResource = propertiesResource;
 		this.loadProperties();
+		this.editor = new Editor();
 	}
 
 	private void loadProperties() throws IOException {
 		this.properties = new Properties();
 
-		try (InputStream is = new FileInputStream(propertiesFilePath)) {
+		try (InputStream is = new FileInputStream(
+				getClass().getClassLoader().getResource(this.propertiesResource).getPath())) {
 			this.properties.load(is);
 		}
 	}
@@ -136,7 +137,7 @@ public class SFProperties {
 		private OutputStream output;
 
 		private Editor() throws IOException {
-			this.output = new FileOutputStream(propertiesFilePath);
+			this.output = new FileOutputStream(getClass().getClassLoader().getResource(propertiesResource).getPath());
 		}
 
 		/**
