@@ -1,10 +1,13 @@
 package abs.sf.client.gini.db;
 
 import java.util.List;
+import java.util.Set;
 
 import abs.ixi.client.core.Initializable;
 import abs.ixi.client.xmpp.JID;
 import abs.ixi.client.xmpp.packet.ChatRoom;
+import abs.ixi.client.xmpp.packet.UserProfileData;
+import abs.ixi.client.xmpp.packet.Presence.PresenceType;
 import abs.ixi.client.xmpp.packet.Roster.RosterItem;
 import abs.ixi.client.xmpp.packet.UserSearchData.Item;
 import abs.sf.client.gini.db.exception.DbException;
@@ -13,6 +16,7 @@ import abs.sf.client.gini.db.object.ConversationTable;
 import abs.sf.client.gini.db.object.RosterTable;
 import abs.sf.client.gini.messaging.ChatLine;
 import abs.sf.client.gini.messaging.Conversation;
+import abs.sf.client.gini.messaging.UserPresence;
 
 public interface Database extends Initializable {
 	/**
@@ -281,4 +285,110 @@ public interface Database extends Initializable {
 	 * @param member
 	 */
 	void addChatRoomMember(ChatRoom.ChatRoomMember member) throws DbException;
+	
+	/**
+	 * Update ChatRoomMember
+	 * @param member
+	 */
+	void updateChatRoomMember(ChatRoom.ChatRoomMember member) throws DbException;
+	
+	/**
+	 *Delete all RoomMember
+	 *@param roomJID
+	 */
+	void deleteAllRoomMembers(String roomJID) throws DbException;
+	
+	/**
+	 * Remove RoomMember
+	 * roomJID, memberJID
+	 */
+	void removeRoomMember(String roomJID, String memberJID)throws DbException;
+	
+	/**
+	 *Getting Room Member Nick Name 
+	 * @roomJID,memberJID
+	 */
+	String getRoomMemberNickName(String roomJId, String memberJID) throws DbException;
+	
+	/**
+	 * Getting ChatRoom Details
+	 * roomJID
+	 */
+	ChatRoom getChatRoomDetails(String roomJID) throws DbException ;
+	
+	/**
+	 * Getting ChatRoom JID
+	 * roomName
+	 */
+	JID getChatRoomJID(String roomName) throws DbException;
+	
+	/**
+	 * Getting List of Chat Room
+	 * 
+	 */
+	 List<ChatRoom> getChatRooms() throws DbException ;
+	 
+	 /**
+	  *Getting ChatRoomMembers   
+	  * @param room
+	  */
+	 Set<ChatRoom.ChatRoomMember> getChatRoomMembers(ChatRoom room) throws DbException;
+	
+	 /**
+	  * Checking the presence of the user and mood ,status,
+	  * @param userJID
+	  */
+	 void addPresence(String userJID, PresenceType presence, String mood, String status) throws DbException;
+	
+	 /**
+	  * Update The Presence, mood ,status of the user 
+	  * userJID
+	  */
+	 void updatePresence(String userJID, PresenceType presence, String mood, String status) throws DbException;
+	 
+	 /**
+	  * Updating the presence of the user
+	  * @param userJID
+	  */
+	 void updatePresence(String userJID, PresenceType presence) throws DbException;
+	 
+	 /**
+	  * Adding or Updating the Presence of the user and mood or status
+	  * userJID
+	  */
+	 void addOrUpdatePresence(String userJID, PresenceType presence, String mood, String status) throws DbException;
+	 
+	 /**
+	  * Adding or Updating the Presence of the user
+	  * @param userJID
+	  * @param presence
+	  * @throws DbException
+	  */
+	  void addOrUpdatePresence(String userJID, PresenceType presence) throws DbException;
+	 
+	  /**
+	   * 
+	   * @param userJID
+	   * @return
+	   * @throws DbException
+	   */
+	   UserPresence getPresenceDetails(String userJID)throws DbException;
+	 
+	   /**
+	    * @param userJID
+	    * @throws DbException
+	    */
+	   void deleteUserPresence(String userJID) throws DbException;
+	 
+	   /**
+	    * @param userProfileData
+	    * @throws DbException
+	    */
+	   void addOrUpdateUserProfileData(UserProfileData userProfileData)  throws DbException;
+	 
+	 
+	 
+	 
+	 
+	 
 }

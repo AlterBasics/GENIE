@@ -1,7 +1,9 @@
 package abs.sf.client.gini.db.mapper;
 
-import android.database.Cursor;
-import android.database.SQLException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import java.sql.ResultSet;
 
 import abs.ixi.client.util.DateUtils;
 import abs.ixi.client.util.StringUtils;
@@ -12,14 +14,14 @@ import abs.sf.client.gini.messaging.UserPresence;
 public class PresenceRowMapper implements RowMapper<UserPresence> {
 
     @Override
-    public UserPresence map(Cursor cursor) throws SQLException {
-        boolean online = StringUtils.safeEquals(cursor.getString(1), PresenceType.AVAILABLE.val(), false) ? true : false;
+    public UserPresence map(ResultSet rs) throws SQLException {
+        boolean online = StringUtils.safeEquals(rs.getString(1), PresenceType.AVAILABLE.val(), false) ? true : false;
 
-        UserPresence presence = new UserPresence(cursor.getString(0), online);
+        UserPresence presence = new UserPresence(rs.getString(0), online);
 
-        presence.setMood(cursor.getString(2));
-        presence.setStatus(PresenceStatus.valueFrom(cursor.getString(3)));
-        presence.setLastUpdateTime(DateUtils.displayTime(cursor.getLong(4)));
+        presence.setMood(rs.getString(2));
+        presence.setStatus(PresenceStatus.valueFrom(rs.getString(3)));
+        presence.setLastUpdateTime(DateUtils.displayTime(rs.getLong(4)));
 
         return presence;
     }

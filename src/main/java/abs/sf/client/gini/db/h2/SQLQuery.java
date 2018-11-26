@@ -208,4 +208,44 @@ public class SQLQuery {
 
 	public static final String SQL_TRUNCATE_ROSTER = "TRUNCATE " + RosterTable.TABLE_NAME;
 
+	public static final String SQL_INSERT_CHAT_ROOM_MEMBER = "INSER INTO " + ChatRoomMemberTable.TABLE_NAME + " SET "
+			+ ChatRoomMemberTable.COLUMN_MEMBER_JID + " , " + ChatRoomMemberTable.COLUMN_MEMBER_NICK_NAME + " , " + ChatRoomMemberTable.COLUMN_AFFILATION + " , "
+			+ ChatRoomMemberTable.COLUMN_ROLE + " , " + ChatRoomMemberTable.COLUMN_ROOM_JID + " ) VALUES ( ?, ?, ?, ?, ?)";
+	
+	public static final String SQL_UPDATE_CHAT_ROOM_MEMBER = "UPDATE " + ChatRoomMemberTable.TABLE_NAME + " SET "
+			+ ChatRoomMemberTable.COLUMN_MEMBER_NICK_NAME + " = IFNULL( ?, " + ChatRoomMemberTable.COLUMN_MEMBER_JID + "),"
+			+ ChatRoomMemberTable.COLUMN_AFFILATION + " = IFNULL( ?, " + ChatRoomMemberTable.COLUMN_MEMBER_JID + "),"
+			+ ChatRoomMemberTable.COLUMN_ROLE + " = IFNULL( ?, " + ChatRoomMemberTable.COLUMN_MEMBER_JID + ") " + " WHERE "
+			+ ChatRoomMemberTable.COLUMN_MEMBER_JID + " = ?";
+			
+    public static final String SQL_DELETE_ALL_ROOM_MEMBER = "DELETE" +  "FROM"  + ChatRoomMemberTable.TABLE_NAME + " WHERE "
+    		+ ChatRoomMemberTable.COLUMN_ROOM_JID + " = ? ";
+			
+    public static final String SQL_INSERT_PRESENCE = "INSER INTO " + PresenceTable.TABLE_NAME + " SET "
+			+ PresenceTable.COLUMN_JID + " , " + PresenceTable.COLUMN_PRESNCE + " , " + PresenceTable.COLUMN_MOOD + " , "
+			+ PresenceTable.COLUMN_STATUS + " , " + PresenceTable.COLUMN_LAST_UPDATE + " ) VALUES ( ?, ?, ?, ?, ?)";		
+			
+
+	public static final String SQL_UPDATE_PRESENCE = "UPDATE " + PresenceTable.TABLE_NAME + " SET "
+			+ PresenceTable.COLUMN_JID + " = ?, " + PresenceTable.COLUMN_PRESNCE + " = ?, "
+			+ PresenceTable.COLUMN_MOOD + " = ?, " + PresenceTable.COLUMN_STATUS
+			+ " = ? " + PresenceTable.COLUMN_LAST_UPDATE + " ? " + 
+			" WHERE " + PresenceTable.COLUMN_JID + " = ?";
+		
+			
+	public static final String SQL_DELETE_USER_PRESENE = "DELETE" +  "FROM"  + PresenceTable.TABLE_NAME + " WHERE "
+    		+ PresenceTable.COLUMN_JID + " = ? ";	
+	
+	
+	
+	
+	
+	
+	
+	
+			
+			
+			
+			
+			
 }

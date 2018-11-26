@@ -6,20 +6,26 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
+
+import com.sun.org.apache.regexp.internal.recompile;
 
 import abs.ixi.client.core.InitializationErrorException;
 import abs.ixi.client.util.DateUtils;
 import abs.ixi.client.util.StringUtils;
 import abs.ixi.client.xmpp.JID;
 import abs.ixi.client.xmpp.packet.ChatRoom;
+import abs.ixi.client.xmpp.packet.UserProfileData;
 import abs.ixi.client.xmpp.packet.ChatRoom.ChatRoomMember;
 import abs.ixi.client.xmpp.packet.Presence.PresenceType;
 import abs.ixi.client.xmpp.packet.Roster.RosterItem;
 import abs.sf.client.gini.db.Database;
 import abs.sf.client.gini.db.exception.DbException;
 import abs.sf.client.gini.db.mapper.ChatLineRowMapper;
+import abs.sf.client.gini.db.mapper.ChatRoomRowMapper;
 import abs.sf.client.gini.db.mapper.ConversationRowMapper;
+import abs.sf.client.gini.db.mapper.PresenceRowMapper;
 import abs.sf.client.gini.db.mapper.RosterItemRowMapper;
 import abs.sf.client.gini.db.object.ChatArchiveTable;
 import abs.sf.client.gini.db.object.ChatRoomMemberTable;
@@ -34,6 +40,7 @@ import abs.sf.client.gini.db.object.UserProfileTable;
 import abs.sf.client.gini.messaging.ChatLine;
 import abs.sf.client.gini.messaging.ChatLine.MessageStatus;
 import abs.sf.client.gini.messaging.Conversation;
+import abs.sf.client.gini.messaging.UserPresence;
 
 public class H2Database implements Database {
 	private static final Logger LOGGER = Logger.getLogger(H2Database.class.getName());
@@ -840,12 +847,376 @@ public class H2Database implements Database {
 		
 		try {
 			
-			ps = 
+			ps = SQLHelper.createPreparedStatement(conn,SQLQuery.SQL_INSERT_CHAT_ROOM_MEMBER, new Object[] {member.getUserJID().getBareJID(),member.getNickName(),member.getAffiliation(),member.getRole(),member.getRoomJID()});
 			
+			ps.executeUpdate();
+			
+		}catch (SQLException e) {
+			LOGGER.warning("Failed to add ChaRoomMember");
+			throw new DbException("Failed to add ChaRoomMember", e);
+
 		} finally {
-			// TODO: handle finally clause
+		    SQLHelper.closeStatement(ps);
+		    SQLHelper.closeConnection(conn);
 		}
 		
 	}
+	
+	@Override
+	public void updateChatRoomMember(ChatRoomMember member) throws DbException {
+	   LOGGER.info("Update ChatRoomMember: " + member);
+	   
+	   Connection conn = getConnection();
+	   PreparedStatement ps = null;
+	   
+	   try {
+		
+		   ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_CHAT_ROOM_MEMBER, new Object[] {member.getUserJID().getBareJID(),member.getRoomJID().getBareJID()});
+		   
+		   ps.executeUpdate();
+	   } catch (SQLException e) {
+		   
+			LOGGER.warning("Failed to Update ChatRoomMember");
+			throw new DbException("Failed to Update ChatRoomMember", e); 
+			
+       }finally {
+		SQLHelper.closeStatement(ps);
+	    SQLHelper.closeConnection(conn);
+	  }
+		
+    }
+	
+	@Override
+	public void deleteAllRoomMembers(String roomJID) throws DbException {
+		LOGGER.info("Delete All RoomMember : " + roomJID);
+		
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		
+		try {
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_DELETE_ALL_ROOM_MEMBER,new Object[] {roomJID});
+			
+			ps.executeUpdate();
+			
+		}catch (SQLException e) {
+			   
+				LOGGER.warning("Failed to Delete RoomMember");
+				throw new DbException("Failed to Delete RoomMember", e); 
+				
+	       } finally {
+	    	   SQLHelper.closeStatement(ps);
+	   	       SQLHelper.closeConnection(conn);
+		}
+		
+	}
+	
+	@Override
+	public void removeRoomMember(String roomJID, String memberJID) throws DbException {
+		LOGGER.info("Remove Room member :" + roomJID + memberJID);
+		
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		
+		try {
+			
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.DELETE_ROOM_MEMBER, new Object[] {memberJID,roomJID});
+			
+			ps.executeUpdate();
+			
+		}catch (SQLException e) {
+			   
+				LOGGER.warning("Failed to Update ChaRoomMember");
+				throw new DbException("Failed to Update ChaRoomMember", e); 
+				
+	       }  finally {
+	    	   SQLHelper.closeStatement(ps);
+	   	       SQLHelper.closeConnection(conn);
+		}
+		
+	}
+	
+	@Override
+	public String getRoomMemberNickName(String roomJId, String memberJID) throws DbException {
+		LOGGER.info("Getting RoomMember Nick Name : " + roomJId + memberJID);
+		
+		Connection conn = getConnection();
+		
+		try {
+			return SQLHelper.queryString(conn, SQLQuery.FETCH_ROOM_MEMBER_NICK_NAME,new Object[] {memberJID,roomJId});
+					
+		} finally {
+			  SQLHelper.closeConnection(conn);
+		}
+	
+	}
+	
+	@Override
+	public ChatRoom getChatRoomDetails(String roomJID) throws DbException {
+		LOGGER.info("Gettng ChatRoom Details :" + roomJID);
+		
+		Connection conn = getConnection();
+		
+		try {
+			ChatRoom room = (ChatRoom) SQLHelper.query(conn, SQLQuery.FETCH_CHAT_ROOM_DETAILS, new Object[] { roomJID },
+					       new ChatRoomRowMapper());
+			
+		
+			if (room != null) {
+				room.setMembers(getChatRoomMembers(room));
+			}
+			return room;
+			
+		} finally {
+			SQLHelper.closeConnection(conn);
+		}
+		
+	}
+	
+	@Override
+	public JID getChatRoomJID(String roomName) throws DbException {
+		LOGGER.info("Getting ChatRoom JID : " + roomName);
+		Connection conn = getConnection();
+		
+		try {
+			
+			 String roomJID = SQLHelper.queryString(conn, SQLQuery.FETCH_CHAT_ROOM_JID,new Object[] {roomName});
+			 
+			 if (!StringUtils.isNullOrEmpty(roomJID)) {
+					try {
+						return new JID(roomJID);
+
+					} catch (Exception e) {
+						// Swallow Exception
+					}
+				}
+		} finally {
+			SQLHelper.closeConnection(conn);
+		}
+		return null;
+	}
+	
+	@Override
+	public List<ChatRoom> getChatRooms() throws DbException {
+		LOGGER.info("Getting list of ChatRoom");
+		
+		Connection conn = getConnection();
+		
+		try {
+			
+			List<ChatRoom> rooms = SQLHelper.query(conn, SQLQuery.FETCH_CHAT_ROOMS,new ChatRoomRowMapper() );
+			
+			for (ChatRoom room : rooms) {
+				room.setMembers(getChatRoomMembers(room));
+			}
+		} finally {
+			SQLHelper.closeConnection(conn);
+		}
+		return null;
+		
+	 }
+	
+	@Override
+	public Set<ChatRoom.ChatRoomMember> getChatRoomMembers(ChatRoom room) throws DbException {
+        LOGGER.info("Getting ChatRoomMembers");
+		
+		Connection conn = getConnection();
+		
+		try {
+			
+			List<ChatRoom.ChatRoomMember> members = SQLHelper.query(conn, SQLQuery.FETCH_CHAT_ROOM_MEMBERS, new Object[] {room.getRoomJID().getBareJID(),new ChatRoomRowMapper()});
+			
+		} finally {
+			SQLHelper.closeConnection(conn);
+		}
+	}
+	
+	@Override
+	public void addPresence(String userJID, PresenceType presence, String mood, String status) throws DbException {
+          LOGGER.info("Checking the presence of the user , mood and Status :" + userJID + presence + mood + status);
+		
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		
+		try {
+			
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_INSERT_PRESENCE, new Object[] {userJID,presence.val(),mood,status, DateUtils.currentTimeInMiles()});
+			
+			ps.executeUpdate();
+			
+		}catch (SQLException e) {
+			   
+				LOGGER.warning("Failed to Check the Presence of the user and mood and status");
+				throw new DbException("Failed to Check the Presence of the user and mood and status", e); 
+				
+	       }  finally {
+	    	   SQLHelper.closeStatement(ps);
+	   	       SQLHelper.closeConnection(conn);
+		}
+		
+	}
+	
+	@Override
+	public void updatePresence(String userJID, PresenceType presence, String mood, String status) throws DbException {
+		 LOGGER.info("Checking the presence of the user , mood and Status :" + userJID + presence + mood + status);
+			
+			Connection conn = getConnection();
+			PreparedStatement ps = null;
+			
+			try {
+				
+				ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_PRESENCE, new Object[] {userJID});
+				
+				ps.executeUpdate();
+				
+			}catch (SQLException e) {
+				   
+					LOGGER.warning("Failed to Update the Presence of the user and mood and status");
+					throw new DbException("Failed to Update the Presence of the user and mood and status", e); 
+					
+		       }  finally {
+		    	   SQLHelper.closeStatement(ps);
+		   	       SQLHelper.closeConnection(conn);
+			}
+		
+	}
+	
+	@Override
+	public void updatePresence(String userJID, PresenceType presence) throws DbException {
+		LOGGER.info("Checking the presence of the user  :" + userJID + presence );
+		
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		
+		try {
+			
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_PRESENCE, new Object[] {userJID});
+			
+			ps.executeUpdate();
+			
+		}catch (SQLException e) {
+			   
+				LOGGER.warning("Failed to Update the Presence of the user ");
+				throw new DbException("Failed to Update the Presence of the user ", e); 
+				
+	       }  finally {
+	    	   SQLHelper.closeStatement(ps);
+	   	       SQLHelper.closeConnection(conn);
+		}
+	
+		
+	}
+	
+	@Override
+	public void addOrUpdatePresence(String userJID, PresenceType presence, String mood, String status)
+			throws DbException {
+          LOGGER.info("Add or Update the Presence of the user ,modd and status :" + userJID + presence + mood + status );
+		
+		Connection conn = getConnection();
+		
+		try {
+			
+			long Count = SQLHelper.queryInt(conn, SQLQuery.FETCH_PRESENCE_COUNT,new Object[] {userJID});
+			
+			if (Count == 0) {
+				addPresence(userJID, presence, mood, status);
+
+			}
+			else {
+				updatePresence(userJID, presence, mood, status);
+			}
+			
+		} finally {
+			SQLHelper.closeConnection(conn);
+		}
+		
+	}
+	
+	@Override
+	public void addOrUpdatePresence(String userJID, PresenceType presence) throws DbException {
+		 LOGGER.info("Add or Update the Presence of the user :" + userJID + presence );
+			
+			Connection conn = getConnection();
+			
+			try {
+				
+				long Count = SQLHelper.queryInt(conn, SQLQuery.FETCH_PRESENCE_COUNT,new Object[] {userJID});
+				
+				if (Count == 0) {
+					addPresence(userJID, presence, null, null);
+
+				}
+				else {
+					updatePresence(userJID, presence);
+				}
+				
+			} finally {
+				SQLHelper.closeConnection(conn);
+			}
+	}
+	
+	@Override
+	public UserPresence getPresenceDetails(String userJID) throws DbException {
+         LOGGER.info("Getting Presence detials of the user : " + userJID);
+		
+		Connection conn = getConnection();
+		
+		try {
+			return (UserPresence) SQLHelper.query(conn, SQLQuery.FETCH_PRESENCE_DETAILS,new Object[] {userJID},
+					new PresenceRowMapper());
+					
+		} finally {
+			  SQLHelper.closeConnection(conn);
+		}
+	
+	}
+	
+	
+	@Override
+	public void deleteUserPresence(String userJID) throws DbException {
+         LOGGER.info("Deleting the Presence of the user :" + userJID);       
+		
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		
+		try {
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_DELETE_USER_PRESENE,new Object[] {userJID});
+			
+			ps.executeUpdate();
+			
+		}catch (SQLException e) {
+			   
+				LOGGER.warning("Failed to Delete User Presence");
+				throw new DbException("Failed to Delete User Presence", e); 
+				
+	       } finally {
+	    	   SQLHelper.closeStatement(ps);
+	   	       SQLHelper.closeConnection(conn);
+		}
+		
+	}
+	
+	@Override
+	public void addOrUpdateUserProfileData(UserProfileData userProfileData) throws DbException {
+         LOGGER.info("Getting Presence detials of the user : " + userJID);
+		
+		Connection conn = getConnection();
+		
+		try {
+			long Count = SQLHelper.queryInt(conn, SQLQuery.FETCH_USER_PROFILE_COUNT,new Object[] {userProfileData.getJabberId().getBareJID()});
+					
+			if (Count == 0) {
+				addUserProfile(userProfileData);
+
+			} else {
+				updateUserProfile(userProfileData);
+			}
+			
+		} finally {
+			  SQLHelper.closeConnection(conn);
+		}
+		
+	}
+	
+	
 
 }
