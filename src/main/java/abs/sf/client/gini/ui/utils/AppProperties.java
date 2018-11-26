@@ -1,12 +1,11 @@
 package abs.sf.client.gini.ui.utils;
 
-import java.io.IOException;
-
 import abs.ixi.client.util.StringUtils;
+import abs.sf.client.gini.exception.StringflowErrorException;
 import abs.sf.client.gini.utils.SFProperties;
 
 public class AppProperties {
-	private static final String GINI_APP_PROPERTIES = "gini_app.properties";
+	private static final String APP_PROPERTIES_RESOURCE = "conf/app.properties";
 
 	private SFProperties properties;
 	private static AppProperties instance;
@@ -14,23 +13,21 @@ public class AppProperties {
 	/**
 	 * Restricting access to local
 	 * 
-	 * @throws IOException
+	 * @throws StringflowErrorException
+	 * 
 	 */
-	private AppProperties() throws IOException {
-		this.properties = new SFProperties(GINI_APP_PROPERTIES);
+	private AppProperties() throws StringflowErrorException {
+		this.properties = new SFProperties(APP_PROPERTIES_RESOURCE);
 	}
 
 	/**
 	 * Returns the singleton instance of {@code GINIAppProperties}
+	 * 
+	 * @throws StringflowErrorException
 	 */
-	public static AppProperties getInstance() {
+	public static AppProperties getInstance() throws StringflowErrorException {
 		if (instance == null) {
-			try {
-				instance = new AppProperties();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			instance = new AppProperties();
 		}
 
 		return instance;
@@ -49,7 +46,6 @@ public class AppProperties {
 	 */
 	public void clear() {
 		this.properties.getEditor().clear().apply();
-		;
 	}
 
 	public void setUsername(String val) {
@@ -99,5 +95,10 @@ public class AppProperties {
 	public String getApplicationName() {
 		return this.properties.getProperty(AppPropertiesName.APPLICATION_NAME,
 				AppPropertiesName.APPLICATION_DEFAULT_NAME);
+	}
+
+	public static void main(String args[]) {
+		System.out.println(getInstance().getXMPPServerIP());
+
 	}
 }

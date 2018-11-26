@@ -14,7 +14,6 @@ import com.messages.MessageType;
 import com.messages.Status;
 
 import abs.sf.client.gini.ui.controller.ChatController;
-import abs.sf.client.gini.ui.controller.LoginController;
 
 public class Listener implements Runnable {
 	//private static final Logger logger = LoggerFactory.getLogger(Listener.class);
@@ -42,13 +41,13 @@ public class Listener implements Runnable {
 	public void run() {
 		try {
 			socket = new Socket(hostname, port);
-			LoginController.getInstance().showScene();
+		//	LoginController.getInstance().showScene();
 			outputStream = socket.getOutputStream();
 			oos = new ObjectOutputStream(outputStream);
 			is = socket.getInputStream();
 			input = new ObjectInputStream(is);
 		} catch (IOException e) {
-			LoginController.getInstance().showErrorDialog("Could not connect to server");
+		//	LoginController.getInstance().showErrorDialog("Could not connect to server");
 		//	logger.error("Could not Connect");
 		}
 		//logger.info("Connection accepted " + socket.getInetAddress() + ":" + socket.getPort());

@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import abs.ixi.client.core.Callback;
+import abs.ixi.client.core.Platform;
 import abs.ixi.client.io.StreamNegotiator;
 import abs.ixi.client.util.StringUtils;
 import abs.sf.client.gini.managers.AndroidUserManager;
@@ -13,12 +14,10 @@ import abs.sf.client.gini.ui.utils.AppProperties;
 import abs.sf.client.gini.ui.utils.JFXUtils;
 import abs.sf.client.gini.ui.utils.ResourceLoader;
 import abs.sf.client.gini.utils.SDKLoader;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -32,30 +31,27 @@ public class LoginController implements Initializable {
 	private PasswordField passwordField;
 
 	@FXML
-	public TextField hostnameTextfield;
-
-	@FXML
-	private TextField portTextfield;
-
-	@FXML
 	private BorderPane borderPane;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		SDKLoader.loadSDK(AppProperties.getInstance().getXMPPServerIP(),
-				AppProperties.getInstance().getXMPPServerPort(), AppProperties.getInstance().getMediaServerIP(),
-				AppProperties.getInstance().getMediaServerPort());
+		try {
+			SDKLoader.loadSDK(AppProperties.getInstance().getXMPPServerIP(),
+					AppProperties.getInstance().getXMPPServerPort(), AppProperties.getInstance().getMediaServerIP(),
+					AppProperties.getInstance().getMediaServerPort());
 
-		if (AppProperties.getInstance().isPreviouslyLoggedin()) {
-			Parent root = ResourceLoader.getInstance().loadChatController();
-			Scene mainScene = new Scene(root);
-			mainScene.setRoot(root);
-
-			Launcher.getPrimaryStage().setScene(mainScene);
-
-			Launcher.getPrimaryStage().show();
+			if (AppProperties.getInstance().isPreviouslyLoggedin()) {
+				showChatView();
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
+	}
+	
+	public void closeSystem() {
+		
 	}
 
 	private void showChatView() {
@@ -67,7 +63,7 @@ public class LoginController implements Initializable {
 			Launcher.getPrimaryStage().show();
 
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 	}
 
@@ -90,6 +86,15 @@ public class LoginController implements Initializable {
 								AppProperties.getInstance().setUsername(userName);
 								AppProperties.getInstance().setPassword(password);
 								AppProperties.getInstance().setLoginStatus(true);
+								
+								javafx.application.Platform.runLater(new Runnable() {
+									
+									@Override
+									public void run() {
+										showChatView();
+										
+									}
+								});
 
 							} else {
 								final String failureMesssage;
@@ -109,7 +114,7 @@ public class LoginController implements Initializable {
 
 						@Override
 						public void onFailure(Exception e) {
-							JFXUtils.showAlert(e.getMessage(), AlertType.WARNING);
+							JFXUtils.showAlert("Exception", AlertType.WARNING);
 						}
 					});
 		}
@@ -127,43 +132,23 @@ public class LoginController implements Initializable {
 
 		return true;
 	}
+	
 
-	// public void showScene() throws IOException {
-	// Platform.runLater(() -> {
-	// Stage stage = (Stage) hostnameTextfield.getScene().getWindow();
-	// stage.setResizable(true);
-	// stage.setWidth(1040);
-	// stage.setHeight(620);
-	//
-	// stage.setOnCloseRequest((WindowEvent e) -> {
-	// Platform.exit();
-	// System.exit(0);
-	// });
-	// stage.setScene(this.scene);
-	// stage.setMinWidth(800);
-	// stage.setMinHeight(300);
-	// ResizeHelper.addResizeListener(stage);
-	// stage.centerOnScreen();
-	// con.setUsernameLabel(usernameTextfield.getText());
-	// });
-	//
-	// }
+    protected void loginBackground() {
 
-	/* Terminates Application */
-	public void closeSystem() {
-		Platform.exit();
-		System.exit(0);
-	}
+        if (AppProperties.getInstance().isPreviouslyLoggedin()) {
 
-	/* This displays an alert message to the user */
-	public void showErrorDialog(String message) {
-		Platform.runLater(() -> {
-			Alert alert = new Alert(Alert.AlertType.WARNING);
-			alert.setTitle("Warning!");
-			alert.setHeaderText(message);
-			alert.setContentText("Please check for firewall issues and check if the server is running.");
-			alert.showAndWait();
-		});
-	}
+            if (!Platform.getInstance().getLoginStatus()) {
+                System.out.println("login in background");
+                
+                Platform.getInstance().getUserManager().loginInBackground(AppProperties.getInstance().getUsername(),
+                        AppProperties.getInstance().getPassword(), AppProperties.getInstance().getDomainName());
+
+            } else {
+                System.out.println("Already logged in");
+            }
+
+        } 
+    }
 
 }

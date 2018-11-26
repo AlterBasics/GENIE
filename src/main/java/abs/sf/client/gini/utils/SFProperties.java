@@ -6,28 +6,40 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import abs.ixi.client.util.TaskExecutor;
+import abs.sf.client.gini.exception.StringflowErrorException;
 
 /**
  * Wrapper around {@link Properties}. For proper handling of properties
  *
  */
 public class SFProperties {
-	private String propertiesFilePath;
-	private Properties properties;
-	protected Editor editor;
+	private static final Logger LOGGER = Logger.getLogger(SFProperties.class.getName());
 
-	public SFProperties(String propertiesFilePath) throws IOException {
-		this.propertiesFilePath = propertiesFilePath;
-		this.editor = new Editor();
-		this.loadProperties();
+	private String propertiesResource;
+	private Properties properties;
+	private Editor editor;
+
+	public SFProperties(String propertiesResource) throws StringflowErrorException {
+		try {
+			this.propertiesResource = propertiesResource;
+			this.loadProperties();
+			this.editor = new Editor();
+		} catch (IOException e) {
+			LOGGER.log(Level.INFO, "Failed to load properties from file " + propertiesResource, e);
+			throw new StringflowErrorException("Failed to load properties from file " + propertiesResource, e);
+		}
+
 	}
 
 	private void loadProperties() throws IOException {
 		this.properties = new Properties();
 
-		try (InputStream is = new FileInputStream(propertiesFilePath)) {
+		try (InputStream is = new FileInputStream(
+				getClass().getClassLoader().getResource(this.propertiesResource).getPath())) {
 			this.properties.load(is);
 		}
 	}
@@ -133,10 +145,9 @@ public class SFProperties {
 	}
 
 	public class Editor {
-		private OutputStream output;
 
-		private Editor() throws IOException {
-			this.output = new FileOutputStream(propertiesFilePath);
+		private Editor() {
+
 		}
 
 		/**
@@ -237,10 +248,19 @@ public class SFProperties {
 		 * It starts an asynchronous commit to disk and you will be notified for
 		 * any failures.
 		 * 
-		 * @throws IOException
+		 * @throws StringflowErrorException
 		 */
-		public void commit() throws IOException {
-			properties.store(this.output, null);
+		public void commit() throws StringflowErrorException {
+			try (OutputStream output = new FileOutputStream(
+					getClass().getClassLoader().getResource(propertiesResource).getPath())) {
+
+				properties.store(output, null);
+
+			} catch (IOException e) {
+				LOGGER.log(Level.INFO, "Failed to save properties in property file : " + propertiesResource, e);
+				throw new StringflowErrorException("Failed to save properties in property file : " + propertiesResource,
+						e);
+			}
 		}
 
 		/**
@@ -254,8 +274,8 @@ public class SFProperties {
 
 					commit();
 
-				} catch (IOException e) {
-					// swallow exception
+				} catch (StringflowErrorException e) {
+					LOGGER.log(Level.INFO, "Failed to save properties in property file : " + propertiesResource, e);
 				}
 			});
 

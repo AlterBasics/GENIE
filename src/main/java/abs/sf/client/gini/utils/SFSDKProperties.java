@@ -1,14 +1,14 @@
 package abs.sf.client.gini.utils;
 
-import java.io.IOException;
-
 import abs.ixi.client.PushNotificationService;
 import abs.ixi.client.core.Platform;
 import abs.ixi.client.util.StringUtils;
+import abs.sf.client.gini.exception.StringflowErrorException;
 import abs.sf.client.gini.managers.AndroidChatManager;
 
 public class SFSDKProperties {
-	public static final String SDK_PROPERTIES_FILE = "sf_android.properties";
+	public static final String SDK_PROPERTIES_RESOURCE = "conf/sf_sdk.properties";
+
 	public static final String ROSTER_VERSION = "roster_version";
 	public static final String DEVIICE_TOKEN = "device_token";
 	public static final String NOTIFICATION_SERVICE = "notification_service";
@@ -24,23 +24,20 @@ public class SFSDKProperties {
 	/**
 	 * Restricting access to local
 	 * 
-	 * @throws IOException
+	 * @throws StringflowErrorException
 	 */
-	private SFSDKProperties() throws IOException {
-		this.sfProperties = new SFProperties(SDK_PROPERTIES_FILE);
+	private SFSDKProperties() throws StringflowErrorException {
+		this.sfProperties = new SFProperties(SDK_PROPERTIES_RESOURCE);
 	}
 
 	/**
 	 * Returns the singleton instance of {@code SFSDKProperties}
+	 * 
+	 * @throws StringflowErrorException
 	 */
-	public static SFSDKProperties getInstance() {
+	public static SFSDKProperties getInstance() throws StringflowErrorException {
 		if (instance == null) {
-			try {
-				instance = new SFSDKProperties();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			instance = new SFSDKProperties();
 		}
 
 		return instance;
