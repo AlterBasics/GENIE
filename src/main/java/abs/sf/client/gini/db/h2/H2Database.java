@@ -11,7 +11,9 @@ import java.util.logging.Logger;
 import abs.ixi.client.core.InitializationErrorException;
 import abs.ixi.client.util.DateUtils;
 import abs.ixi.client.util.StringUtils;
+import abs.ixi.client.xmpp.JID;
 import abs.ixi.client.xmpp.packet.ChatRoom;
+import abs.ixi.client.xmpp.packet.ChatRoom.ChatRoomMember;
 import abs.ixi.client.xmpp.packet.Presence.PresenceType;
 import abs.ixi.client.xmpp.packet.Roster.RosterItem;
 import abs.sf.client.gini.db.Database;
@@ -758,6 +760,92 @@ public class H2Database implements Database {
 			SQLHelper.closeStatement(ps);
 			SQLHelper.closeConnection(conn);
 		}
+	}
+
+	@Override
+	public String getChatRoomSubject(String roomJID) throws DbException {
+		LOGGER.info("Getting Chat Room Subject  : " + roomJID);
+
+		Connection conn = this.getConnection();
+
+		try {
+
+			return SQLHelper.queryString(conn, SQLQuery.FETCH_CHAT_ROOM_SUBJECT, new Object[] { roomJID });
+
+		} finally {
+			SQLHelper.closeConnection(conn);
+		}
+	}
+	
+	@Override
+	public String getChatRoomMemberJID(String roomJID, String memberNickName) throws DbException {
+		LOGGER.info("Getting Chat Room Member Room JID : " + roomJID + memberNickName);
+		
+		Connection conn = this.getConnection();
+		
+		try {
+			
+			return SQLHelper.queryString(conn, SQLQuery.FETCH_ROOM_MEMBER_JID, new Object[] {roomJID,memberNickName});
+			
+		}finally {
+			SQLHelper.closeConnection(conn);
+		}
+	}
+	
+	@Override
+	public boolean isChatRoomMember(JID roomJID, JID memberJID) throws DbException {
+		LOGGER.info("Checking member is Chat Room Member or not :" + roomJID + memberJID);
+		
+		Connection conn = getConnection();
+		
+		try {
+			
+			int Count = SQLHelper.queryInt(conn, SQLQuery.FETCH_CHAT_ROOM_MEMBER_COUNT,new Object[] {roomJID,memberJID});
+			
+			return Count == 1;
+		} finally {
+			SQLHelper.closeConnection(conn);
+		}
+		
+	}
+	
+	@Override
+	public void addOrUpdateChatRoomMember(ChatRoomMember member) throws DbException {
+		LOGGER.info("Add or Update ChatRoomMember :" + member);
+		
+		Connection conn = getConnection();
+		
+		try {
+			
+			int Count = SQLHelper.queryInt(conn, SQLQuery.FETCH_CHAT_ROOM_MEMBER_COUNT,new Object[] {member.getUserJID().getBareJID(),member.getRoomJID().getBareJID()});
+			
+			if (Count == 0) {
+				addChatRoomMember(member);
+			}
+			else {
+				updateChatRoomMember(member);
+			}
+			
+		} finally {
+			SQLHelper.closeConnection(conn);
+		}
+	}
+	
+	@Override
+	public void addChatRoomMember(ChatRoomMember member) throws DbException {
+		LOGGER.info("Add ChatRoomMember :" + member );
+		 
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		
+		try {
+			
+			ps = 
+			
+		} finally {
+			// TODO: handle finally clause
+		}
+		
 	}
 
 }

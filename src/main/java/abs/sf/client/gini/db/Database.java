@@ -251,5 +251,34 @@ public interface Database extends Initializable {
 	 * 
 	 */
 	void updateChatRoomSubject(String roomJID, String subject) throws DbException;
-
+	
+	/**
+	 * Getting Chat room subject
+	 * @param roomJID
+	 */
+	String getChatRoomSubject(String roomJID) throws DbException;
+	
+	/**
+	 * Getting Chat Room Subject
+	 * @param roomJID,memberNickName
+	 */
+	String getChatRoomMemberJID(String roomJID, String memberNickName) throws DbException;
+	
+	/**
+	 * Check Member is ChatRoom Member or not 
+	 * @param roomJID , memberJID
+	 */
+	boolean isChatRoomMember(JID roomJID, JID memberJID) throws DbException;
+	
+	/**
+	 * Add or Update ChatRoomMember 
+	 * @param member
+	 */
+	void addOrUpdateChatRoomMember(ChatRoom.ChatRoomMember member) throws DbException;
+	
+	/**
+	 * Add ChatRoomMember 
+	 * @param member
+	 */
+	void addChatRoomMember(ChatRoom.ChatRoomMember member) throws DbException;
 }

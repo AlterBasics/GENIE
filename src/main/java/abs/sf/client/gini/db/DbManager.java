@@ -450,24 +450,26 @@ public final class DbManager {
 		this.database.updateChatRoomSubject(roomJID, subject);
 	}
 
-	public String getChatRoomSubject(String roomJID) {
-		return dbHelper.queryString(SQLQuery.FETCH_CHAT_ROOM_SUBJECT, new String[] { roomJID });
+	public String getChatRoomSubject(String roomJID) throws DbException {
+		return this.database.getChatRoomSubject(roomJID);
+		//return dbHelper.queryString(SQLQuery.FETCH_CHAT_ROOM_SUBJECT, new String[] { roomJID });
 	}
 
-	public String getChatRoomMemberJID(String roomJID, String memberNickName) {
-		return dbHelper.queryString(SQLQuery.FETCH_ROOM_MEMBER_JID, new String[] { roomJID, memberNickName });
+	public String getChatRoomMemberJID(String roomJID, String memberNickName) throws DbException {
+		return this.database.getChatRoomMemberJID(roomJID,memberNickName);
+		//return dbHelper.queryString(SQLQuery.FETCH_ROOM_MEMBER_JID, new String[] { roomJID, memberNickName });
 	}
 
-	public void deleteChatRoom(ChatRoom chatRoom) {
+	public void deleteChatRoom(ChatRoom chatRoom) throws DbException {
 		deleteChatRoom(chatRoom.getRoomJID().getBareJID());
 	}
 
-	public void deleteChatRoom(String roomJID) {
+	public void deleteChatRoom(String roomJID) throws DbException {
 		deleteRosterItem(roomJID);
 		deleteAllRoomMembers(roomJID);
 	}
 
-	public void addChatRoomMembers(ChatRoom chatRoom) {
+	public void addChatRoomMembers(ChatRoom chatRoom) throws DbException {
 		Set<ChatRoom.ChatRoomMember> chatRoomMembers = chatRoom.getMembers();
 
 		for (ChatRoom.ChatRoomMember member : chatRoomMembers) {
@@ -475,28 +477,32 @@ public final class DbManager {
 		}
 	}
 
-	public boolean isChatRoomMember(JID roomJID, JID memberJID) {
-		long count = dbHelper.queryInt(SQLQuery.FETCH_CHAT_ROOM_MEMBER_COUNT,
-				new String[] { memberJID.getBareJID(), roomJID.getBareJID() });
-
-		return count == 1;
+	public boolean isChatRoomMember(JID roomJID, JID memberJID) throws DbException {
+	return	this.database.isChatRoomMember(roomJID, memberJID);
+//		long count = dbHelper.queryInt(SQLQuery.FETCH_CHAT_ROOM_MEMBER_COUNT,
+//				new String[] { memberJID.getBareJID(), roomJID.getBareJID() });
+//
+//		return count == 1;
 	}
 
-	public void addOrUpdateChatRoomMember(ChatRoom.ChatRoomMember member) {
+	public void addOrUpdateChatRoomMember(ChatRoom.ChatRoomMember member) throws DbException{
 		synchronized (ChatRoomMemberTable.class) {
-			long count = dbHelper.queryInt(SQLQuery.FETCH_CHAT_ROOM_MEMBER_COUNT,
-					new String[] { member.getUserJID().getBareJID(), member.getRoomJID().getBareJID() });
-
-			if (count == 0) {
-				addChatRoomMember(member);
-
-			} else {
-				updateChatRoomMember(member);
-			}
+			
+			this.database.addOrUpdateChatRoomMember(member);
+//			long count = dbHelper.queryInt(SQLQuery.FETCH_CHAT_ROOM_MEMBER_COUNT,
+//					new String[] { member.getUserJID().getBareJID(), member.getRoomJID().getBareJID() });
+//
+//			if (count == 0) {
+//				addChatRoomMember(member);
+//
+//			} else {
+//				updateChatRoomMember(member);
+//			}
 		}
 	}
 
-	public void addChatRoomMember(ChatRoom.ChatRoomMember member) {
+	public void addChatRoomMember(ChatRoom.ChatRoomMember member) throws DbException {
+		this.database.addChatRoomMember(member);
 		ContentValues memberContent = new ContentValues();
 		memberContent.put(ChatRoomMemberTable.COLUMN_MEMBER_JID, member.getUserJID().getBareJID());
 		memberContent.put(ChatRoomMemberTable.COLUMN_MEMBER_NICK_NAME, member.getNickName());
