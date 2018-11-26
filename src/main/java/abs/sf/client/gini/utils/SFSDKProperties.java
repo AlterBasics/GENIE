@@ -1,10 +1,9 @@
 package abs.sf.client.gini.utils;
 
-import java.io.IOException;
-
 import abs.ixi.client.PushNotificationService;
 import abs.ixi.client.core.Platform;
 import abs.ixi.client.util.StringUtils;
+import abs.sf.client.gini.exception.StringflowErrorException;
 import abs.sf.client.gini.managers.AndroidChatManager;
 
 public class SFSDKProperties {
@@ -25,23 +24,20 @@ public class SFSDKProperties {
 	/**
 	 * Restricting access to local
 	 * 
-	 * @throws IOException
+	 * @throws StringflowErrorException
 	 */
-	private SFSDKProperties() throws IOException {
+	private SFSDKProperties() throws StringflowErrorException {
 		this.sfProperties = new SFProperties(SDK_PROPERTIES_RESOURCE);
 	}
 
 	/**
 	 * Returns the singleton instance of {@code SFSDKProperties}
+	 * 
+	 * @throws StringflowErrorException
 	 */
-	public static SFSDKProperties getInstance() {
+	public static SFSDKProperties getInstance() throws StringflowErrorException {
 		if (instance == null) {
-			try {
-				instance = new SFSDKProperties();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			instance = new SFSDKProperties();
 		}
 
 		return instance;

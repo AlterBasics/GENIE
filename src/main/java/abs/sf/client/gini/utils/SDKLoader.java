@@ -1,5 +1,6 @@
 package abs.sf.client.gini.utils;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import abs.ixi.client.ChatManager;
@@ -13,11 +14,13 @@ import abs.ixi.client.net.ConnectionConfig;
 import abs.ixi.client.net.ConnectionManager;
 import abs.ixi.client.net.XMPPConnection;
 import abs.sf.client.gini.db.DbManager;
+import abs.sf.client.gini.db.exception.DbException;
 import abs.sf.client.gini.event.handlers.ChatRoomReceiveHandler;
 import abs.sf.client.gini.event.handlers.RosterReceiveHandler;
 import abs.sf.client.gini.event.handlers.RosterUpdateHandler;
 import abs.sf.client.gini.event.handlers.StreamRestartHandler;
 import abs.sf.client.gini.event.handlers.StreamStartHandler;
+import abs.sf.client.gini.exception.StringflowErrorException;
 import abs.sf.client.gini.managers.AndroidChatManager;
 import abs.sf.client.gini.managers.AndroidPresenceManager;
 import abs.sf.client.gini.managers.AndroidUserManager;
@@ -31,6 +34,7 @@ import abs.sf.client.gini.managers.AndroidUserManager;
  */
 public class SDKLoader {
 	private static final Logger LOGGER = Logger.getLogger(SDKLoader.class.getName());
+
 	private static boolean isSDKLoaded;
 	private static boolean loadingSDK;
 
@@ -138,8 +142,17 @@ public class SDKLoader {
 		Platform.addEventHandler(Event.EventType.MESSAGE_DELIVERED, chatManager.new MessageAckHandler());
 	}
 
-	public static void unloadSdk() {
-		DbManager.getInstance().cleanUpAllData();
+	public static void unloadSdk() throws StringflowErrorException {
+		LOGGER.log(Level.FINE, "Unloading Stringflow Exception");
+		try {
+
+			DbManager.getInstance().cleanUpAllData();
+
+		} catch (DbException e) {
+			LOGGER.log(Level.INFO, "Failed to cleanup all db data during unloading SDK", e);
+			throw new StringflowErrorException("Failed to cleanup all db data during unloading SDK", e);
+		}
+
 		SFSDKProperties.getInstance().setRosterVersion(0);
 		isSDKLoaded = false;
 	}
