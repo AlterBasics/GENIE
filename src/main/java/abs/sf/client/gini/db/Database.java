@@ -255,140 +255,126 @@ public interface Database extends Initializable {
 	 * 
 	 */
 	void updateChatRoomSubject(String roomJID, String subject) throws DbException;
-	
+
 	/**
 	 * Getting Chat room subject
+	 * 
 	 * @param roomJID
 	 */
 	String getChatRoomSubject(String roomJID) throws DbException;
-	
+
 	/**
 	 * Getting Chat Room Subject
+	 * 
 	 * @param roomJID,memberNickName
 	 */
 	String getChatRoomMemberJID(String roomJID, String memberNickName) throws DbException;
-	
+
 	/**
-	 * Check Member is ChatRoom Member or not 
+	 * Check Member is ChatRoom Member or not
+	 * 
 	 * @param roomJID , memberJID
 	 */
 	boolean isChatRoomMember(JID roomJID, JID memberJID) throws DbException;
-	
+
 	/**
-	 * Add or Update ChatRoomMember 
+	 * Add or Update ChatRoomMember
+	 * 
 	 * @param member
 	 */
 	void addOrUpdateChatRoomMember(ChatRoom.ChatRoomMember member) throws DbException;
-	
+
 	/**
-	 * Add ChatRoomMember 
+	 * Add ChatRoomMember
+	 * 
 	 * @param member
 	 */
 	void addChatRoomMember(ChatRoom.ChatRoomMember member) throws DbException;
-	
+
 	/**
 	 * Update ChatRoomMember
+	 * 
 	 * @param member
 	 */
 	void updateChatRoomMember(ChatRoom.ChatRoomMember member) throws DbException;
-	
+
 	/**
-	 *Delete all RoomMember
-	 *@param roomJID
+	 * Delete all RoomMember
+	 * 
+	 * @param roomJID
 	 */
 	void deleteAllRoomMembers(String roomJID) throws DbException;
-	
+
 	/**
-	 * Remove RoomMember
-	 * roomJID, memberJID
+	 * Remove RoomMember roomJID, memberJID
 	 */
-	void removeRoomMember(String roomJID, String memberJID)throws DbException;
-	
+	void removeRoomMember(String roomJID, String memberJID) throws DbException;
+
 	/**
-	 *Getting Room Member Nick Name 
+	 * Getting Room Member Nick Name
+	 * 
 	 * @roomJID,memberJID
 	 */
 	String getRoomMemberNickName(String roomJId, String memberJID) throws DbException;
-	
+
 	/**
-	 * Getting ChatRoom Details
-	 * roomJID
+	 * Getting ChatRoom Details roomJID
 	 */
-	ChatRoom getChatRoomDetails(String roomJID) throws DbException ;
-	
+	ChatRoom getChatRoomDetails(String roomJID) throws DbException;
+
 	/**
-	 * Getting ChatRoom JID
-	 * roomName
+	 * Getting ChatRoom JID roomName
 	 */
 	JID getChatRoomJID(String roomName) throws DbException;
-	
+
 	/**
 	 * Getting List of Chat Room
 	 * 
 	 */
-	 List<ChatRoom> getChatRooms() throws DbException ;
-	 
-	 /**
-	  *Getting ChatRoomMembers   
-	  * @param room
-	  */
-	 Set<ChatRoom.ChatRoomMember> getChatRoomMembers(ChatRoom room) throws DbException;
-	
-	 /**
-	  * Checking the presence of the user and mood ,status,
-	  * @param userJID
-	  */
-	 void addPresence(String userJID, PresenceType presence, String mood, String status) throws DbException;
-	
-	 /**
-	  * Update The Presence, mood ,status of the user 
-	  * userJID
-	  */
-	 void updatePresence(String userJID, PresenceType presence, String mood, String status) throws DbException;
-	 
-	 /**
-	  * Updating the presence of the user
-	  * @param userJID
-	  */
-	 void updatePresence(String userJID, PresenceType presence) throws DbException;
-	 
-	 /**
-	  * Adding or Updating the Presence of the user and mood or status
-	  * userJID
-	  */
-	 void addOrUpdatePresence(String userJID, PresenceType presence, String mood, String status) throws DbException;
-	 
-	 /**
-	  * Adding or Updating the Presence of the user
-	  * @param userJID
-	  * @param presence
-	  * @throws DbException
-	  */
-	  void addOrUpdatePresence(String userJID, PresenceType presence) throws DbException;
-	 
-	  /**
-	   * 
-	   * @param userJID
-	   * @return
-	   * @throws DbException
-	   */
-	   UserPresence getPresenceDetails(String userJID)throws DbException;
-	 
-	   /**
-	    * @param userJID
-	    * @throws DbException
-	    */
-	   void deleteUserPresence(String userJID) throws DbException;
-	 
-	   /**
-	    * @param userProfileData
-	    * @throws DbException
-	    */
-	   void addOrUpdateUserProfileData(UserProfileData userProfileData)  throws DbException;
-	 
-	 
-	 
-	 
-	 
-	 
+	List<ChatRoom> getChatRooms() throws DbException;
+
+	/**
+	 * Getting ChatRoomMembers
+	 * 
+	 * @param room
+	 */
+	Set<ChatRoom.ChatRoomMember> getChatRoomMembers(ChatRoom room) throws DbException;
+
+	/**
+	 * Checking the presence of the user and mood ,status,
+	 * 
+	 * @param userJID
+	 */
+	void addPresence(String userJID, PresenceType presence, String mood, String status) throws DbException;
+
+	/**
+	 * Update The Presence, mood ,status of the user userJID
+	 */
+	void updatePresence(String userJID, PresenceType presence, String mood, String status) throws DbException;
+
+	/**
+	 * Adding or Updating the Presence of the user and mood or status userJID
+	 */
+	void addOrUpdatePresence(String userJID, PresenceType presence, String mood, String status) throws DbException;
+
+	/**
+	 * 
+	 * @param userJID
+	 * @return
+	 * @throws DbException
+	 */
+	UserPresence getPresenceDetails(String userJID) throws DbException;
+
+	/**
+	 * @param userJID
+	 * @throws DbException
+	 */
+	void deleteUserPresence(String userJID) throws DbException;
+
+	/**
+	 * @param userProfileData
+	 * @throws DbException
+	 */
+	void addOrUpdateUserProfileData(UserProfileData userProfileData) throws DbException;
+
 }

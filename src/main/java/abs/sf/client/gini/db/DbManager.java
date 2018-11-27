@@ -452,12 +452,10 @@ public final class DbManager {
 
 	public String getChatRoomSubject(String roomJID) throws DbException {
 		return this.database.getChatRoomSubject(roomJID);
-		//return dbHelper.queryString(SQLQuery.FETCH_CHAT_ROOM_SUBJECT, new String[] { roomJID });
 	}
 
 	public String getChatRoomMemberJID(String roomJID, String memberNickName) throws DbException {
-		return this.database.getChatRoomMemberJID(roomJID,memberNickName);
-		//return dbHelper.queryString(SQLQuery.FETCH_ROOM_MEMBER_JID, new String[] { roomJID, memberNickName });
+		return this.database.getChatRoomMemberJID(roomJID, memberNickName);
 	}
 
 	public void deleteChatRoom(ChatRoom chatRoom) throws DbException {
@@ -478,63 +476,24 @@ public final class DbManager {
 	}
 
 	public boolean isChatRoomMember(JID roomJID, JID memberJID) throws DbException {
-	return	this.database.isChatRoomMember(roomJID, memberJID);
-//		long count = dbHelper.queryInt(SQLQuery.FETCH_CHAT_ROOM_MEMBER_COUNT,
-//				new String[] { memberJID.getBareJID(), roomJID.getBareJID() });
-//
-//		return count == 1;
+		return this.database.isChatRoomMember(roomJID, memberJID);
 	}
 
-	public void addOrUpdateChatRoomMember(ChatRoom.ChatRoomMember member) throws DbException{
-		synchronized (ChatRoomMemberTable.class) {
-			
-			this.database.addOrUpdateChatRoomMember(member);
-//			long count = dbHelper.queryInt(SQLQuery.FETCH_CHAT_ROOM_MEMBER_COUNT,
-//					new String[] { member.getUserJID().getBareJID(), member.getRoomJID().getBareJID() });
-//
-//			if (count == 0) {
-//				addChatRoomMember(member);
-//
-//			} else {
-//				updateChatRoomMember(member);
-//			}
-		}
+	public void addOrUpdateChatRoomMember(ChatRoom.ChatRoomMember member) throws DbException {
+		this.database.addOrUpdateChatRoomMember(member);
 	}
 
 	public void addChatRoomMember(ChatRoom.ChatRoomMember member) throws DbException {
 		this.database.addChatRoomMember(member);
-//		ContentValues memberContent = new ContentValues();
-//		memberContent.put(ChatRoomMemberTable.COLUMN_MEMBER_JID, member.getUserJID().getBareJID());
-//		memberContent.put(ChatRoomMemberTable.COLUMN_MEMBER_NICK_NAME, member.getNickName());
-//		memberContent.put(ChatRoomMemberTable.COLUMN_AFFILATION, member.getAffiliation().val());
-//		memberContent.put(ChatRoomMemberTable.COLUMN_ROLE, member.getRole().val());
-//		memberContent.put(ChatRoomMemberTable.COLUMN_ROOM_JID, member.getRoomJID().getBareJID());
-//
-//		this.dbHelper.insert(ChatRoomMemberTable.TABLE_NAME, memberContent);
+
 	}
 
 	public void updateChatRoomMember(ChatRoom.ChatRoomMember member) throws DbException {
 		this.database.updateChatRoomMember(member);
-		
-//		ContentValues memberContent = new ContentValues();
-//
-//		if (member.getNickName() != null)
-//			memberContent.put(ChatRoomMemberTable.COLUMN_MEMBER_NICK_NAME, member.getNickName());
-//
-//		if (member.getAffiliation() != null)
-//			memberContent.put(ChatRoomMemberTable.COLUMN_AFFILATION, member.getAffiliation().val());
-//
-//		if (member.getRole() != null)
-//			memberContent.put(ChatRoomMemberTable.COLUMN_ROLE, member.getRole().val());
-//
-//		this.dbHelper.update(ChatRoomMemberTable.TABLE_NAME, memberContent,
-//				ChatRoomMemberTable.COLUMN_MEMBER_JID + " = ? AND " + ChatRoomMemberTable.COLUMN_ROOM_JID + " = ? ",
-//				new String[] { member.getUserJID().getBareJID(), member.getRoomJID().getBareJID() });
 	}
 
-	public void deleteAllRoomMembers(String roomJID) throws DbException{
+	public void deleteAllRoomMembers(String roomJID) throws DbException {
 		this.database.deleteAllRoomMembers(roomJID);
-//		dbHelper.delete(ChatRoomMemberTable.TABLE_NAME, ChatRoomMemberTable.COLUMN_ROOM_JID, roomJID);
 	}
 
 	public void removeRoomMember(ChatRoom.ChatRoomMember member) throws DbException {
@@ -542,11 +501,10 @@ public final class DbManager {
 	}
 
 	public void removeRoomMember(String roomJID, String memberJID) throws DbException {
-		this.database.removeRoomMember(roomJID,memberJID);
-		//dbHelper.query(SQLQuery.DELETE_ROOM_MEMBER, new String[] { memberJID, roomJID }, null);
+		this.database.removeRoomMember(roomJID, memberJID);
 	}
 
-	public String getChatRoomMemberName(String roomJId, String memberJID) throws DbException{
+	public String getChatRoomMemberName(String roomJId, String memberJID) throws DbException {
 		String memberName = getRosterItemName(memberJID);
 
 		if (StringUtils.isNullOrEmpty(memberName)) {
@@ -566,150 +524,69 @@ public final class DbManager {
 		return memberName;
 	}
 
-	private String getRoomMemberNickName(String roomJId, String memberJID) throws DbException {
-		return this.database.getRoomMemberNickName(roomJId,memberJID);
-		//return dbHelper.queryString(SQLQuery.FETCH_ROOM_MEMBER_NICK_NAME, new String[] { memberJID, roomJId });
+	public String getRoomMemberNickName(String roomJId, String memberJID) throws DbException {
+		return this.database.getRoomMemberNickName(roomJId, memberJID);
 	}
 
 	public ChatRoom getChatRoomDetails(String roomJID) throws DbException {
-	   return this.database.getChatRoomDetails(roomJID);
-		
-//		ChatRoom room = dbHelper.queryForObject(SQLQuery.FETCH_CHAT_ROOM_DETAILS, new String[] { roomJID },
-//				new ChatRoomRowMapper());
-//
-//		if (room != null) {
-//			room.setMembers(getChatRoomMembers(room));
-//		}
-//
-//		return room;
+		return this.database.getChatRoomDetails(roomJID);
+
 	}
 
-	public JID getChatRoomJID(String roomName) throws DbException{
-		return this.getChatRoomJID(roomName);
-//		String roomJID = dbHelper.queryString(SQLQuery.FETCH_CHAT_ROOM_JID, new String[] { roomName });
-//
-//		if (!StringUtils.isNullOrEmpty(roomJID)) {
-//			try {
-//				return new JID(roomJID);
-//
-//			} catch (Exception e) {
-//				// Swallow Exception
-//			}
-//		}
-//
-//		return null;
+	public JID getChatRoomJID(String roomName) throws DbException {
+		return this.database.getChatRoomJID(roomName);
 	}
 
 	public List<ChatRoom> getChatRooms() throws DbException {
 		return this.database.getChatRooms();
-//		List<ChatRoom> rooms = dbHelper.query(SQLQuery.FETCH_CHAT_ROOMS, new ChatRoomRowMapper());
-//
-//		for (ChatRoom room : rooms) {
-//			room.setMembers(getChatRoomMembers(room));
-//		}
-//
-//		return rooms;
 	}
 
-	public Set<ChatRoom.ChatRoomMember> getChatRoomMembers(ChatRoom room) throws DbException{
+	public Set<ChatRoom.ChatRoomMember> getChatRoomMembers(ChatRoom room) throws DbException {
 		return this.database.getChatRoomMembers(room);
-		
-//		List<ChatRoom.ChatRoomMember> members = dbHelper.query(SQLQuery.FETCH_CHAT_ROOM_MEMBERS,
-//				new String[] { room.getRoomJID().getBareJID() }, new ChatRoomMemberRowMapper(room));
-//
-		//return new HashSet<>(members);
 	}
 
 	public void addPresence(String userJID, PresenceType presence, String mood, String status) throws DbException {
-		this.database.addPresence(userJID,presence,mood,status);
-		
-//		ContentValues contentValues = new ContentValues();
-//		contentValues.put(PresenceTable.COLUMN_JID, userJID);
-//		contentValues.put(PresenceTable.COLUMN_PRESNCE, presence.val());
-//		contentValues.put(PresenceTable.COLUMN_MOOD, mood);
-//		contentValues.put(PresenceTable.COLUMN_STATUS, status);
-//		contentValues.put(PresenceTable.COLUMN_LAST_UPDATE, DateUtils.currentTimeInMiles());
-//
-//		dbHelper.insert(PresenceTable.TABLE_NAME, contentValues);
+		this.database.addPresence(userJID, presence, mood, status);
 	}
 
 	public void updatePresence(String userJID, PresenceType presence, String mood, String status) throws DbException {
-       this.database.updatePresence(userJID,presence,mood,status);
-		
-		//ContentValues contentValues = new ContentValues();
-//		contentValues.put(PresenceTable.COLUMN_JID, userJID);
-//		contentValues.put(PresenceTable.COLUMN_PRESNCE, presence.val());
-//		contentValues.put(PresenceTable.COLUMN_MOOD, mood);
-//		contentValues.put(PresenceTable.COLUMN_STATUS, status);
-//		contentValues.put(PresenceTable.COLUMN_LAST_UPDATE, DateUtils.currentTimeInMiles());
-//
-//		dbHelper.update(PresenceTable.TABLE_NAME, contentValues, PresenceTable.COLUMN_JID + " = ?",
-//				new String[] { userJID });
+		this.database.updatePresence(userJID, presence, mood, status);
 	}
 
 	public void updatePresence(String userJID, PresenceType presence) throws DbException {
-		this.database.updatePresence(userJID,presence);
-//		ContentValues contentValues = new ContentValues();
-//		contentValues.put(PresenceTable.COLUMN_JID, userJID);
-//		contentValues.put(PresenceTable.COLUMN_PRESNCE, presence.val());
-//		contentValues.put(PresenceTable.COLUMN_LAST_UPDATE, DateUtils.currentTimeInMiles());
-//
-//		dbHelper.update(PresenceTable.TABLE_NAME, contentValues, PresenceTable.COLUMN_JID + " = ?",
-//				new String[] { userJID });
+		this.database.updatePresence(userJID, presence, null, null);
 	}
 
-	public void addOrUpdatePresence(String userJID, PresenceType presence, String mood, String status) throws DbException {
-		synchronized (PresenceTable.class) {
-			this.database.addOrUpdatePresence(userJID,presence,mood,status);
-//			long count = dbHelper.queryInt(SQLQuery.FETCH_PRESENCE_COUNT, new String[] { userJID });
-//
-//			if (count == 0) {
-//				addPresence(userJID, presence, mood, status);
-//
-//			} else {
-//				updatePresence(userJID, presence, mood, status);
-//			}
-		}
+	public void addOrUpdatePresence(String userJID, PresenceType presence, String mood, String status)
+			throws DbException {
+		this.database.addOrUpdatePresence(userJID, presence, mood, status);
 	}
 
 	public void addOrUpdatePresence(String userJID, PresenceType presence) throws DbException {
-		synchronized (PresenceTable.class) {
-			this.database.addOrUpdatePresence(userJID,presence);
-//			long count = dbHelper.queryInt(SQLQuery.FETCH_PRESENCE_COUNT, new String[] { userJID });
-//
-//			if (count == 0) {
-//				addPresence(userJID, presence, null, null);
-//
-//			} else {
-//				updatePresence(userJID, presence);
-//			}
-		}
+		this.database.addOrUpdatePresence(userJID, presence, null, null);
 	}
 
-	public UserPresence getPresenceDetails(String userJID)throws DbException{
+	public UserPresence getPresenceDetails(String userJID) throws DbException {
 		return this.database.getPresenceDetails(userJID);
-//		return dbHelper.queryForObject(SQLQuery.FETCH_PRESENCE_DETAILS, new String[] { userJID },
-//				new PresenceRowMapper());
 	}
 
-	public void deleteUserPresence(String userJID) throws DbException{
+	public void deleteUserPresence(String userJID) throws DbException {
 		this.database.deleteUserPresence(userJID);
-		//dbHelper.delete(PresenceTable.TABLE_NAME, PresenceTable.COLUMN_JID, userJID);
 	}
 
-	public void addOrUpdateUserProfileData(UserProfileData userProfileData)  throws DbException{
+	public void addOrUpdateUserProfileData(UserProfileData userProfileData) throws DbException {
 		synchronized (UserProfileTable.class) {
-			
+
 			this.database.addOrUpdateUserProfileData(userProfileData);
-//			long count = dbHelper.queryInt(SQLQuery.FETCH_USER_PROFILE_COUNT,
-//					new String[] { userProfileData.getJabberId().getBareJID() });
-//
-//			if (count == 0) {
-//				addUserProfile(userProfileData);
-//
-//			} else {
-//				updateUserProfile(userProfileData);
-//			}
+			// long count = dbHelper.queryInt(SQLQuery.FETCH_USER_PROFILE_COUNT,
+			// new String[] { userProfileData.getJabberId().getBareJID() });
+			//
+			// if (count == 0) {
+			// addUserProfile(userProfileData);
+			//
+			// } else {
+			// updateUserProfile(userProfileData);
+			// }
 		}
 	}
 
