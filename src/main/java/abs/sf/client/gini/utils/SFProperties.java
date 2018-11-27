@@ -30,6 +30,7 @@ public class SFProperties {
 			this.editor = new Editor();
 		} catch (IOException e) {
 			LOGGER.log(Level.INFO, "Failed to load properties from file " + propertiesResource, e);
+			e.printStackTrace();
 			throw new StringflowErrorException("Failed to load properties from file " + propertiesResource, e);
 		}
 
@@ -258,6 +259,7 @@ public class SFProperties {
 
 			} catch (IOException e) {
 				LOGGER.log(Level.INFO, "Failed to save properties in property file : " + propertiesResource, e);
+				e.printStackTrace();
 				throw new StringflowErrorException("Failed to save properties in property file : " + propertiesResource,
 						e);
 			}

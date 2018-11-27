@@ -46,8 +46,9 @@ public class SDKLoader {
 	 * @param xmppServerPort xmpp server port
 	 * @param mediaServerIP media server ip address
 	 * @param mediaServerPort media server port
+	 * @throws StringflowErrorException 
 	 */
-	public static void loadSDK(String xmppServerIP, int xmppServerPort, String mediaServerIP, int mediaServerPort) {
+	public static void loadSDK(String xmppServerIP, int xmppServerPort, String mediaServerIP, int mediaServerPort) throws StringflowErrorException {
 		if (isSDKLoaded || loadingSDK) {
 			while (loadingSDK)
 				;
@@ -70,8 +71,9 @@ public class SDKLoader {
 	 * @param xmppConnectionconfig
 	 * @param mimeConnectionconfig
 	 * @param provider
+	 * @throws StringflowErrorException 
 	 */
-	public static void loadSDK(ConnectionConfig xmppConnectionconfig, ConnectionConfig mimeConnectionconfig) {
+	public static void loadSDK(ConnectionConfig xmppConnectionconfig, ConnectionConfig mimeConnectionconfig) throws StringflowErrorException {
 		if (isSDKLoaded || loadingSDK) {
 			while (loadingSDK)
 				;
@@ -96,7 +98,7 @@ public class SDKLoader {
 		loadingSDK = false;
 	}
 
-	private static void initializeSDKObjects(XMPPConnection connection) {
+	private static void initializeSDKObjects(XMPPConnection connection) throws StringflowErrorException {
 		setupUndeliveredStanzaManager();
 
 		XMPPStreamManager streamManager = new XMPPStreamManager(connection);
@@ -150,6 +152,7 @@ public class SDKLoader {
 
 		} catch (DbException e) {
 			LOGGER.log(Level.INFO, "Failed to cleanup all db data during unloading SDK", e);
+			e.printStackTrace();
 			throw new StringflowErrorException("Failed to cleanup all db data during unloading SDK", e);
 		}
 
