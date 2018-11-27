@@ -35,6 +35,7 @@ import abs.ixi.client.xmpp.packet.MessageMedia;
 import abs.ixi.client.xmpp.packet.MessageSubject;
 import abs.ixi.client.xmpp.packet.MessageThread;
 import abs.sf.client.gini.db.DbManager;
+import abs.sf.client.gini.exception.StringflowErrorException;
 import abs.sf.client.gini.messaging.ChatLine;
 import abs.sf.client.gini.messaging.ChatListener;
 import abs.sf.client.gini.messaging.Conversation;
@@ -51,7 +52,7 @@ public class AndroidChatManager extends ChatManager {
 	private boolean isChatStateNotificationEnabled;
 	private boolean isMessageDeliveryReceiptEnabled;
 
-	public AndroidChatManager(XMPPStreamManager streamManager) {
+	public AndroidChatManager(XMPPStreamManager streamManager) throws StringflowErrorException {
 		super(streamManager);
 		this.chatListeners = Collections.synchronizedList(new ArrayList<ChatListener>());
 		this.isChatMarkersEnabled = SFSDKProperties.getInstance().isChatMarkersEnabled();
