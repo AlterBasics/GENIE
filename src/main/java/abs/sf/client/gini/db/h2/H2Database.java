@@ -1233,7 +1233,7 @@ public class H2Database implements Database {
 	}
 
 	@Override
-	public long updateUserProfile(UserProfileData userProfileData) throws DbException {
+	public void updateUserProfile(UserProfileData userProfileData) throws DbException {
 		LOGGER.info("Updating Profile of the user :" + userProfileData);
 
 		Connection conn = getConnection();
