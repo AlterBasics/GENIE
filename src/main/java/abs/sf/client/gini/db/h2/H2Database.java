@@ -13,10 +13,13 @@ import java.util.logging.Logger;
 import com.sun.org.apache.regexp.internal.recompile;
 
 import abs.ixi.client.core.InitializationErrorException;
+import abs.ixi.client.util.CollectionUtils;
 import abs.ixi.client.util.DateUtils;
+import abs.ixi.client.util.ObjectUtils;
 import abs.ixi.client.util.StringUtils;
 import abs.ixi.client.xmpp.JID;
 import abs.ixi.client.xmpp.packet.ChatRoom;
+import abs.ixi.client.xmpp.packet.Stanza;
 import abs.ixi.client.xmpp.packet.UserProfileData;
 import abs.ixi.client.xmpp.packet.ChatRoom.ChatRoomMember;
 import abs.ixi.client.xmpp.packet.Presence.PresenceType;
@@ -27,8 +30,11 @@ import abs.sf.client.gini.db.mapper.ChatLineRowMapper;
 import abs.sf.client.gini.db.mapper.ChatRoomMemberRowMapper;
 import abs.sf.client.gini.db.mapper.ChatRoomRowMapper;
 import abs.sf.client.gini.db.mapper.ConversationRowMapper;
+import abs.sf.client.gini.db.mapper.MediaRowMapper;
 import abs.sf.client.gini.db.mapper.PresenceRowMapper;
 import abs.sf.client.gini.db.mapper.RosterItemRowMapper;
+import abs.sf.client.gini.db.mapper.UndeliverStanzaRowMapper;
+import abs.sf.client.gini.db.mapper.UserProfileRowMapper;
 import abs.sf.client.gini.db.object.ChatArchiveTable;
 import abs.sf.client.gini.db.object.ChatRoomMemberTable;
 import abs.sf.client.gini.db.object.ChatStoreTable;
@@ -42,6 +48,7 @@ import abs.sf.client.gini.db.object.UserProfileTable;
 import abs.sf.client.gini.messaging.ChatLine;
 import abs.sf.client.gini.messaging.ChatLine.MessageStatus;
 import abs.sf.client.gini.messaging.Conversation;
+import abs.sf.client.gini.messaging.MediaContent;
 import abs.sf.client.gini.messaging.UserPresence;
 
 public class H2Database implements Database {
@@ -1195,5 +1202,356 @@ public class H2Database implements Database {
 		}
 
 	}
+	
+	@Override
+	public long addUserProfile(UserProfileData userProfileData) throws DbException {
+		LOGGER.info("Adding Profile of the user :" + userProfileData);
+
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+
+		try {
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_INSERT_USER_PROFILE, 
+					new Object[] { userProfileData.getJabberId().getBareJID(),userProfileData.getFirstName(),
+							        userProfileData.getMiddleName(), userProfileData.getLastName(),
+							         userProfileData.getNickName(),userProfileData.getEmail(),
+							          userProfileData.getPhone(),userProfileData.getGender(),
+							           userProfileData.getBday(),userProfileData.getAddress() == null ? null : userProfileData.getAddress(),
+							             userProfileData.getAvtar(),userProfileData.getDescription()});
+
+			ps.executeUpdate();
+		} catch (SQLException e) {
+
+			LOGGER.warning("Failed to Add Profile of the user ");
+			throw new DbException("Failed to Add Profile of the user", e);
+
+		} finally {
+			SQLHelper.closeStatement(ps);
+			SQLHelper.closeConnection(conn);
+		}
+		
+	}
+	
+	@Override
+	public long updateUserProfile(UserProfileData userProfileData) throws DbException {
+		LOGGER.info("Updating Profile of the user :" + userProfileData);
+
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+
+		try {
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_USER_PROFILE, 
+					new Object[] { userProfileData.getJabberId().getBareJID()});
+
+			ps.executeUpdate();
+		} catch (SQLException e) {
+
+			LOGGER.warning("Failed to Update Profile of the user ");
+			throw new DbException("Failed to Update Profile of the user", e);
+
+		} finally {
+			SQLHelper.closeStatement(ps);
+			SQLHelper.closeConnection(conn);
+		}
+		
+	}
+	
+	@Override
+	public UserProfileData getUserProfileData(String userJID) throws DbException {
+		LOGGER.info("Getting User Profile Data :" + userJID);
+
+		Connection conn = getConnection();
+
+		try {
+
+			UserProfileData userProfileData = SQLHelper.query(conn, SQLQuery.FETCH_USER_PROFILE_DATA, new Obect[] {userJID},
+					new UserProfileRowMapper());
+     
+			return userProfileData;
+		
+		} finally {
+			SQLHelper.closeConnection(conn);
+		}
+	}
+	
+	@Override
+	public byte[] getUserAvatarBytes(String userJID) throws DbException {
+		LOGGER.info("Getting User Avtar: " + userJID);
+
+		Connection conn = getConnection();
+
+		try {
+
+			return SQLHelper.query(conn, SQLQuery.FETCH_USER_PROFILE_AVATAR, new Object[] {userJID},
+					new  RowMapper<byte[]>() );
+     
+			
+		} finally {
+			SQLHelper.closeConnection(conn);
+		}
+	}
+
+	@Override
+	public long storeMedia(String mediaId, byte[] mediaThumb, String mediaPath, String contentType) throws DbException {
+		LOGGER.info("Storing Media : " + mediaId  + mediaThumb + mediaPath + contentType);
+
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+
+		try {
+
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_INSERT_STORE_MEDIA,
+					new Object[] { mediaId, mediaThumb, mediaPath, contentType });
+
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+
+			LOGGER.warning("Failed to Store the Media");
+			throw new DbException("Failed to Store the media", e);
+
+		} finally {
+			SQLHelper.closeStatement(ps);
+			SQLHelper.closeConnection(conn);
+		}
+		return 0;
+
+	}
+	
+	@Override
+	public void updateMediaPath(String mediaId, String mediaPath) throws DbException {
+		LOGGER.info("Updating User Media Path : " + mediaId + mediaPath);
+
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+
+		try {
+
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_MEDIA_PATH,
+					new Object[] { mediaId });
+
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+
+			LOGGER.warning("Failed to Update Media Path");
+			throw new DbException("Failed to Update Media Path", e);
+
+		} finally {
+			SQLHelper.closeStatement(ps);
+			SQLHelper.closeConnection(conn);
+		}
+		
+		
+	}
+	
+	@Override
+	public MediaContent getMediaDetaisByMediaId(String mediaId) throws DbException {
+		LOGGER.info("Getting Media Details by MediaId: " + mediaId);
+
+		Connection conn = getConnection();
+
+		try {
+
+			return (MediaContent) SQLHelper.query(conn, SQLQuery.FETCH_MEDIA_DETAILS_BY_MEDIA_ID,
+					new MediaRowMapper());
+     
+			
+		} finally {
+			SQLHelper.closeConnection(conn);
+		}
+	}
+	
+	@Override
+	public MediaContent getMediaDetaisByMediaUUID(Long uuid) throws DbException {
+		LOGGER.info("Getting Media Details by uuid: " + uuid);
+
+		Connection conn = getConnection();
+
+		try {
+
+			return (MediaContent) SQLHelper.query(conn, SQLQuery.FETCH_MEDIA_DETAILS_BY_UUID,
+					new MediaRowMapper());
+     
+			
+		} finally {
+			SQLHelper.closeConnection(conn);
+		}
+	}
+	
+	@Override
+	public String getMediaPathByMediaId(String mediaId) throws DbException {
+		LOGGER.info("Getting Media Path by mediaId: " + mediaId);
+
+		Connection conn = getConnection();
+
+		try {
+
+		return SQLHelper.queryString(conn, SQLQuery.FETCH_MEDIA_PATH_BY_MEDIA_ID ,new Object[] { mediaId});
+     
+			
+		} finally {
+			SQLHelper.closeConnection(conn);
+		}
+	}
+	
+	@Override
+	public String getMediaPathByMediaUUID(Long uuid) throws DbException {
+		LOGGER.info("Getting Media Path by mediaUUID: " + uuid);
+
+		Connection conn = getConnection();
+
+		try {
+
+		return SQLHelper.queryString(conn, SQLQuery.FETCH_MEDIA_PATH_BY_UUID,new Object[] { uuid});
+     
+			
+		} finally {
+			SQLHelper.closeConnection(conn);
+		}
+	}
+	
+	@Override
+	public void deleteMedia(String mediaId) throws DbException {
+		LOGGER.info("Deleting the Media by MediaId:" + mediaId);
+
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+
+		try {
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_DELETE_MEDIA, new Object[] { mediaId });
+
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+
+			LOGGER.warning("Failed to Delete the Media");
+			throw new DbException("Failed to Delete the Media", e);
+
+		} finally {
+			SQLHelper.closeStatement(ps);
+			SQLHelper.closeConnection(conn);
+		}
+		
+	}
+	
+	@Override
+	public void deleteMedia(Long mediaId) throws DbException {
+		LOGGER.info("Deleting the Media by UUID :" + mediaId);
+
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+
+		try {
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_DELETE_MEDIA_UUID, new Object[] { mediaId.toString() });
+
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+
+			LOGGER.warning("Failed to Delete the Media");
+			throw new DbException("Failed to Delete the Media", e);
+
+		} finally {
+			SQLHelper.closeStatement(ps);
+			SQLHelper.closeConnection(conn);
+		}
+	}
+	
+	@Override
+	public void deleteFirstUndeliveredStanza(Integer stanzaCount) throws DbException {
+		LOGGER.info("Deleting First Undelivered Stanza :" + stanzaCount);
+
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+
+		try {
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.DELETE_FIRST_UNDELIVERED_STANZAS, new Object[] { stanzaCount.toString() });
+
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+
+			LOGGER.warning("Failed to Delete First Undelivered Stanza");
+			throw new DbException("Failed to Delete First Undelivered Stanza", e);
+
+		} finally {
+			SQLHelper.closeStatement(ps);
+			SQLHelper.closeConnection(conn);
+		}
+		
+	}
+	
+	@Override
+	public void persistUndeliverStanza(Stanza stanza) throws DbException {
+		LOGGER.info("Persisting Undelivered Stanza :" + stanza);
+
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+
+		try {
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_PERSIST_UNDELIVERD_STANZA, new Object[] { ObjectUtils.serializeObject(stanza) });
+
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+
+			LOGGER.warning("Failed to Persist the Undelivered Stanza");
+			throw new DbException("Failed to Persist the Undelivered Stanza", e);
+
+		} finally {
+			SQLHelper.closeStatement(ps);
+			SQLHelper.closeConnection(conn);
+		}
+		
+	}
+	
+	@Override
+	public void deleteAllUndeliverStanzas() throws DbException {
+		LOGGER.info("Deleting all Undelivered Stanza :");
+
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+
+		try {
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_DELETE_UNDELIVERD_STANZA, new Object[] { });
+
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+
+			LOGGER.warning("Failed to delete all the Undelivered Stanza");
+			throw new DbException("Failed to delete all the Undelivered Stanza", e);
+
+		} finally {
+			SQLHelper.closeStatement(ps);
+			SQLHelper.closeConnection(conn);
+		}
+		
+	}
+	
+	@Override
+	public List<Stanza> fetchAllUndeliverStanzas() throws DbException {
+		LOGGER.info("Fetching all undelivers Stanzas : ");
+
+		Connection conn = getConnection();
+
+		try {
+
+			List<Stanza> stanzas = SQLHelper.query(conn, SQLQuery.FETCH_ALL_UNDELIVERD_STANZAS,
+					new UndeliverStanzaRowMapper());
+			
+			if (!CollectionUtils.isNullOrEmpty(stanzas)) {
+				this.deleteAllUndeliverStanzas();
+			}
+
+			return stanzas;
+
+		} finally {
+
+			SQLHelper.closeConnection(conn);
+		}
+	}
+	
 
 }

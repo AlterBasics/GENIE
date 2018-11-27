@@ -6,6 +6,7 @@ import java.util.Set;
 import abs.ixi.client.core.Initializable;
 import abs.ixi.client.xmpp.JID;
 import abs.ixi.client.xmpp.packet.ChatRoom;
+import abs.ixi.client.xmpp.packet.Stanza;
 import abs.ixi.client.xmpp.packet.UserProfileData;
 import abs.ixi.client.xmpp.packet.Presence.PresenceType;
 import abs.ixi.client.xmpp.packet.Roster.RosterItem;
@@ -16,6 +17,7 @@ import abs.sf.client.gini.db.object.ConversationTable;
 import abs.sf.client.gini.db.object.RosterTable;
 import abs.sf.client.gini.messaging.ChatLine;
 import abs.sf.client.gini.messaging.Conversation;
+import abs.sf.client.gini.messaging.MediaContent;
 import abs.sf.client.gini.messaging.UserPresence;
 
 public interface Database extends Initializable {
@@ -377,4 +379,125 @@ public interface Database extends Initializable {
 	 */
 	void addOrUpdateUserProfileData(UserProfileData userProfileData) throws DbException;
 
+	/**
+	 * 
+	 * @param userProfileData
+	 * @return
+	 * @throws DbException
+	 */
+	 long addUserProfile(UserProfileData userProfileData) throws DbException;
+	
+	 /**
+	  * 
+	  * @param userProfileData
+	  * @return
+	  * @throws DbException
+	  */
+	 long updateUserProfile(UserProfileData userProfileData) throws DbException ;
+ 
+	 /**
+	  * 
+	  * @param userJID
+	  * @return
+	  * @throws DbException
+	  */
+      UserProfileData getUserProfileData(String userJID) throws DbException;
+
+      /**
+       * 
+       * @param userJID
+       * @return
+       * @throws DbException
+       */
+      byte[] getUserAvatarBytes(String userJID) throws DbException;
+      
+      /**
+       * 
+       * @param mediaId
+       * @param mediaThumb
+       * @param mediaPath
+       * @param contentType
+       * @return
+       * @throws DbException
+       */
+      long storeMedia(String mediaId, byte[] mediaThumb, String mediaPath, String contentType) throws DbException;
+      
+      /**
+       * 
+       * @param mediaId
+       * @param mediaPath
+       * @throws DbException
+       */
+      void updateMediaPath(String mediaId, String mediaPath) throws DbException;
+      
+      /**
+       * 
+       * @param mediaId
+       * @return
+       * @throws DbException
+       */
+      MediaContent getMediaDetaisByMediaId(String mediaId) throws DbException;
+      
+      /**
+       * @param uuid
+       * @return
+       * @throws DbException
+       */
+      MediaContent getMediaDetaisByMediaUUID(Long uuid) throws DbException;
+      
+      /**
+       * 
+       * @param mediaId
+       * @return
+       * @throws DbException
+       */
+      String getMediaPathByMediaId(String mediaId) throws DbException;
+      
+      /**
+       * 
+       * @param uuid
+       * @return
+       * @throws DbException
+       */
+      String getMediaPathByMediaUUID(Long uuid) throws DbException;
+      
+      /**
+       * @param mediaId
+       * @throws DbException
+       */
+      void deleteMedia(String mediaId) throws DbException;
+      
+      /**
+       * 
+       * @param mediaId
+       * @throws DbException
+       */
+      void deleteMedia(Long mediaId) throws DbException;
+      
+      /**
+       * 
+       * @param stanzaCount
+       * @throws DbException
+       */
+      void deleteFirstUndeliveredStanza(Integer stanzaCount) throws DbException;
+      
+      /**
+       * 
+       * @param stanza
+       * @throws DbException
+       */
+      void persistUndeliverStanza(Stanza stanza) throws DbException;
+      
+      /**
+       * 
+       * @throws DbException
+       */
+      void deleteAllUndeliverStanzas() throws DbException;
+      
+      /**
+       * 
+       * @return
+       * @throws DbException
+       */
+      List<Stanza> fetchAllUndeliverStanzas()  throws DbException;
 }

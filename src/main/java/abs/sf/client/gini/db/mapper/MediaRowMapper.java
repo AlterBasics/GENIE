@@ -1,21 +1,20 @@
 package abs.sf.client.gini.db.mapper;
 
-import android.database.Cursor;
-import android.database.SQLException;
-
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import abs.ixi.client.file.sfcm.ContentType;
 import abs.sf.client.gini.messaging.MediaContent;
 
 public class MediaRowMapper implements RowMapper<MediaContent>{
 
     @Override
-    public MediaContent map(Cursor cursor) throws SQLException {
+    public MediaContent map(ResultSet rs) throws SQLException {
         MediaContent media = new MediaContent();
-        media.setUuid(cursor.getLong(0));
-        media.setMediaId(cursor.getString(1));
-        media.setMediaThumb(cursor.getBlob(2));
-        media.setMediaPath(cursor.getString(3));
-        media.setContentType(new ContentType(cursor.getString(4)));
+        media.setUuid(rs.getLong(0));
+        media.setMediaId(rs.getString(1));
+        media.setMediaThumb(rs.getBlob(2));
+        media.setMediaPath(rs.getString(3));
+        media.setContentType(new ContentType(rs.getString(4)));
 
         return media;
     }
