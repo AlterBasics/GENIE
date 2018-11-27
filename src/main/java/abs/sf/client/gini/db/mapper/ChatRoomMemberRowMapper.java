@@ -8,6 +8,11 @@ import abs.ixi.client.xmpp.JID;
 import abs.ixi.client.xmpp.packet.ChatRoom;
 
 public class ChatRoomMemberRowMapper implements RowMapper<ChatRoom.ChatRoomMember> {
+	private ChatRoom chatRoom;
+
+	public ChatRoomMemberRowMapper(ChatRoom chatRoom) {
+		this.chatRoom = chatRoom;
+	}
 
 	@Override
 	public ChatRoom.ChatRoomMember map(ResultSet rs) throws SQLException {
