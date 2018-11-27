@@ -17,6 +17,7 @@ import abs.sf.client.gini.ui.utils.JFXUtils;
 import abs.sf.client.gini.ui.utils.ResourceLoader;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
@@ -24,7 +25,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 
-public class LoginController implements Initializable {
+public class LoginController extends APPController implements Initializable {
 	private static final Logger LOGGER = Logger.getLogger(LoginController.class.getName());
 
 	@FXML
@@ -36,12 +37,28 @@ public class LoginController implements Initializable {
 	@FXML
 	private BorderPane borderPane;
 
+	private double xOffset;
+
+	private double yOffset;
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		/* Drag and Drop */
+		borderPane.setOnMousePressed(event -> {
+			xOffset = Launcher.getPrimaryStage().getX() - event.getScreenX();
+			yOffset = Launcher.getPrimaryStage().getY() - event.getScreenY();
+			borderPane.setCursor(Cursor.CLOSED_HAND);
+		});
 
-	}
+		borderPane.setOnMouseDragged(event -> {
+			Launcher.getPrimaryStage().setX(event.getScreenX() + xOffset);
+			Launcher.getPrimaryStage().setY(event.getScreenY() + yOffset);
 
-	public void closeSystem() {
+		});
+
+		borderPane.setOnMouseReleased(event -> {
+			borderPane.setCursor(Cursor.DEFAULT);
+		});
 
 	}
 
@@ -50,8 +67,7 @@ public class LoginController implements Initializable {
 			Parent root = ResourceLoader.getInstance().loadChatController();
 			Scene scene = new Scene(root);
 			scene.setRoot(root);
-			Launcher.getPrimaryStage().setScene(scene);
-			Launcher.getPrimaryStage().show();
+			showSceneOnPrimeryStage(scene);
 
 		} catch (IOException e) {
 			LOGGER.log(Level.WARNING, "Failed to load ChatView", e);
@@ -76,7 +92,6 @@ public class LoginController implements Initializable {
 							public void onSuccess(StreamNegotiator.NegotiationResult result) {
 
 								if (result.isSuccess()) {
-
 									try {
 										AppProperties.getInstance().setUsername(userName);
 										AppProperties.getInstance().setPassword(password);

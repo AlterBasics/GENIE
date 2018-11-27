@@ -18,6 +18,7 @@ import abs.ixi.client.xmpp.packet.ChatRoom;
 import abs.ixi.client.xmpp.packet.Roster;
 import abs.ixi.client.xmpp.packet.UserProfileData;
 import abs.sf.client.gini.db.DbManager;
+import abs.sf.client.gini.exception.StringflowErrorException;
 import abs.sf.client.gini.utils.SDKLoader;
 import abs.sf.client.gini.utils.SFSDKProperties;
 
@@ -341,9 +342,10 @@ public class AndroidUserManager extends UserManager {
 	 * @param password
 	 * @param domain
 	 * @param callback
+	 * @throws StringflowErrorException 
 	 */
 	public void loginUser(final String userName, final String password, final String domain,
-			final Callback<StreamNegotiator.NegotiationResult, Exception> callback) {
+			final Callback<StreamNegotiator.NegotiationResult, Exception> callback) throws StringflowErrorException {
 
 		SFSDKProperties.getInstance().setDomainName(domain);
 
