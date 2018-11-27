@@ -1,16 +1,11 @@
 package abs.sf.client.gini.db;
 
+import java.io.InputStream;
 import java.sql.SQLException;
-import java.util.Base64;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import abs.ixi.client.core.Platform;
-import abs.ixi.client.core.Session;
 import abs.ixi.client.util.CollectionUtils;
-import abs.ixi.client.util.DateUtils;
-import abs.ixi.client.util.ObjectUtils;
 import abs.ixi.client.util.StringUtils;
 import abs.ixi.client.xmpp.InvalidJabberId;
 import abs.ixi.client.xmpp.JID;
@@ -20,22 +15,9 @@ import abs.ixi.client.xmpp.packet.Roster.RosterItem;
 import abs.ixi.client.xmpp.packet.Stanza;
 import abs.ixi.client.xmpp.packet.UserProfileData;
 import abs.sf.client.gini.db.exception.DbException;
-import abs.sf.client.gini.db.h2.SQLQuery;
-import abs.sf.client.gini.db.mapper.ChatRoomMemberRowMapper;
-import abs.sf.client.gini.db.mapper.ChatRoomRowMapper;
-import abs.sf.client.gini.db.mapper.MediaRowMapper;
-import abs.sf.client.gini.db.mapper.PresenceRowMapper;
-import abs.sf.client.gini.db.mapper.RowMapper;
-import abs.sf.client.gini.db.mapper.UndeliverStanzaRowMapper;
-import abs.sf.client.gini.db.mapper.UserProfileRowMapper;
-import abs.sf.client.gini.db.object.ChatRoomMemberTable;
 import abs.sf.client.gini.db.object.ChatStoreTable;
 import abs.sf.client.gini.db.object.ConversationTable;
-import abs.sf.client.gini.db.object.MediaStoreTable;
-import abs.sf.client.gini.db.object.PresenceTable;
 import abs.sf.client.gini.db.object.RosterTable;
-import abs.sf.client.gini.db.object.UndeliverStanzaTable;
-import abs.sf.client.gini.db.object.UserProfileTable;
 import abs.sf.client.gini.messaging.ChatLine;
 import abs.sf.client.gini.messaging.Conversation;
 import abs.sf.client.gini.messaging.MediaContent;
@@ -515,7 +497,6 @@ public final class DbManager {
 					memberName = new JID(memberJID).getNode();
 				} catch (InvalidJabberId e) {
 					memberName = "unknown";
-					// Swallow it
 				}
 			}
 
@@ -575,248 +556,229 @@ public final class DbManager {
 	}
 
 	public void addOrUpdateUserProfileData(UserProfileData userProfileData) throws DbException {
-		synchronized (UserProfileTable.class) {
-
-			this.database.addOrUpdateUserProfileData(userProfileData);
-			// long count = dbHelper.queryInt(SQLQuery.FETCH_USER_PROFILE_COUNT,
-			// new String[] { userProfileData.getJabberId().getBareJID() });
-			//
-			// if (count == 0) {
-			// addUserProfile(userProfileData);
-			//
-			// } else {
-			// updateUserProfile(userProfileData);
-			// }
-		}
+		this.database.addOrUpdateUserProfileData(userProfileData);
 	}
 
-	private long addUserProfile(UserProfileData userProfileData) throws DbException {
-	    return	this.database.addUserProfile(userProfileData);
-//		ContentValues contentValues = new ContentValues();
-//		contentValues.put(UserProfileTable.COLUMN_JID, userProfileData.getJabberId().getBareJID());
-//		contentValues.put(UserProfileTable.COLUMN_FIRST_NAME, userProfileData.getFirstName());
-//		contentValues.put(UserProfileTable.COLUMN_MIDDLE_NAME, userProfileData.getMiddleName());
-//		contentValues.put(UserProfileTable.COLUMN_LAST_NAME, userProfileData.getLastName());
-//		contentValues.put(UserProfileTable.COLUMN_NICK_NAME, userProfileData.getNickName());
-//		contentValues.put(UserProfileTable.COLUMN_EMAIL, userProfileData.getEmail());
-//		contentValues.put(UserProfileTable.COLUMN_PHONE, userProfileData.getPhone());
-//		contentValues.put(UserProfileTable.COLUMN_GENDER, userProfileData.getGender());
-//		contentValues.put(UserProfileTable.COLUMN_BDAY, userProfileData.getBday());
-//
-//		if (userProfileData.getAddress() != null) {
-//			UserProfileData.Address address = userProfileData.getAddress();
-//
-//			contentValues.put(UserProfileTable.COLUMN_ADDRESS_HOME, address.getHome());
-//			contentValues.put(UserProfileTable.COLUMN_ADDRESS_STREET, address.getStreet());
-//			contentValues.put(UserProfileTable.COLUMN_ADDRESS_LOCALITY, address.getLocality());
-//			contentValues.put(UserProfileTable.COLUMN_ADDRESS_CITY, address.getCity());
-//			contentValues.put(UserProfileTable.COLUMN_ADDRESS_STATE, address.getState());
-//			contentValues.put(UserProfileTable.COLUMN_ADDRESS_COUNTRY, address.getCountry());
-//			contentValues.put(UserProfileTable.COLUMN_ADDRESS_PCODE, address.getPcode());
-//		}
-//
-//		if (userProfileData.getAvtar() != null) {
-//			UserProfileData.UserAvtar avtar = userProfileData.getAvtar();
-//
-//			if (StringUtils.isNullOrEmpty(avtar.getBase64EncodedImage())) {
-//				contentValues.put(UserProfileTable.COLUMN_AVATAR, new byte[0]);
-//
-//			} else {
-//				contentValues.put(UserProfileTable.COLUMN_AVATAR,
-//						Base64.decode(avtar.getBase64EncodedImage(), Base64.DEFAULT));
-//			}
-//
-//			contentValues.put(UserProfileTable.COLUMN_AVATAR_MEDIA_TYPE, avtar.getImageType());
-//		}
-//
-//		if (userProfileData.getDescription() != null) {
-//			contentValues.put(UserProfileTable.COLUMN_ABOUT, userProfileData.getDescription());
-//		}
-//
-//		return dbHelper.insert(UserProfileTable.TABLE_NAME, contentValues);
+	private void addUserProfile(UserProfileData userProfileData) throws DbException {
+		this.database.addUserProfile(userProfileData);
+		// ContentValues contentValues = new ContentValues();
+		// contentValues.put(UserProfileTable.COLUMN_JID,
+		// userProfileData.getJabberId().getBareJID());
+		// contentValues.put(UserProfileTable.COLUMN_FIRST_NAME,
+		// userProfileData.getFirstName());
+		// contentValues.put(UserProfileTable.COLUMN_MIDDLE_NAME,
+		// userProfileData.getMiddleName());
+		// contentValues.put(UserProfileTable.COLUMN_LAST_NAME,
+		// userProfileData.getLastName());
+		// contentValues.put(UserProfileTable.COLUMN_NICK_NAME,
+		// userProfileData.getNickName());
+		// contentValues.put(UserProfileTable.COLUMN_EMAIL,
+		// userProfileData.getEmail());
+		// contentValues.put(UserProfileTable.COLUMN_PHONE,
+		// userProfileData.getPhone());
+		// contentValues.put(UserProfileTable.COLUMN_GENDER,
+		// userProfileData.getGender());
+		// contentValues.put(UserProfileTable.COLUMN_BDAY,
+		// userProfileData.getBday());
+		//
+		// if (userProfileData.getAddress() != null) {
+		// UserProfileData.Address address = userProfileData.getAddress();
+		//
+		// contentValues.put(UserProfileTable.COLUMN_ADDRESS_HOME,
+		// address.getHome());
+		// contentValues.put(UserProfileTable.COLUMN_ADDRESS_STREET,
+		// address.getStreet());
+		// contentValues.put(UserProfileTable.COLUMN_ADDRESS_LOCALITY,
+		// address.getLocality());
+		// contentValues.put(UserProfileTable.COLUMN_ADDRESS_CITY,
+		// address.getCity());
+		// contentValues.put(UserProfileTable.COLUMN_ADDRESS_STATE,
+		// address.getState());
+		// contentValues.put(UserProfileTable.COLUMN_ADDRESS_COUNTRY,
+		// address.getCountry());
+		// contentValues.put(UserProfileTable.COLUMN_ADDRESS_PCODE,
+		// address.getPcode());
+		// }
+		//
+		// if (userProfileData.getAvtar() != null) {
+		// UserProfileData.UserAvtar avtar = userProfileData.getAvtar();
+		//
+		// if (StringUtils.isNullOrEmpty(avtar.getBase64EncodedImage())) {
+		// contentValues.put(UserProfileTable.COLUMN_AVATAR, new byte[0]);
+		//
+		// } else {
+		// contentValues.put(UserProfileTable.COLUMN_AVATAR,
+		// Base64.decode(avtar.getBase64EncodedImage(), Base64.DEFAULT));
+		// }
+		//
+		// contentValues.put(UserProfileTable.COLUMN_AVATAR_MEDIA_TYPE,
+		// avtar.getImageType());
+		// }
+		//
+		// if (userProfileData.getDescription() != null) {
+		// contentValues.put(UserProfileTable.COLUMN_ABOUT,
+		// userProfileData.getDescription());
+		// }
+		//
+		// return dbHelper.insert(UserProfileTable.TABLE_NAME, contentValues);
 	}
 
-	public long updateUserProfile(UserProfileData userProfileData) throws DbException {
-	 return	this.database.updateUserProfile(userProfileData);
-//		ContentValues contentValues = new ContentValues();
-//
-//		if (userProfileData.getFirstName() != null)
-//			contentValues.put(UserProfileTable.COLUMN_FIRST_NAME, userProfileData.getFirstName());
-//
-//		if (userProfileData.getMiddleName() != null)
-//			contentValues.put(UserProfileTable.COLUMN_MIDDLE_NAME, userProfileData.getMiddleName());
-//
-//		if (userProfileData.getLastName() != null)
-//			contentValues.put(UserProfileTable.COLUMN_LAST_NAME, userProfileData.getLastName());
-//
-//		if (userProfileData.getNickName() != null)
-//			contentValues.put(UserProfileTable.COLUMN_NICK_NAME, userProfileData.getNickName());
-//
-//		if (userProfileData.getEmail() != null)
-//			contentValues.put(UserProfileTable.COLUMN_EMAIL, userProfileData.getEmail());
-//
-//		if (userProfileData.getPhone() != null)
-//			contentValues.put(UserProfileTable.COLUMN_PHONE, userProfileData.getPhone());
-//
-//		if (userProfileData.getGender() != null)
-//			contentValues.put(UserProfileTable.COLUMN_GENDER, userProfileData.getGender());
-//
-//		if (userProfileData.getBday() != null)
-//			contentValues.put(UserProfileTable.COLUMN_BDAY, userProfileData.getBday());
-//
-//		if (userProfileData.getAddress() != null) {
-//			UserProfileData.Address address = userProfileData.getAddress();
-//
-//			if (address.getHome() != null)
-//				contentValues.put(UserProfileTable.COLUMN_ADDRESS_HOME, address.getHome());
-//
-//			if (address.getStreet() != null)
-//				contentValues.put(UserProfileTable.COLUMN_ADDRESS_STREET, address.getStreet());
-//
-//			if (address.getLocality() != null)
-//				contentValues.put(UserProfileTable.COLUMN_ADDRESS_LOCALITY, address.getLocality());
-//
-//			if (address.getCity() != null)
-//				contentValues.put(UserProfileTable.COLUMN_ADDRESS_CITY, address.getCity());
-//
-//			if (address.getState() != null)
-//				contentValues.put(UserProfileTable.COLUMN_ADDRESS_STATE, address.getState());
-//
-//			if (address.getCountry() != null)
-//				contentValues.put(UserProfileTable.COLUMN_ADDRESS_COUNTRY, address.getCountry());
-//
-//			if (address.getPcode() != null)
-//				contentValues.put(UserProfileTable.COLUMN_ADDRESS_PCODE, address.getPcode());
-//		}
-//
-//		if (userProfileData.getAvtar() != null) {
-//			UserProfileData.UserAvtar avtar = userProfileData.getAvtar();
-//
-//			if (StringUtils.isNullOrEmpty(avtar.getBase64EncodedImage())) {
-//				contentValues.put(UserProfileTable.COLUMN_AVATAR, new byte[0]);
-//
-//			} else {
-//				contentValues.put(UserProfileTable.COLUMN_AVATAR,
-//						Base64.decode(avtar.getBase64EncodedImage(), Base64.DEFAULT));
-//			}
-//
-//			contentValues.put(UserProfileTable.COLUMN_AVATAR_MEDIA_TYPE, avtar.getImageType());
-//		}
-//
-//		if (userProfileData.getDescription() != null) {
-//			contentValues.put(UserProfileTable.COLUMN_ABOUT, userProfileData.getDescription());
-//		}
-//
-//		return dbHelper.update(UserProfileTable.TABLE_NAME, contentValues, UserProfileTable.COLUMN_JID + " = ?",
-//				new String[] { userProfileData.getJabberId().getBareJID() });
+	public void updateUserProfile(UserProfileData userProfileData) throws DbException {
+		this.database.updateUserProfile(userProfileData);
+		// ContentValues contentValues = new ContentValues();
+		//
+		// if (userProfileData.getFirstName() != null)
+		// contentValues.put(UserProfileTable.COLUMN_FIRST_NAME,
+		// userProfileData.getFirstName());
+		//
+		// if (userProfileData.getMiddleName() != null)
+		// contentValues.put(UserProfileTable.COLUMN_MIDDLE_NAME,
+		// userProfileData.getMiddleName());
+		//
+		// if (userProfileData.getLastName() != null)
+		// contentValues.put(UserProfileTable.COLUMN_LAST_NAME,
+		// userProfileData.getLastName());
+		//
+		// if (userProfileData.getNickName() != null)
+		// contentValues.put(UserProfileTable.COLUMN_NICK_NAME,
+		// userProfileData.getNickName());
+		//
+		// if (userProfileData.getEmail() != null)
+		// contentValues.put(UserProfileTable.COLUMN_EMAIL,
+		// userProfileData.getEmail());
+		//
+		// if (userProfileData.getPhone() != null)
+		// contentValues.put(UserProfileTable.COLUMN_PHONE,
+		// userProfileData.getPhone());
+		//
+		// if (userProfileData.getGender() != null)
+		// contentValues.put(UserProfileTable.COLUMN_GENDER,
+		// userProfileData.getGender());
+		//
+		// if (userProfileData.getBday() != null)
+		// contentValues.put(UserProfileTable.COLUMN_BDAY,
+		// userProfileData.getBday());
+		//
+		// if (userProfileData.getAddress() != null) {
+		// UserProfileData.Address address = userProfileData.getAddress();
+		//
+		// if (address.getHome() != null)
+		// contentValues.put(UserProfileTable.COLUMN_ADDRESS_HOME,
+		// address.getHome());
+		//
+		// if (address.getStreet() != null)
+		// contentValues.put(UserProfileTable.COLUMN_ADDRESS_STREET,
+		// address.getStreet());
+		//
+		// if (address.getLocality() != null)
+		// contentValues.put(UserProfileTable.COLUMN_ADDRESS_LOCALITY,
+		// address.getLocality());
+		//
+		// if (address.getCity() != null)
+		// contentValues.put(UserProfileTable.COLUMN_ADDRESS_CITY,
+		// address.getCity());
+		//
+		// if (address.getState() != null)
+		// contentValues.put(UserProfileTable.COLUMN_ADDRESS_STATE,
+		// address.getState());
+		//
+		// if (address.getCountry() != null)
+		// contentValues.put(UserProfileTable.COLUMN_ADDRESS_COUNTRY,
+		// address.getCountry());
+		//
+		// if (address.getPcode() != null)
+		// contentValues.put(UserProfileTable.COLUMN_ADDRESS_PCODE,
+		// address.getPcode());
+		// }
+		//
+		// if (userProfileData.getAvtar() != null) {
+		// UserProfileData.UserAvtar avtar = userProfileData.getAvtar();
+		//
+		// if (StringUtils.isNullOrEmpty(avtar.getBase64EncodedImage())) {
+		// contentValues.put(UserProfileTable.COLUMN_AVATAR, new byte[0]);
+		//
+		// } else {
+		// contentValues.put(UserProfileTable.COLUMN_AVATAR,
+		// Base64.decode(avtar.getBase64EncodedImage(), Base64.DEFAULT));
+		// }
+		//
+		// contentValues.put(UserProfileTable.COLUMN_AVATAR_MEDIA_TYPE,
+		// avtar.getImageType());
+		// }
+		//
+		// if (userProfileData.getDescription() != null) {
+		// contentValues.put(UserProfileTable.COLUMN_ABOUT,
+		// userProfileData.getDescription());
+		// }
+		//
+		// return dbHelper.update(UserProfileTable.TABLE_NAME, contentValues,
+		// UserProfileTable.COLUMN_JID + " = ?",
+		// new String[] { userProfileData.getJabberId().getBareJID() });
 
 	}
 
 	public UserProfileData getUserProfileData(String userJID) throws DbException {
-	     return	this.database.getUserProfileData(userJID);
-//		UserProfileData userProfileData = dbHelper.queryForObject(SQLQuery.FETCH_USER_PROFILE_DATA,
-//				new String[] { userJID }, new UserProfileRowMapper());
-//		return userProfileData;
+		return this.database.getUserProfileData(userJID);
 	}
 
-	public byte[] getUserAvatarBytes(String userJID) throws DbException{
+	public InputStream getUserAvatarBytes(String userJID) throws DbException {
 		return this.database.getUserAvatarBytes(userJID);
-//		return dbHelper.queryForObject(SQLQuery.FETCH_USER_PROFILE_AVATAR, new String[] { userJID },
-//				new RowMapper<byte[]>() {
-//
-//					@Override
-//					public byte[] map(Cursor cursor) throws SQLException {
-//						return cursor.getBlob(0);
-//					}
-//				});
 	}
 
 	public long storeMedia(String mediaId, byte[] mediaThumb, String mediaPath, String contentType) throws DbException {
-	     return	this.database.storeMedia(mediaId,mediaThumb,mediaPath,contentType);
-//		ContentValues contentValues = new ContentValues();
-//		contentValues.put(MediaStoreTable.COL_MEDIA_ID, mediaId);
-//		contentValues.put(MediaStoreTable.COL_MEDIA_THUMB, mediaThumb);
-//		contentValues.put(MediaStoreTable.COL_MEDIA_PATH, mediaPath);
-//		contentValues.put(MediaStoreTable.COL_CONTENT_TYPE, contentType);
-//
-//		return dbHelper.insert(MediaStoreTable.TABLE_NAME, contentValues);
+		return this.database.storeMedia(mediaId, mediaThumb, mediaPath, contentType);
+
 	}
 
 	public void updateMediaPath(String mediaId, String mediaPath) throws DbException {
-		this.database.updateMediaPath(mediaId,mediaPath);
-//		ContentValues contentValues = new ContentValues();
-//		contentValues.put(MediaStoreTable.COL_MEDIA_ID, mediaId);
-//		contentValues.put(MediaStoreTable.COL_MEDIA_PATH, mediaPath);
-//
-//		dbHelper.update(MediaStoreTable.TABLE_NAME, contentValues, MediaStoreTable.COL_MEDIA_ID + " = ?",
-//				new String[] { mediaId });
+		this.database.updateMediaPath(mediaId, mediaPath);
 	}
 
 	public MediaContent getMediaDetaisByMediaId(String mediaId) throws DbException {
-		return	this.database.getMediaDetaisByMediaId(mediaId);
-//		return dbHelper.queryForObject(SQLQuery.FETCH_MEDIA_DETAILS_BY_MEDIA_ID, new String[] { mediaId },
-//				new MediaRowMapper());
+		return this.database.getMediaDetaisByMediaId(mediaId);
+
 	}
 
-	public MediaContent getMediaDetaisByMediaUUID(Long uuid) throws DbException{
+	public MediaContent getMediaDetaisByMediaUUID(Long uuid) throws DbException {
 		return this.database.getMediaDetaisByMediaUUID(uuid);
-//		return dbHelper.queryForObject(SQLQuery.FETCH_MEDIA_DETAILS_BY_UUID, new String[] { uuid.toString() },
-//				new MediaRowMapper());
 	}
 
 	public String getMediaPathByMediaId(String mediaId) throws DbException {
 		return this.database.getMediaPathByMediaId(mediaId);
-//		return dbHelper.queryString(SQLQuery.FETCH_MEDIA_PATH_BY_MEDIA_ID, new String[] { mediaId });
 	}
 
 	public String getMediaPathByMediaUUID(Long uuid) throws DbException {
 		return this.database.getMediaPathByMediaUUID(uuid);
-		//return dbHelper.queryString(SQLQuery.FETCH_MEDIA_PATH_BY_UUID, new String[] { uuid.toString() });
 	}
 
-	public void deleteMedia(String mediaId) throws DbException{
+	public void deleteMedia(String mediaId) throws DbException {
 		this.database.deleteMedia(mediaId);
-		
-		//dbHelper.delete(MediaStoreTable.TABLE_NAME, MediaStoreTable.COL_MEDIA_ID + " = ?", mediaId);
 	}
 
 	public void deleteMedia(Long mediaId) throws DbException {
 		this.database.deleteMedia(mediaId);
-		//dbHelper.delete(MediaStoreTable.TABLE_NAME, MediaStoreTable.COL_UUID + " = ?", mediaId.toString());
 	}
 
-	public void deleteFirstUndeliveredStanza(Integer stanzaCount) throws DbException {
+	public void deleteFirstUndeliveredStanza(int stanzaCount) throws DbException {
 		this.database.deleteFirstUndeliveredStanza(stanzaCount);
-		//dbHelper.query(SQLQuery.DELETE_FIRST_UNDELIVERED_STANZAS, new String[] { stanzaCount.toString() }, null);
 	}
 
-	public void persistUndeliverStanza(Stanza stanza) throws DbException{
+	public void persistUndeliverStanza(Stanza stanza) throws DbException {
 		this.database.persistUndeliverStanza(stanza);
-//		ContentValues contentValues = new ContentValues();
-//
-//		contentValues.put(UndeliverStanzaTable.COL_STANZA, ObjectUtils.serializeObject(stanza));
-//
-//		dbHelper.insert(UndeliverStanzaTable.TABLE_NAME, contentValues);
 	}
 
-	public void deleteAllUndeliverStanzas() throws DbException{
+	public void deleteAllUndeliverStanzas() throws DbException {
 		this.database.deleteAllUndeliverStanzas();
-		//this.truncateTable(UndeliverStanzaTable.TABLE_NAME);
 	}
 
-	public List<Stanza> fetchAllUndeliverStanzas()  throws DbException{
-	     return	this.database.fetchAllUndeliverStanzas();
-//		synchronized (UndeliverStanzaTable.class) {
-//			
-//			List<Stanza> stanzas = dbHelper.query(SQLQuery.FETCH_ALL_UNDELIVERD_STANZAS,
-//					new UndeliverStanzaRowMapper());
-//
-//			if (!CollectionUtils.isNullOrEmpty(stanzas)) {
-//				this.deleteAllUndeliverStanzas();
-//			}
-//
-//			return stanzas;
-//		}
+	public List<Stanza> fetchAllUndeliverStanzas() throws DbException {
+		List<Stanza> stanzas = this.database.fetchAllUndeliverStanzas();
+
+		if (!CollectionUtils.isNullOrEmpty(stanzas)) {
+			this.deleteAllUndeliverStanzas();
+		}
+
+		return stanzas;
 	}
 
 }

@@ -1,5 +1,6 @@
 package abs.sf.client.gini.db;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 
@@ -385,7 +386,7 @@ public interface Database extends Initializable {
 	 * @return
 	 * @throws DbException
 	 */
-	 long addUserProfile(UserProfileData userProfileData) throws DbException;
+	 void addUserProfile(UserProfileData userProfileData) throws DbException;
 	
 	 /**
 	  * 
@@ -393,7 +394,7 @@ public interface Database extends Initializable {
 	  * @return
 	  * @throws DbException
 	  */
-	 long updateUserProfile(UserProfileData userProfileData) throws DbException ;
+	 void updateUserProfile(UserProfileData userProfileData) throws DbException ;
  
 	 /**
 	  * 
@@ -409,7 +410,7 @@ public interface Database extends Initializable {
        * @return
        * @throws DbException
        */
-      byte[] getUserAvatarBytes(String userJID) throws DbException;
+     InputStream getUserAvatarBytes(String userJID) throws DbException;
       
       /**
        * 
@@ -479,7 +480,7 @@ public interface Database extends Initializable {
        * @param stanzaCount
        * @throws DbException
        */
-      void deleteFirstUndeliveredStanza(Integer stanzaCount) throws DbException;
+      void deleteFirstUndeliveredStanza(int stanzaCount) throws DbException;
       
       /**
        * 

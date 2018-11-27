@@ -123,10 +123,10 @@ public class SQLQuery {
 			+ MediaStoreTable.COL_MEDIA_PATH + ", " + MediaStoreTable.COL_CONTENT_TYPE + " FROM "
 			+ MediaStoreTable.TABLE_NAME + " WHERE " + MediaStoreTable.COL_MEDIA_ID + " = ?";
 
-	public static final String FETCH_MEDIA_PATH_BY_UUID = "SELECT " + ", " + MediaStoreTable.COL_MEDIA_PATH + " FROM "
+	public static final String FETCH_MEDIA_PATH_BY_UUID = "SELECT "  + MediaStoreTable.COL_MEDIA_PATH + " FROM "
 			+ MediaStoreTable.TABLE_NAME + " WHERE " + MediaStoreTable.COL_UUID + " = ?";
 
-	public static final String FETCH_MEDIA_PATH_BY_MEDIA_ID = "SELECT " + ", " + MediaStoreTable.COL_MEDIA_PATH
+	public static final String FETCH_MEDIA_PATH_BY_MEDIA_ID = "SELECT " + MediaStoreTable.COL_MEDIA_PATH
 			+ " FROM " + MediaStoreTable.TABLE_NAME + " WHERE " + MediaStoreTable.COL_MEDIA_ID + " = ?";
 
 	public static final String DELETE_FIRST_UNDELIVERED_STANZAS = "DELETE " + " FROM " + UndeliverStanzaTable.TABLE_NAME
@@ -209,36 +209,36 @@ public class SQLQuery {
 	public static final String SQL_TRUNCATE_ROSTER = "TRUNCATE " + RosterTable.TABLE_NAME;
 
 	public static final String SQL_INSERT_CHAT_ROOM_MEMBER = "INSER INTO " + ChatRoomMemberTable.TABLE_NAME + " ( "
-			+ ChatRoomMemberTable.COLUMN_MEMBER_JID + " , " + ChatRoomMemberTable.COLUMN_MEMBER_NICK_NAME + " , " + ChatRoomMemberTable.COLUMN_AFFILATION + " , "
-			+ ChatRoomMemberTable.COLUMN_ROLE + " , " + ChatRoomMemberTable.COLUMN_ROOM_JID + " ) VALUES ( ?, ?, ?, ?, ?)";
-	
+			+ ChatRoomMemberTable.COLUMN_MEMBER_JID + " , " + ChatRoomMemberTable.COLUMN_MEMBER_NICK_NAME + " , "
+			+ ChatRoomMemberTable.COLUMN_AFFILATION + " , " + ChatRoomMemberTable.COLUMN_ROLE + " , "
+			+ ChatRoomMemberTable.COLUMN_ROOM_JID + " ) VALUES ( ?, ?, ?, ?, ?)";
+
 	public static final String SQL_UPDATE_CHAT_ROOM_MEMBER = "UPDATE " + ChatRoomMemberTable.TABLE_NAME + " SET "
-			+ ChatRoomMemberTable.COLUMN_MEMBER_NICK_NAME + " = IFNULL( ?, " + ChatRoomMemberTable.COLUMN_MEMBER_NICK_NAME + "),"
-			+ ChatRoomMemberTable.COLUMN_AFFILATION + " = IFNULL( ?, " + ChatRoomMemberTable.COLUMN_AFFILATION + "),"
-			+ ChatRoomMemberTable.COLUMN_ROLE + " = IFNULL( ?, " + ChatRoomMemberTable.COLUMN_ROLE + ") " + " WHERE "
+			+ ChatRoomMemberTable.COLUMN_MEMBER_NICK_NAME + " = IFNULL( ?, "
+			+ ChatRoomMemberTable.COLUMN_MEMBER_NICK_NAME + ")," + ChatRoomMemberTable.COLUMN_AFFILATION
+			+ " = IFNULL( ?, " + ChatRoomMemberTable.COLUMN_AFFILATION + ")," + ChatRoomMemberTable.COLUMN_ROLE
+			+ " = IFNULL( ?, " + ChatRoomMemberTable.COLUMN_ROLE + ") " + " WHERE "
 			+ ChatRoomMemberTable.COLUMN_MEMBER_JID + " = ?";
-			
-    public static final String SQL_DELETE_ALL_ROOM_MEMBER = "DELETE" +  "FROM"  + ChatRoomMemberTable.TABLE_NAME + " WHERE "
-    		+ ChatRoomMemberTable.COLUMN_ROOM_JID + " = ? ";
-			
-    public static final String SQL_INSERT_PRESENCE = "INSER INTO " + PresenceTable.TABLE_NAME + " ( "
-			+ PresenceTable.COLUMN_JID + " , " + PresenceTable.COLUMN_PRESNCE + " , " + PresenceTable.COLUMN_MOOD + " , "
-			+ PresenceTable.COLUMN_STATUS + " , " + PresenceTable.COLUMN_LAST_UPDATE + " ) VALUES ( ?, ?, ?, ?, ?)";		
-			
+
+	public static final String SQL_DELETE_ALL_ROOM_MEMBER = "DELETE" + "FROM" + ChatRoomMemberTable.TABLE_NAME
+			+ " WHERE " + ChatRoomMemberTable.COLUMN_ROOM_JID + " = ? ";
+
+	public static final String SQL_INSERT_PRESENCE = "INSER INTO " + PresenceTable.TABLE_NAME + " ( "
+			+ PresenceTable.COLUMN_JID + " , " + PresenceTable.COLUMN_PRESNCE + " , " + PresenceTable.COLUMN_MOOD
+			+ " , " + PresenceTable.COLUMN_STATUS + " , " + PresenceTable.COLUMN_LAST_UPDATE
+			+ " ) VALUES ( ?, ?, ?, ?, ?)";
 
 	public static final String SQL_UPDATE_PRESENCE = "UPDATE " + PresenceTable.TABLE_NAME + " SET "
 			+ PresenceTable.COLUMN_PRESNCE + " = IFNULL( ?, " + PresenceTable.COLUMN_PRESNCE + "),"
 			+ PresenceTable.COLUMN_MOOD + " = IFNULL( ?, " + PresenceTable.COLUMN_MOOD + "),"
 			+ PresenceTable.COLUMN_STATUS + " = IFNULL( ?, " + PresenceTable.COLUMN_STATUS + "),"
-			+ PresenceTable.COLUMN_LAST_UPDATE + " ? " 
-			+ " WHERE " + PresenceTable.COLUMN_JID + " = ?";
-		
-			
-	public static final String SQL_DELETE_USER_PRESENE = "DELETE" +  "FROM"  + PresenceTable.TABLE_NAME + " WHERE "
-    		+ PresenceTable.COLUMN_JID + " = ? ";	
-	
+			+ PresenceTable.COLUMN_LAST_UPDATE + " ? " + " WHERE " + PresenceTable.COLUMN_JID + " = ?";
+
+	public static final String SQL_DELETE_USER_PRESENE = "DELETE" + "FROM" + PresenceTable.TABLE_NAME + " WHERE "
+			+ PresenceTable.COLUMN_JID + " = ? ";
+
 	public static final String SQL_INSERT_USER_PROFILE = "INSERT INTO " + UserProfileTable.TABLE_NAME + " ( "
-			+ UserProfileTable.COLUMN_JID + " , " + UserProfileTable.COLUMN_FIRST_NAME + " , " 
+			+ UserProfileTable.COLUMN_JID + " , " + UserProfileTable.COLUMN_FIRST_NAME + " , "
 			+ UserProfileTable.COLUMN_MIDDLE_NAME + " , " + UserProfileTable.COLUMN_LAST_NAME + " , "
 			+ UserProfileTable.COLUMN_NICK_NAME + " , " + UserProfileTable.COLUMN_EMAIL + " , "
 			+ UserProfileTable.COLUMN_PHONE + " , " + UserProfileTable.COLUMN_GENDER + " , "
@@ -247,11 +247,9 @@ public class SQLQuery {
 			+ UserProfileTable.COLUMN_ADDRESS_CITY + " , " + UserProfileTable.COLUMN_ADDRESS_STATE + " , "
 			+ UserProfileTable.COLUMN_ADDRESS_COUNTRY + " , " + UserProfileTable.COLUMN_ADDRESS_PCODE + " , "
 			+ UserProfileTable.COLUMN_AVATAR + " = IFNULL( ?," + UserProfileTable.COLUMN_AVATAR + " , "
-			+ UserProfileTable.COLUMN_AVATAR_MEDIA_TYPE + " , "
-			+ UserProfileTable.COLUMN_ABOUT + " = IFNULL( ?, " + UserProfileTable.COLUMN_ABOUT + ") "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			
-	
+			+ UserProfileTable.COLUMN_AVATAR_MEDIA_TYPE + " , " + UserProfileTable.COLUMN_ABOUT + " = IFNULL( ?, "
+			+ UserProfileTable.COLUMN_ABOUT + ") " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
 	public static final String SQL_UPDATE_USER_PROFILE = "UPDATE " + UserProfileTable.TABLE_NAME + " SET "
 			+ UserProfileTable.COLUMN_FIRST_NAME + " = IFNULL( ?, " + UserProfileTable.COLUMN_FIRST_NAME + "),"
 			+ UserProfileTable.COLUMN_MIDDLE_NAME + " = IFNULL( ?, " + UserProfileTable.COLUMN_MIDDLE_NAME + "),"
@@ -263,39 +261,32 @@ public class SQLQuery {
 			+ UserProfileTable.COLUMN_BDAY + " = IFNULL( ?, " + UserProfileTable.COLUMN_BDAY + "),"
 			+ UserProfileTable.COLUMN_ADDRESS_HOME + " = IFNULL( ?, " + UserProfileTable.COLUMN_ADDRESS_HOME + "),"
 			+ UserProfileTable.COLUMN_ADDRESS_STREET + " = IFNULL( ?, " + UserProfileTable.COLUMN_ADDRESS_STREET + "),"
-			+ UserProfileTable.COLUMN_ADDRESS_LOCALITY + " = IFNULL( ?, " + UserProfileTable.COLUMN_ADDRESS_LOCALITY + "),"
-			+ UserProfileTable.COLUMN_ADDRESS_CITY + " = IFNULL( ?, " + UserProfileTable.COLUMN_ADDRESS_CITY + "),"
-			+ UserProfileTable.COLUMN_ADDRESS_STATE + " = IFNULL( ?, " + UserProfileTable.COLUMN_ADDRESS_STATE + "),"
-			+ UserProfileTable.COLUMN_ADDRESS_COUNTRY + " = IFNULL( ?, " + UserProfileTable.COLUMN_ADDRESS_COUNTRY + "),"
-			+ UserProfileTable.COLUMN_ADDRESS_PCODE + " = IFNULL( ?, " + UserProfileTable.COLUMN_ADDRESS_PCODE + "),"
-			+ UserProfileTable.COLUMN_AVATAR + " = IFNULL( ?, " + UserProfileTable.COLUMN_AVATAR + "),"
-			+ UserProfileTable.COLUMN_AVATAR_MEDIA_TYPE + " = IFNULL( ?, " + UserProfileTable.COLUMN_AVATAR_MEDIA_TYPE + "),"
-			+ UserProfileTable.COLUMN_ABOUT + " = IFNULL( ?, " + UserProfileTable.COLUMN_ABOUT + ")"
-			+ " WHERE " + UserProfileTable.COLUMN_JID + " = ?";	
-	
-	public static final String SQL_INSERT_STORE_MEDIA = "INSERT INTO " + MediaStoreTable.TABLE_NAME + " ( " 
+			+ UserProfileTable.COLUMN_ADDRESS_LOCALITY + " = IFNULL( ?, " + UserProfileTable.COLUMN_ADDRESS_LOCALITY
+			+ ")," + UserProfileTable.COLUMN_ADDRESS_CITY + " = IFNULL( ?, " + UserProfileTable.COLUMN_ADDRESS_CITY
+			+ ")," + UserProfileTable.COLUMN_ADDRESS_STATE + " = IFNULL( ?, " + UserProfileTable.COLUMN_ADDRESS_STATE
+			+ ")," + UserProfileTable.COLUMN_ADDRESS_COUNTRY + " = IFNULL( ?, "
+			+ UserProfileTable.COLUMN_ADDRESS_COUNTRY + ")," + UserProfileTable.COLUMN_ADDRESS_PCODE + " = IFNULL( ?, "
+			+ UserProfileTable.COLUMN_ADDRESS_PCODE + ")," + UserProfileTable.COLUMN_AVATAR + " = IFNULL( ?, "
+			+ UserProfileTable.COLUMN_AVATAR + ")," + UserProfileTable.COLUMN_AVATAR_MEDIA_TYPE + " = IFNULL( ?, "
+			+ UserProfileTable.COLUMN_AVATAR_MEDIA_TYPE + ")," + UserProfileTable.COLUMN_ABOUT + " = IFNULL( ?, "
+			+ UserProfileTable.COLUMN_ABOUT + ")" + " WHERE " + UserProfileTable.COLUMN_JID + " = ?";
+
+	public static final String SQL_INSERT_STORE_MEDIA = "INSERT INTO " + MediaStoreTable.TABLE_NAME + " ( "
 			+ MediaStoreTable.COL_MEDIA_ID + " , " + MediaStoreTable.COL_MEDIA_THUMB + " , "
-			+ MediaStoreTable.COL_MEDIA_PATH + "  ," + MediaStoreTable.COL_CONTENT_TYPE + ") " 
-			+ "VALUES (?, ?, ?, ?)";
-	
-	
+			+ MediaStoreTable.COL_MEDIA_PATH + "  ," + MediaStoreTable.COL_CONTENT_TYPE + ") " + "VALUES (?, ?, ?, ?)";
+
 	public static final String SQL_UPDATE_MEDIA_PATH = "UPDATE " + MediaStoreTable.TABLE_NAME + " SET "
-			+ MediaStoreTable.COL_MEDIA_PATH + " = ?, "
-			+ " WHERE " + MediaStoreTable.COL_MEDIA_ID + " = ?";
-		
-	public static final String SQL_DELETE_MEDIA = "DELETE" +  "FROM"  + MediaStoreTable.TABLE_NAME + " WHERE "
-    		+ MediaStoreTable.COL_MEDIA_ID + " = ? ";			
-			
-	public static final String SQL_DELETE_MEDIA_UUID = "DELETE" +  "FROM"  + MediaStoreTable.TABLE_NAME + " WHERE "
-    		+ MediaStoreTable.COL_UUID + " = ? ";			
-				
-			
-	public static final String SQL_PERSIST_UNDELIVERD_STANZA = "INSERT INTO " + UndeliverStanzaTable.TABLE_NAME + " ( " 
-			+ UndeliverStanzaTable.COL_STANZA +  ") " 
-			+ "VALUES (?)";
-	
-	public static final String SQL_DELETE_UNDELIVERD_STANZA = "DELETE" +  "FROM" + UndeliverStanzaTable.TABLE_NAME + " WHERE "
-    		+ UndeliverStanzaTable.COL_STANZA + " = ? ";			
-			
-	
+			+ MediaStoreTable.COL_MEDIA_PATH + " = ?, " + " WHERE " + MediaStoreTable.COL_MEDIA_ID + " = ?";
+
+	public static final String SQL_DELETE_MEDIA = "DELETE" + "FROM" + MediaStoreTable.TABLE_NAME + " WHERE "
+			+ MediaStoreTable.COL_MEDIA_ID + " = ? ";
+
+	public static final String SQL_DELETE_MEDIA_UUID = "DELETE" + "FROM" + MediaStoreTable.TABLE_NAME + " WHERE "
+			+ MediaStoreTable.COL_UUID + " = ? ";
+
+	public static final String SQL_PERSIST_UNDELIVERD_STANZA = "INSERT INTO " + UndeliverStanzaTable.TABLE_NAME + " ( "
+			+ UndeliverStanzaTable.COL_STANZA + ") " + "VALUES (?)";
+
+	public static final String SQL_TRUNCATE_UNDELIVERD_STANZA_TABLE = "TRUNCATE " + UndeliverStanzaTable.TABLE_NAME;
+
 }

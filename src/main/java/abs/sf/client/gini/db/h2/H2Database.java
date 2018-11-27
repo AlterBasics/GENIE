@@ -1,8 +1,10 @@
 package abs.sf.client.gini.db.h2;
 
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -10,20 +12,17 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import com.sun.org.apache.regexp.internal.recompile;
-
 import abs.ixi.client.core.InitializationErrorException;
-import abs.ixi.client.util.CollectionUtils;
 import abs.ixi.client.util.DateUtils;
 import abs.ixi.client.util.ObjectUtils;
 import abs.ixi.client.util.StringUtils;
 import abs.ixi.client.xmpp.JID;
 import abs.ixi.client.xmpp.packet.ChatRoom;
-import abs.ixi.client.xmpp.packet.Stanza;
-import abs.ixi.client.xmpp.packet.UserProfileData;
 import abs.ixi.client.xmpp.packet.ChatRoom.ChatRoomMember;
 import abs.ixi.client.xmpp.packet.Presence.PresenceType;
 import abs.ixi.client.xmpp.packet.Roster.RosterItem;
+import abs.ixi.client.xmpp.packet.Stanza;
+import abs.ixi.client.xmpp.packet.UserProfileData;
 import abs.sf.client.gini.db.Database;
 import abs.sf.client.gini.db.exception.DbException;
 import abs.sf.client.gini.db.mapper.ChatLineRowMapper;
@@ -33,6 +32,7 @@ import abs.sf.client.gini.db.mapper.ConversationRowMapper;
 import abs.sf.client.gini.db.mapper.MediaRowMapper;
 import abs.sf.client.gini.db.mapper.PresenceRowMapper;
 import abs.sf.client.gini.db.mapper.RosterItemRowMapper;
+import abs.sf.client.gini.db.mapper.RowMapper;
 import abs.sf.client.gini.db.mapper.UndeliverStanzaRowMapper;
 import abs.sf.client.gini.db.mapper.UserProfileRowMapper;
 import abs.sf.client.gini.db.object.ChatArchiveTable;
@@ -1202,22 +1202,22 @@ public class H2Database implements Database {
 		}
 
 	}
-	
+
 	@Override
-	public long addUserProfile(UserProfileData userProfileData) throws DbException {
+	public void addUserProfile(UserProfileData userProfileData) throws DbException {
 		LOGGER.info("Adding Profile of the user :" + userProfileData);
 
 		Connection conn = getConnection();
 		PreparedStatement ps = null;
 
 		try {
-			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_INSERT_USER_PROFILE, 
-					new Object[] { userProfileData.getJabberId().getBareJID(),userProfileData.getFirstName(),
-							        userProfileData.getMiddleName(), userProfileData.getLastName(),
-							         userProfileData.getNickName(),userProfileData.getEmail(),
-							          userProfileData.getPhone(),userProfileData.getGender(),
-							           userProfileData.getBday(),userProfileData.getAddress() == null ? null : userProfileData.getAddress(),
-							             userProfileData.getAvtar(),userProfileData.getDescription()});
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_INSERT_USER_PROFILE,
+					new Object[] { userProfileData.getJabberId().getBareJID(), userProfileData.getFirstName(),
+							userProfileData.getMiddleName(), userProfileData.getLastName(),
+							userProfileData.getNickName(), userProfileData.getEmail(), userProfileData.getPhone(),
+							userProfileData.getGender(), userProfileData.getBday(),
+							userProfileData.getAddress() == null ? null : userProfileData.getAddress(),
+							userProfileData.getAvtar(), userProfileData.getDescription() });
 
 			ps.executeUpdate();
 		} catch (SQLException e) {
@@ -1229,9 +1229,9 @@ public class H2Database implements Database {
 			SQLHelper.closeStatement(ps);
 			SQLHelper.closeConnection(conn);
 		}
-		
+
 	}
-	
+
 	@Override
 	public long updateUserProfile(UserProfileData userProfileData) throws DbException {
 		LOGGER.info("Updating Profile of the user :" + userProfileData);
@@ -1240,8 +1240,8 @@ public class H2Database implements Database {
 		PreparedStatement ps = null;
 
 		try {
-			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_USER_PROFILE, 
-					new Object[] { userProfileData.getJabberId().getBareJID()});
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_USER_PROFILE,
+					new Object[] { userProfileData.getJabberId().getBareJID() });
 
 			ps.executeUpdate();
 		} catch (SQLException e) {
@@ -1253,9 +1253,9 @@ public class H2Database implements Database {
 			SQLHelper.closeStatement(ps);
 			SQLHelper.closeConnection(conn);
 		}
-		
+
 	}
-	
+
 	@Override
 	public UserProfileData getUserProfileData(String userJID) throws DbException {
 		LOGGER.info("Getting User Profile Data :" + userJID);
@@ -1264,28 +1264,33 @@ public class H2Database implements Database {
 
 		try {
 
-			UserProfileData userProfileData = SQLHelper.query(conn, SQLQuery.FETCH_USER_PROFILE_DATA, new Obect[] {userJID},
-					new UserProfileRowMapper());
-     
+			UserProfileData userProfileData = SQLHelper.queryForObject(conn, SQLQuery.FETCH_USER_PROFILE_DATA,
+					new Object[] { userJID }, new UserProfileRowMapper());
+
 			return userProfileData;
-		
+
 		} finally {
 			SQLHelper.closeConnection(conn);
 		}
 	}
-	
+
 	@Override
-	public byte[] getUserAvatarBytes(String userJID) throws DbException {
+	public InputStream getUserAvatarBytes(String userJID) throws DbException {
 		LOGGER.info("Getting User Avtar: " + userJID);
 
 		Connection conn = getConnection();
 
 		try {
 
-			return SQLHelper.query(conn, SQLQuery.FETCH_USER_PROFILE_AVATAR, new Object[] {userJID},
-					new  RowMapper<byte[]>() );
-     
-			
+			return SQLHelper.queryForObject(conn, SQLQuery.FETCH_USER_PROFILE_AVATAR, new Object[] { userJID },
+					new RowMapper<InputStream>() {
+
+						@Override
+						public InputStream map(ResultSet rs) throws SQLException {
+							return rs.getBlob(1).getBinaryStream();
+						}
+					});
+
 		} finally {
 			SQLHelper.closeConnection(conn);
 		}
@@ -1293,7 +1298,7 @@ public class H2Database implements Database {
 
 	@Override
 	public long storeMedia(String mediaId, byte[] mediaThumb, String mediaPath, String contentType) throws DbException {
-		LOGGER.info("Storing Media : " + mediaId  + mediaThumb + mediaPath + contentType);
+		LOGGER.info("Storing Media : " + mediaId + mediaThumb + mediaPath + contentType);
 
 		Connection conn = getConnection();
 		PreparedStatement ps = null;
@@ -1305,6 +1310,11 @@ public class H2Database implements Database {
 
 			ps.executeUpdate();
 
+			ResultSet keys = ps.getGeneratedKeys();
+
+			if (keys.next())
+				return keys.getLong(1);
+
 		} catch (SQLException e) {
 
 			LOGGER.warning("Failed to Store the Media");
@@ -1314,10 +1324,10 @@ public class H2Database implements Database {
 			SQLHelper.closeStatement(ps);
 			SQLHelper.closeConnection(conn);
 		}
-		return 0;
 
+		return 0L;
 	}
-	
+
 	@Override
 	public void updateMediaPath(String mediaId, String mediaPath) throws DbException {
 		LOGGER.info("Updating User Media Path : " + mediaId + mediaPath);
@@ -1327,8 +1337,7 @@ public class H2Database implements Database {
 
 		try {
 
-			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_MEDIA_PATH,
-					new Object[] { mediaId });
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_MEDIA_PATH, new Object[] { mediaId });
 
 			ps.executeUpdate();
 
@@ -1341,10 +1350,9 @@ public class H2Database implements Database {
 			SQLHelper.closeStatement(ps);
 			SQLHelper.closeConnection(conn);
 		}
-		
-		
+
 	}
-	
+
 	@Override
 	public MediaContent getMediaDetaisByMediaId(String mediaId) throws DbException {
 		LOGGER.info("Getting Media Details by MediaId: " + mediaId);
@@ -1353,15 +1361,14 @@ public class H2Database implements Database {
 
 		try {
 
-			return (MediaContent) SQLHelper.query(conn, SQLQuery.FETCH_MEDIA_DETAILS_BY_MEDIA_ID,
+			return SQLHelper.queryForObject(conn, SQLQuery.FETCH_MEDIA_DETAILS_BY_MEDIA_ID, new Object[] { mediaId },
 					new MediaRowMapper());
-     
-			
+
 		} finally {
 			SQLHelper.closeConnection(conn);
 		}
 	}
-	
+
 	@Override
 	public MediaContent getMediaDetaisByMediaUUID(Long uuid) throws DbException {
 		LOGGER.info("Getting Media Details by uuid: " + uuid);
@@ -1370,15 +1377,14 @@ public class H2Database implements Database {
 
 		try {
 
-			return (MediaContent) SQLHelper.query(conn, SQLQuery.FETCH_MEDIA_DETAILS_BY_UUID,
+			return SQLHelper.queryForObject(conn, SQLQuery.FETCH_MEDIA_DETAILS_BY_UUID, new Object[] { uuid },
 					new MediaRowMapper());
-     
-			
+
 		} finally {
 			SQLHelper.closeConnection(conn);
 		}
 	}
-	
+
 	@Override
 	public String getMediaPathByMediaId(String mediaId) throws DbException {
 		LOGGER.info("Getting Media Path by mediaId: " + mediaId);
@@ -1387,14 +1393,13 @@ public class H2Database implements Database {
 
 		try {
 
-		return SQLHelper.queryString(conn, SQLQuery.FETCH_MEDIA_PATH_BY_MEDIA_ID ,new Object[] { mediaId});
-     
-			
+			return SQLHelper.queryString(conn, SQLQuery.FETCH_MEDIA_PATH_BY_MEDIA_ID, new Object[] { mediaId });
+
 		} finally {
 			SQLHelper.closeConnection(conn);
 		}
 	}
-	
+
 	@Override
 	public String getMediaPathByMediaUUID(Long uuid) throws DbException {
 		LOGGER.info("Getting Media Path by mediaUUID: " + uuid);
@@ -1403,14 +1408,13 @@ public class H2Database implements Database {
 
 		try {
 
-		return SQLHelper.queryString(conn, SQLQuery.FETCH_MEDIA_PATH_BY_UUID,new Object[] { uuid});
-     
-			
+			return SQLHelper.queryString(conn, SQLQuery.FETCH_MEDIA_PATH_BY_UUID, new Object[] { uuid });
+
 		} finally {
 			SQLHelper.closeConnection(conn);
 		}
 	}
-	
+
 	@Override
 	public void deleteMedia(String mediaId) throws DbException {
 		LOGGER.info("Deleting the Media by MediaId:" + mediaId);
@@ -1432,9 +1436,9 @@ public class H2Database implements Database {
 			SQLHelper.closeStatement(ps);
 			SQLHelper.closeConnection(conn);
 		}
-		
+
 	}
-	
+
 	@Override
 	public void deleteMedia(Long mediaId) throws DbException {
 		LOGGER.info("Deleting the Media by UUID :" + mediaId);
@@ -1443,7 +1447,8 @@ public class H2Database implements Database {
 		PreparedStatement ps = null;
 
 		try {
-			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_DELETE_MEDIA_UUID, new Object[] { mediaId.toString() });
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_DELETE_MEDIA_UUID,
+					new Object[] { mediaId.toString() });
 
 			ps.executeUpdate();
 
@@ -1457,16 +1462,17 @@ public class H2Database implements Database {
 			SQLHelper.closeConnection(conn);
 		}
 	}
-	
+
 	@Override
-	public void deleteFirstUndeliveredStanza(Integer stanzaCount) throws DbException {
+	public void deleteFirstUndeliveredStanza(int stanzaCount) throws DbException {
 		LOGGER.info("Deleting First Undelivered Stanza :" + stanzaCount);
 
 		Connection conn = getConnection();
 		PreparedStatement ps = null;
 
 		try {
-			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.DELETE_FIRST_UNDELIVERED_STANZAS, new Object[] { stanzaCount.toString() });
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.DELETE_FIRST_UNDELIVERED_STANZAS,
+					new Object[] { stanzaCount });
 
 			ps.executeUpdate();
 
@@ -1479,9 +1485,9 @@ public class H2Database implements Database {
 			SQLHelper.closeStatement(ps);
 			SQLHelper.closeConnection(conn);
 		}
-		
+
 	}
-	
+
 	@Override
 	public void persistUndeliverStanza(Stanza stanza) throws DbException {
 		LOGGER.info("Persisting Undelivered Stanza :" + stanza);
@@ -1490,7 +1496,8 @@ public class H2Database implements Database {
 		PreparedStatement ps = null;
 
 		try {
-			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_PERSIST_UNDELIVERD_STANZA, new Object[] { ObjectUtils.serializeObject(stanza) });
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_PERSIST_UNDELIVERD_STANZA,
+					new Object[] { ObjectUtils.serializeObject(stanza) });
 
 			ps.executeUpdate();
 
@@ -1503,9 +1510,9 @@ public class H2Database implements Database {
 			SQLHelper.closeStatement(ps);
 			SQLHelper.closeConnection(conn);
 		}
-		
+
 	}
-	
+
 	@Override
 	public void deleteAllUndeliverStanzas() throws DbException {
 		LOGGER.info("Deleting all Undelivered Stanza :");
@@ -1514,7 +1521,8 @@ public class H2Database implements Database {
 		PreparedStatement ps = null;
 
 		try {
-			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_DELETE_UNDELIVERD_STANZA, new Object[] { });
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_TRUNCATE_UNDELIVERD_STANZA_TABLE,
+					new Object[] {});
 
 			ps.executeUpdate();
 
@@ -1527,9 +1535,9 @@ public class H2Database implements Database {
 			SQLHelper.closeStatement(ps);
 			SQLHelper.closeConnection(conn);
 		}
-		
+
 	}
-	
+
 	@Override
 	public List<Stanza> fetchAllUndeliverStanzas() throws DbException {
 		LOGGER.info("Fetching all undelivers Stanzas : ");
@@ -1538,20 +1546,12 @@ public class H2Database implements Database {
 
 		try {
 
-			List<Stanza> stanzas = SQLHelper.query(conn, SQLQuery.FETCH_ALL_UNDELIVERD_STANZAS,
-					new UndeliverStanzaRowMapper());
-			
-			if (!CollectionUtils.isNullOrEmpty(stanzas)) {
-				this.deleteAllUndeliverStanzas();
-			}
-
-			return stanzas;
+			return SQLHelper.query(conn, SQLQuery.FETCH_ALL_UNDELIVERD_STANZAS, new UndeliverStanzaRowMapper());
 
 		} finally {
 
 			SQLHelper.closeConnection(conn);
 		}
 	}
-	
 
 }
