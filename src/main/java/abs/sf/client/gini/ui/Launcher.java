@@ -29,9 +29,7 @@ public class Launcher extends Application {
 		setupPrimaryStage();
 
 		Parent root;
-
 		root = ResourceLoader.getInstance().loadChatController();
-		
 //		if (AppProperties.getInstance().isPreviouslyLoggedin()) {
 //			root = ResourceLoader.getInstance().loadChatController();
 //			initiateBackgroundLogin();
@@ -49,7 +47,7 @@ public class Launcher extends Application {
 	}
 
 	private void setupPrimaryStage() {
-		pStage.initStyle(StageStyle.UNDECORATED);
+		pStage.initStyle(StageStyle.DECORATED);
 		pStage.setResizable(true);
 		pStage.getIcons().add(ResourceLoader.getInstance().loadApplicationIconImage());
 		pStage.setOnCloseRequest((e) -> {

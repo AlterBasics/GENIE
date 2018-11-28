@@ -2,7 +2,7 @@ package abs.sf.client.gini.ui.utils;
 
 import java.io.IOException;
 
-import abs.sf.client.gini.ui.controller.ChatController;
+import abs.sf.client.gini.ui.controller.ChatController1;
 import abs.sf.client.gini.ui.controller.LoginController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -40,7 +40,7 @@ public class ResourceLoader {
 	}
 	
 	/**
-	 * Load {@link ChatController} with fxml {@link Resources#CHAT_VIEW_FXML}
+	 * Load {@link ChatController1} with fxml {@link Resources#CHAT_VIEW_FXML}
 	 * @return
 	 * @throws IOException
 	 */

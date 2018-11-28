@@ -27,8 +27,8 @@
 			</columnConstraints>
 			<rowConstraints>
 				<RowConstraints maxHeight="149.0" minHeight="10.0" prefHeight="36.0" vgrow="SOMETIMES" />
-				<RowConstraints maxHeight="226.0" minHeight="10.0" prefHeight="133.0" vgrow="SOMETIMES" />
-				<RowConstraints maxHeight="149.0" minHeight="10.0" prefHeight="57.0" vgrow="SOMETIMES" />
+				<RowConstraints maxHeight="226.0" minHeight="10.0" prefHeight="167.0" vgrow="SOMETIMES" />
+				<RowConstraints maxHeight="149.0" minHeight="10.0" prefHeight="39.0" vgrow="SOMETIMES" />
 				<RowConstraints maxHeight="96.0" minHeight="10.0" prefHeight="42.0" vgrow="SOMETIMES" />
 				<RowConstraints maxHeight="126.0" minHeight="12.0" prefHeight="35.0" />
 				<RowConstraints maxHeight="110.0" minHeight="10.0" prefHeight="47.0" />
@@ -36,28 +36,11 @@
 				<RowConstraints maxHeight="110.0" minHeight="9.0" prefHeight="11.0" />
 			</rowConstraints>
 			<children>
-				<Button id="connectBtn" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#loginButtonAction" stylesheets="@../styles/Login.css" text="Login" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-				<Label text="Username: " textFill="#f89406" GridPane.rowIndex="3" />
-				<TextField fx:id="usernameTextfield" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-				<HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="2">
-					<children>
-						<Button id="MinimizedBtn" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" maxHeight="24.0" maxWidth="68.0" minWidth="45.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="45.0" stylesheets="@../styles/Login.css">
-							<cursor>
-								<Cursor fx:constant="HAND" />
-							</cursor>
-						</Button>
-						<Button id="CloseBtn" fx:id="closeButton" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" maxHeight="24.0" maxWidth="68.0" minWidth="45.0" mnemonicParsing="false" onAction="#closeSystem" prefHeight="24.0" prefWidth="45.0" stylesheets="@../styles/Login.css">
-							<cursor>
-								<Cursor fx:constant="HAND" />
-							</cursor>
-						</Button>
-					</children>
-					<GridPane.margin>
-						<Insets right="10.0" top="10.0" />
-					</GridPane.margin>
-				</HBox>
-				<Label id="passwordTf" text="Password: " textFill="#f89406" GridPane.rowIndex="4" />
-				<PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+				<Button id="connectBtn" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#loginButtonAction" stylesheets="@../styles/Login.css" text="Login" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+				<Label text="Username: " textFill="#f89406" GridPane.rowIndex="2" />
+				<TextField fx:id="usernameTextfield" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+				<Label id="passwordTf" text="Password: " textFill="#f89406" GridPane.rowIndex="3" />
+				<PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 			</children>
 		</GridPane>
 	</center>

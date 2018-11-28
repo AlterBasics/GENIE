@@ -13,7 +13,7 @@ import com.messages.Message;
 import com.messages.MessageType;
 import com.messages.Status;
 
-import abs.sf.client.gini.ui.controller.ChatController;
+import abs.sf.client.gini.ui.controller.ChatController1;
 
 public class Listener implements Runnable {
 	//private static final Logger logger = LoggerFactory.getLogger(Listener.class);
@@ -25,13 +25,13 @@ public class Listener implements Runnable {
 	public String hostname;
 	public int port;
 	public static String username;
-	public ChatController controller;
+	public ChatController1 controller;
 	private static ObjectOutputStream oos;
 	private InputStream is;
 	private ObjectInputStream input;
 	private OutputStream outputStream;
 
-	public Listener(String hostname, int port, String username, ChatController controller) {
+	public Listener(String hostname, int port, String username, ChatController1 controller) {
 		this.hostname = hostname;
 		this.port = port;
 		Listener.username = username;

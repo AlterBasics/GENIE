@@ -102,7 +102,6 @@ public class LoginController extends APPController implements Initializable {
 											@Override
 											public void run() {
 												showChatView();
-
 											}
 										});
 
