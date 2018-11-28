@@ -559,68 +559,8 @@ public final class DbManager {
 		this.database.addOrUpdateUserProfileData(userProfileData);
 	}
 
-	private void addUserProfile(UserProfileData userProfileData) throws DbException {
+	public void addUserProfile(UserProfileData userProfileData) throws DbException {
 		this.database.addUserProfile(userProfileData);
-		// ContentValues contentValues = new ContentValues();
-		// contentValues.put(UserProfileTable.COLUMN_JID,
-		// userProfileData.getJabberId().getBareJID());
-		// contentValues.put(UserProfileTable.COLUMN_FIRST_NAME,
-		// userProfileData.getFirstName());
-		// contentValues.put(UserProfileTable.COLUMN_MIDDLE_NAME,
-		// userProfileData.getMiddleName());
-		// contentValues.put(UserProfileTable.COLUMN_LAST_NAME,
-		// userProfileData.getLastName());
-		// contentValues.put(UserProfileTable.COLUMN_NICK_NAME,
-		// userProfileData.getNickName());
-		// contentValues.put(UserProfileTable.COLUMN_EMAIL,
-		// userProfileData.getEmail());
-		// contentValues.put(UserProfileTable.COLUMN_PHONE,
-		// userProfileData.getPhone());
-		// contentValues.put(UserProfileTable.COLUMN_GENDER,
-		// userProfileData.getGender());
-		// contentValues.put(UserProfileTable.COLUMN_BDAY,
-		// userProfileData.getBday());
-		//
-		// if (userProfileData.getAddress() != null) {
-		// UserProfileData.Address address = userProfileData.getAddress();
-		//
-		// contentValues.put(UserProfileTable.COLUMN_ADDRESS_HOME,
-		// address.getHome());
-		// contentValues.put(UserProfileTable.COLUMN_ADDRESS_STREET,
-		// address.getStreet());
-		// contentValues.put(UserProfileTable.COLUMN_ADDRESS_LOCALITY,
-		// address.getLocality());
-		// contentValues.put(UserProfileTable.COLUMN_ADDRESS_CITY,
-		// address.getCity());
-		// contentValues.put(UserProfileTable.COLUMN_ADDRESS_STATE,
-		// address.getState());
-		// contentValues.put(UserProfileTable.COLUMN_ADDRESS_COUNTRY,
-		// address.getCountry());
-		// contentValues.put(UserProfileTable.COLUMN_ADDRESS_PCODE,
-		// address.getPcode());
-		// }
-		//
-		// if (userProfileData.getAvtar() != null) {
-		// UserProfileData.UserAvtar avtar = userProfileData.getAvtar();
-		//
-		// if (StringUtils.isNullOrEmpty(avtar.getBase64EncodedImage())) {
-		// contentValues.put(UserProfileTable.COLUMN_AVATAR, new byte[0]);
-		//
-		// } else {
-		// contentValues.put(UserProfileTable.COLUMN_AVATAR,
-		// Base64.decode(avtar.getBase64EncodedImage(), Base64.DEFAULT));
-		// }
-		//
-		// contentValues.put(UserProfileTable.COLUMN_AVATAR_MEDIA_TYPE,
-		// avtar.getImageType());
-		// }
-		//
-		// if (userProfileData.getDescription() != null) {
-		// contentValues.put(UserProfileTable.COLUMN_ABOUT,
-		// userProfileData.getDescription());
-		// }
-		//
-		// return dbHelper.insert(UserProfileTable.TABLE_NAME, contentValues);
 	}
 
 	public void updateUserProfile(UserProfileData userProfileData) throws DbException {

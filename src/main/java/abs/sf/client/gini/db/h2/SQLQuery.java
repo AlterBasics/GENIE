@@ -247,7 +247,7 @@ public class SQLQuery {
 			+ UserProfileTable.COLUMN_ADDRESS_CITY + " , " + UserProfileTable.COLUMN_ADDRESS_STATE + " , "
 			+ UserProfileTable.COLUMN_ADDRESS_COUNTRY + " , " + UserProfileTable.COLUMN_ADDRESS_PCODE + " , "
 			+ UserProfileTable.COLUMN_AVATAR + " , "   + UserProfileTable.COLUMN_AVATAR_MEDIA_TYPE + " , "
-			+ UserProfileTable.COLUMN_ABOUT +  ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			+ UserProfileTable.COLUMN_ABOUT +  ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 	public static final String SQL_UPDATE_USER_PROFILE = "UPDATE " + UserProfileTable.TABLE_NAME + " SET "
 			+ UserProfileTable.COLUMN_FIRST_NAME + " = IFNULL( ?, " + UserProfileTable.COLUMN_FIRST_NAME + "),"
