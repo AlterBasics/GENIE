@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,6 +24,8 @@ import abs.ixi.client.xmpp.packet.Presence.PresenceType;
 import abs.ixi.client.xmpp.packet.Roster.RosterItem;
 import abs.ixi.client.xmpp.packet.Stanza;
 import abs.ixi.client.xmpp.packet.UserProfileData;
+import abs.ixi.client.xmpp.packet.UserProfileData.Address;
+import abs.ixi.client.xmpp.packet.UserProfileData.UserAvtar;
 import abs.sf.client.gini.db.Database;
 import abs.sf.client.gini.db.exception.DbException;
 import abs.sf.client.gini.db.mapper.ChatLineRowMapper;
@@ -1147,7 +1150,7 @@ public class H2Database implements Database {
 		Connection conn = getConnection();
 
 		try {
-			return (UserPresence) SQLHelper.query(conn, SQLQuery.FETCH_PRESENCE_DETAILS, new Object[] { userJID },
+			return SQLHelper.queryForObject(conn, SQLQuery.FETCH_PRESENCE_DETAILS, new Object[] { userJID },
 					new PresenceRowMapper());
 
 		} finally {
@@ -1219,7 +1222,34 @@ public class H2Database implements Database {
 							userProfileData.getAddress() == null ? null : userProfileData.getAddress(),
 							userProfileData.getAvtar(), userProfileData.getDescription() });
 
+			ps = conn.prepareStatement(SQLQuery.SQL_INSERT_USER_PROFILE);
+
+			ps.setString(1, userProfileData.getJabberId().getBareJID());
+			ps.setString(2, userProfileData.getFirstName());
+
+			if (userProfileData.getAddress() != null) {
+				Address address = userProfileData.getAddress();
+
+				ps.setString(10, address.getHome());
+
+			} else {
+				ps.setString(10, null);
+
+			}
+
+			if (userProfileData.getAvtar() != null) {
+				UserAvtar avatar = userProfileData.getAvtar();
+
+				ps.setBytes(15, Base64.getDecoder().decode(avatar.getBase64EncodedImage()));
+				ps.setString(16, avatar.getImageType());
+
+			} else {
+				ps.setBytes(15, null);
+				ps.setString(16, null);
+			}
+
 			ps.executeUpdate();
+
 		} catch (SQLException e) {
 
 			LOGGER.warning("Failed to Add Profile of the user ");

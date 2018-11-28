@@ -721,7 +721,7 @@ public final class DbManager {
 		return this.database.getUserProfileData(userJID);
 	}
 
-	public InputStream getUserAvatarBytes(String userJID) throws DbException {
+	public InputStream getUserAvatar(String userJID) throws DbException {
 		return this.database.getUserAvatarBytes(userJID);
 	}
 

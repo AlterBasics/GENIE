@@ -261,15 +261,15 @@ public class SQLQuery {
 			+ UserProfileTable.COLUMN_BDAY + " = IFNULL( ?, " + UserProfileTable.COLUMN_BDAY + "),"
 			+ UserProfileTable.COLUMN_ADDRESS_HOME + " = IFNULL( ?, " + UserProfileTable.COLUMN_ADDRESS_HOME + "),"
 			+ UserProfileTable.COLUMN_ADDRESS_STREET + " = IFNULL( ?, " + UserProfileTable.COLUMN_ADDRESS_STREET + "),"
-			+ UserProfileTable.COLUMN_ADDRESS_LOCALITY + " = IFNULL( ?, " + UserProfileTable.COLUMN_ADDRESS_LOCALITY
-			+ ")," + UserProfileTable.COLUMN_ADDRESS_CITY + " = IFNULL( ?, " + UserProfileTable.COLUMN_ADDRESS_CITY
-			+ ")," + UserProfileTable.COLUMN_ADDRESS_STATE + " = IFNULL( ?, " + UserProfileTable.COLUMN_ADDRESS_STATE
-			+ ")," + UserProfileTable.COLUMN_ADDRESS_COUNTRY + " = IFNULL( ?, "
-			+ UserProfileTable.COLUMN_ADDRESS_COUNTRY + ")," + UserProfileTable.COLUMN_ADDRESS_PCODE + " = IFNULL( ?, "
-			+ UserProfileTable.COLUMN_ADDRESS_PCODE + ")," + UserProfileTable.COLUMN_AVATAR + " = IFNULL( ?, "
-			+ UserProfileTable.COLUMN_AVATAR + ")," + UserProfileTable.COLUMN_AVATAR_MEDIA_TYPE + " = IFNULL( ?, "
-			+ UserProfileTable.COLUMN_AVATAR_MEDIA_TYPE + ")," + UserProfileTable.COLUMN_ABOUT + " = IFNULL( ?, "
-			+ UserProfileTable.COLUMN_ABOUT + ")" + " WHERE " + UserProfileTable.COLUMN_JID + " = ?";
+			+ UserProfileTable.COLUMN_ADDRESS_LOCALITY + " = IFNULL( ?, " + UserProfileTable.COLUMN_ADDRESS_LOCALITY+ "),"
+			+ UserProfileTable.COLUMN_ADDRESS_CITY + " = IFNULL( ?, " + UserProfileTable.COLUMN_ADDRESS_CITY+ "),"
+			+ UserProfileTable.COLUMN_ADDRESS_STATE + " = IFNULL( ?, " + UserProfileTable.COLUMN_ADDRESS_STATE + "),"
+			+ UserProfileTable.COLUMN_ADDRESS_COUNTRY + " = IFNULL( ?, " + UserProfileTable.COLUMN_ADDRESS_COUNTRY + ")," 
+			+ UserProfileTable.COLUMN_ADDRESS_PCODE + " = IFNULL( ?, "	+ UserProfileTable.COLUMN_ADDRESS_PCODE + ")," 
+			+ UserProfileTable.COLUMN_AVATAR + " = IFNULL( ?, "	+ UserProfileTable.COLUMN_AVATAR + ")," 
+			+ UserProfileTable.COLUMN_AVATAR_MEDIA_TYPE + " = IFNULL( ?, " + UserProfileTable.COLUMN_AVATAR_MEDIA_TYPE + "),"
+			+ UserProfileTable.COLUMN_ABOUT + " = IFNULL( ?, " + UserProfileTable.COLUMN_ABOUT + ")" 
+			+ " WHERE " + UserProfileTable.COLUMN_JID + " = ?";
 
 	public static final String SQL_INSERT_STORE_MEDIA = "INSERT INTO " + MediaStoreTable.TABLE_NAME + " ( "
 			+ MediaStoreTable.COL_MEDIA_ID + " , " + MediaStoreTable.COL_MEDIA_THUMB + " , "

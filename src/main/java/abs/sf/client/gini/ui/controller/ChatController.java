@@ -2,6 +2,8 @@ package abs.sf.client.gini.ui.controller;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import com.client.chatwindow.CellRenderer;
@@ -85,6 +87,64 @@ public class ChatController implements Initializable {
 
 	private double xOffset;
 	private double yOffset;
+
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		try {
+			setImageLabel();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		/* Drag and Drop */
+		borderPane.setOnMousePressed(event -> {
+			xOffset = Launcher.getPrimaryStage().getX() - event.getScreenX();
+			yOffset = Launcher.getPrimaryStage().getY() - event.getScreenY();
+			borderPane.setCursor(Cursor.CLOSED_HAND);
+		});
+
+		borderPane.setOnMouseDragged(event -> {
+			Launcher.getPrimaryStage().setX(event.getScreenX() + xOffset);
+			Launcher.getPrimaryStage().setY(event.getScreenY() + yOffset);
+
+		});
+
+		borderPane.setOnMouseReleased(event -> {
+			borderPane.setCursor(Cursor.DEFAULT);
+		});
+
+		List<User> user = new ArrayList<>();
+		user.add(new User("dharmu"));
+		user.add(new User("Vishal"));
+		user.add(new User("Akhil"));
+		ObservableList<User> list = FXCollections.observableList(user);
+		
+		this.userList.setItems(list);
+		
+		statusComboBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				try {
+					Listener.sendStatusUpdate(Status.valueOf(newValue.toUpperCase()));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
+		/*
+		 * Added to prevent the enter from adding a new line to inputMessageBox
+		 */
+		messageBox.addEventFilter(KeyEvent.KEY_PRESSED, ke -> {
+			if (ke.getCode().equals(KeyCode.ENTER)) {
+				try {
+					sendButtonAction();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				ke.consume();
+			}
+		});
+
+	}
 
 	public void sendButtonAction() throws IOException {
 		String msg = messageBox.getText();
@@ -261,56 +321,6 @@ public class ChatController implements Initializable {
 		Thread t = new Thread(task);
 		t.setDaemon(true);
 		t.start();
-	}
-
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		try {
-			setImageLabel();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		/* Drag and Drop */
-		borderPane.setOnMousePressed(event -> {
-			xOffset = Launcher.getPrimaryStage().getX() - event.getScreenX();
-			yOffset = Launcher.getPrimaryStage().getY() - event.getScreenY();
-			borderPane.setCursor(Cursor.CLOSED_HAND);
-		});
-
-		borderPane.setOnMouseDragged(event -> {
-			Launcher.getPrimaryStage().setX(event.getScreenX() + xOffset);
-			Launcher.getPrimaryStage().setY(event.getScreenY() + yOffset);
-
-		});
-
-		borderPane.setOnMouseReleased(event -> {
-			borderPane.setCursor(Cursor.DEFAULT);
-		});
-
-		statusComboBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
-			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				try {
-					Listener.sendStatusUpdate(Status.valueOf(newValue.toUpperCase()));
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		});
-
-		/*
-		 * Added to prevent the enter from adding a new line to inputMessageBox
-		 */
-		messageBox.addEventFilter(KeyEvent.KEY_PRESSED, ke -> {
-			if (ke.getCode().equals(KeyCode.ENTER)) {
-				try {
-					sendButtonAction();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				ke.consume();
-			}
-		});
-
 	}
 
 	public void setImageLabel(String selectedPicture) {
