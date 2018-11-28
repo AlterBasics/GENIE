@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.chrono.IsoEra;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashSet;
@@ -1214,39 +1215,64 @@ public class H2Database implements Database {
 		PreparedStatement ps = null;
 
 		try {
-			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_INSERT_USER_PROFILE,
-					new Object[] { userProfileData.getJabberId().getBareJID(), userProfileData.getFirstName(),
-							userProfileData.getMiddleName(), userProfileData.getLastName(),
-							userProfileData.getNickName(), userProfileData.getEmail(), userProfileData.getPhone(),
-							userProfileData.getGender(), userProfileData.getBday(),
-							userProfileData.getAddress() == null ? null : userProfileData.getAddress(),
-							userProfileData.getAvtar(), userProfileData.getDescription() });
+//			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_INSERT_USER_PROFILE,
+//					new Object[] { userProfileData.getJabberId().getBareJID(), userProfileData.getFirstName(),
+//							userProfileData.getMiddleName(), userProfileData.getLastName(),
+//							userProfileData.getNickName(), userProfileData.getEmail(), userProfileData.getPhone(),
+//							userProfileData.getGender(), userProfileData.getBday(),
+//							userProfileData.getAddress() == null ? null : userProfileData.getAddress(),
+//							userProfileData.getAvtar(), userProfileData.getDescription() });
 
 			ps = conn.prepareStatement(SQLQuery.SQL_INSERT_USER_PROFILE);
 
 			ps.setString(1, userProfileData.getJabberId().getBareJID());
 			ps.setString(2, userProfileData.getFirstName());
+			ps.setString(3, userProfileData.getMiddleName());
+			ps.setString(4, userProfileData.getLastName());
+			ps.setString(5, userProfileData.getNickName());
+			ps.setString(6, userProfileData.getEmail());
+			ps.setString(7, userProfileData.getPhone());
+			ps.setString(8, userProfileData.getGender());
+			ps.setString(9, userProfileData.getBday());
 
 			if (userProfileData.getAddress() != null) {
 				Address address = userProfileData.getAddress();
 
 				ps.setString(10, address.getHome());
+				ps.setString(11, address.getStreet());
+				ps.setString(12, address.getLocality());
+				ps.setString(13, address.getCity());
+				ps.setString(14, address.getState());
+				ps.setString(15, address.getCountry());
+				ps.setString(16, address.getPcode());
 
 			} else {
 				ps.setString(10, null);
-
+				ps.setString(11, null);
+				ps.setString(12, null);
+				ps.setString(13, null);
+				ps.setString(14, null);
+				ps.setString(15, null);
+				ps.setString(16, null);
+				
 			}
 
 			if (userProfileData.getAvtar() != null) {
 				UserAvtar avatar = userProfileData.getAvtar();
 
-				ps.setBytes(15, Base64.getDecoder().decode(avatar.getBase64EncodedImage()));
-				ps.setString(16, avatar.getImageType());
+				ps.setBytes(17, Base64.getDecoder().decode(avatar.getBase64EncodedImage()));
+				ps.setString(18, avatar.getImageType());
 
 			} else {
-				ps.setBytes(15, null);
-				ps.setString(16, null);
+				ps.setBytes(17, null);
+				ps.setString(18, null);
 			}
+			
+			if (userProfileData.getDescription() != null) {
+				ps.setString(19, userProfileData.getDescription());
+			}else {
+			    ps.setString(19, null);
+		    }
 
 			ps.executeUpdate();
 
@@ -1270,8 +1296,107 @@ public class H2Database implements Database {
 		PreparedStatement ps = null;
 
 		try {
-			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_USER_PROFILE,
-					new Object[] { userProfileData.getJabberId().getBareJID() });
+//			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_USER_PROFILE,
+//					new Object[] { userProfileData.getJabberId().getBareJID() });
+			
+			ps = conn.prepareStatement(SQLQuery.SQL_UPDATE_USER_PROFILE);
+			
+			if(userProfileData.getFirstName() != null) {
+				ps.setString(1,userProfileData.getFirstName());
+			}
+			else {
+				ps.setString(1, null);
+			}
+			
+			if(userProfileData.getMiddleName() != null) {
+				ps.setString(2,userProfileData.getMiddleName());
+			}
+			else {
+				ps.setString(2, null);
+			}
+			
+			if(userProfileData.getLastName() != null) {
+				ps.setString(3,userProfileData.getLastName());
+			}
+			else {
+				ps.setString(3, null);
+			}
+			
+			if(userProfileData.getNickName() != null) {
+				ps.setString(4,userProfileData.getNickName());
+			}
+			else {
+				ps.setString(4, null);
+			}
+			
+			if(userProfileData.getEmail() != null) {
+				ps.setString(5,userProfileData.getEmail());
+			}
+			else {
+				ps.setString(5, null);
+			}
+			
+			if(userProfileData.getPhone() != null) {
+				ps.setString(6,userProfileData.getPhone());
+			}
+			else {
+				ps.setString(6, null);
+			}
+			
+			if(userProfileData.getGender() != null) {
+				ps.setString(7,userProfileData.getGender());
+			}
+			else {
+				ps.setString(7, null);
+			}
+
+			if(userProfileData.getBday() != null) {
+				ps.setString(8,userProfileData.getBday());
+			}
+			else {
+				ps.setString(8, null);
+			}
+			
+			if(userProfileData.getAddress() != null) {
+				Address address = userProfileData.getAddress();
+				
+				ps.setString(9, address.getHome());
+				ps.setString(10, address.getStreet());
+				ps.setString(11, address.getLocality());
+				ps.setString(12, address.getCity());
+				ps.setString(13, address.getState());
+				ps.setString(14, address.getCountry());
+				ps.setString(15, address.getPcode());
+				
+			}
+			else {
+				ps.setString(9, null);
+				ps.setString(10, null);
+				ps.setString(11, null);
+				ps.setString(12, null);
+				ps.setString(13, null);
+				ps.setString(14, null);
+				ps.setString(15, null);
+			}
+			
+			if (userProfileData.getAvtar() != null) {
+				UserAvtar avatar = userProfileData.getAvtar();
+
+				ps.setBytes(16, Base64.getDecoder().decode(avatar.getBase64EncodedImage()));
+				ps.setString(17, avatar.getImageType());
+
+			} else {
+				ps.setBytes(16, null);
+				ps.setString(17, null);
+			}
+			
+           if (userProfileData.getDescription() != null) {
+        	  
+				ps.setString(18, userProfileData.getDescription());
+			}
+           else {
+			    ps.setString(18, null);
+		    }
 
 			ps.executeUpdate();
 		} catch (SQLException e) {
