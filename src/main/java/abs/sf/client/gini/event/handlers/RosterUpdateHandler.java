@@ -1,5 +1,8 @@
 package abs.sf.client.gini.event.handlers;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import abs.ixi.client.core.event.Event;
 import abs.ixi.client.core.event.Event.EventType;
 import abs.ixi.client.core.event.EventHandler;
@@ -10,36 +13,43 @@ import abs.sf.client.gini.db.object.RosterTable;
 import abs.sf.client.gini.utils.SFSDKProperties;
 
 /**
- * {@link EventHandler} implementation to handle
- * {@link EventType#ROSTER_UPDATE} event.
+ * {@link EventHandler} implementation to handle {@link EventType#ROSTER_UPDATE}
+ * event.
  */
 public class RosterUpdateHandler implements EventHandler {
-    @Override
-    public void handle(Event event) {
-        Object source = event.getSource();
+	private static final Logger LOGGER = Logger.getLogger(RosterUpdateHandler.class.getName());
 
-        if (source instanceof Roster) {
-            Roster roster = (Roster) source;
+	@Override
+	public void handle(Event event) {
+		try {
+			Object source = event.getSource();
 
-            int newVer = roster.getVersion();
-            int oldVer = SFSDKProperties.getInstance().getRosterVersion();
+			if (source instanceof Roster) {
+				Roster roster = (Roster) source;
 
-            if (oldVer < newVer && roster.getItems() != null) {
-                synchronized (RosterTable.class) {
+				int newVer = roster.getVersion();
+				int oldVer = SFSDKProperties.getInstance().getRosterVersion();
 
-                    for (Roster.RosterItem item : roster.getItems()) {
-                        if (item.getSubscription() == PresenceSubscription.REMOVE) {
-                            DbManager.getInstance().deleteRosterItem(item);
+				if (oldVer < newVer && roster.getItems() != null) {
+					synchronized (RosterTable.class) {
 
-                        } else {
-                            DbManager.getInstance().addOrUpdateRosterItem(item);
-                        }
-                    }
+						for (Roster.RosterItem item : roster.getItems()) {
+							if (item.getSubscription() == PresenceSubscription.REMOVE) {
+								DbManager.getInstance().deleteRosterItem(item);
 
-                    SFSDKProperties.getInstance().setRosterVersion(newVer);
+							} else {
+								DbManager.getInstance().addOrUpdateRosterItem(item);
+							}
+						}
 
-                }
-            }
-        }
-    }
+						SFSDKProperties.getInstance().setRosterVersion(newVer);
+
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			LOGGER.log(Level.WARNING, "Failed to handle Roster update Event due to " + e.getMessage(), e);
+		}
+	}
 }

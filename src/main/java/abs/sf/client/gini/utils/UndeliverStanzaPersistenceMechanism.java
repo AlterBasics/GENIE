@@ -2,16 +2,28 @@ package abs.sf.client.gini.utils;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import abs.ixi.client.io.UndeliveredStanzaManager;
 import abs.ixi.client.util.CollectionUtils;
 import abs.ixi.client.xmpp.packet.Stanza;
 import abs.sf.client.gini.db.DbManager;
+import abs.sf.client.gini.db.exception.DbException;
 
 public class UndeliverStanzaPersistenceMechanism implements UndeliveredStanzaManager.PersistenceMechanism {
+	private static final Logger LOGGER = Logger.getLogger(UndeliverStanzaPersistenceMechanism.class.getName());
+
 	@Override
 	public void write(Stanza stanza) throws IOException {
-		DbManager.getInstance().persistUndeliverStanza(stanza);
+		try {
+
+			DbManager.getInstance().persistUndeliverStanza(stanza);
+
+		} catch (DbException e) {
+			LOGGER.log(Level.WARNING, "Failed to write stanza", e);
+			throw new IOException(e);
+		}
 	}
 
 	@Override
@@ -25,19 +37,35 @@ public class UndeliverStanzaPersistenceMechanism implements UndeliveredStanzaMan
 
 	@Override
 	public void remove(int stanzaCount) throws IOException {
-		if (stanzaCount > 0) {
-			DbManager.getInstance().deleteFirstUndeliveredStanza(stanzaCount);
+		try {
+			if (stanzaCount > 0) {
+				DbManager.getInstance().deleteFirstUndeliveredStanza(stanzaCount);
+			}
+		} catch (DbException e) {
+			LOGGER.log(Level.WARNING, "Failed to remove stanza", e);
+			throw new IOException(e);
 		}
+
 	}
 
 	@Override
 	public List<Stanza> readAll() throws IOException {
-		return DbManager.getInstance().fetchAllUndeliverStanzas();
+		try {
+			return DbManager.getInstance().fetchAllUndeliverStanzas();
+		} catch (DbException e) {
+			LOGGER.log(Level.WARNING, "Failed to read stanza ", e);
+			throw new IOException(e);
+		}
 	}
 
 	@Override
 	public void truncateUndeliverStanzas() {
-		DbManager.getInstance().deleteAllUndeliverStanzas();
+		try {
+			DbManager.getInstance().deleteAllUndeliverStanzas();
+		} catch (DbException e) {
+			LOGGER.log(Level.WARNING, "Failed to t stanza ", e);
+		}
+
 	}
 
 }
