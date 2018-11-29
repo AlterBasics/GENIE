@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 
+import abs.ixi.client.core.InitializationErrorException;
 import abs.ixi.client.util.CollectionUtils;
 import abs.ixi.client.util.StringUtils;
 import abs.ixi.client.xmpp.InvalidJabberId;
@@ -15,6 +16,7 @@ import abs.ixi.client.xmpp.packet.Roster.RosterItem;
 import abs.ixi.client.xmpp.packet.Stanza;
 import abs.ixi.client.xmpp.packet.UserProfileData;
 import abs.sf.client.gini.db.exception.DbException;
+import abs.sf.client.gini.db.h2.H2Database;
 import abs.sf.client.gini.db.object.ChatStoreTable;
 import abs.sf.client.gini.db.object.ConversationTable;
 import abs.sf.client.gini.db.object.RosterTable;
@@ -32,16 +34,27 @@ public final class DbManager {
 
 	private static DbManager instance;
 
-	private DbManager() {
+	private DbManager() throws DbException {
+		this.database = new H2Database();
+		try {
 
+			this.database.init();
+
+		} catch (InitializationErrorException e) {
+			throw new DbException("Faied to initilize  database");
+		}
 	}
 
-	public synchronized static DbManager getInstance() {
+	public synchronized static DbManager getInstance() throws DbException {
 		if (instance == null) {
 			instance = new DbManager();
 		}
 
 		return instance;
+	}
+
+	public void createDatabaseSchema() throws DbException {
+		this.database.createDatabaseSchema();
 	}
 
 	/**
@@ -565,96 +578,6 @@ public final class DbManager {
 
 	public void updateUserProfile(UserProfileData userProfileData) throws DbException {
 		this.database.updateUserProfile(userProfileData);
-		// ContentValues contentValues = new ContentValues();
-		//
-		// if (userProfileData.getFirstName() != null)
-		// contentValues.put(UserProfileTable.COLUMN_FIRST_NAME,
-		// userProfileData.getFirstName());
-		//
-		// if (userProfileData.getMiddleName() != null)
-		// contentValues.put(UserProfileTable.COLUMN_MIDDLE_NAME,
-		// userProfileData.getMiddleName());
-		//
-		// if (userProfileData.getLastName() != null)
-		// contentValues.put(UserProfileTable.COLUMN_LAST_NAME,
-		// userProfileData.getLastName());
-		//
-		// if (userProfileData.getNickName() != null)
-		// contentValues.put(UserProfileTable.COLUMN_NICK_NAME,
-		// userProfileData.getNickName());
-		//
-		// if (userProfileData.getEmail() != null)
-		// contentValues.put(UserProfileTable.COLUMN_EMAIL,
-		// userProfileData.getEmail());
-		//
-		// if (userProfileData.getPhone() != null)
-		// contentValues.put(UserProfileTable.COLUMN_PHONE,
-		// userProfileData.getPhone());
-		//
-		// if (userProfileData.getGender() != null)
-		// contentValues.put(UserProfileTable.COLUMN_GENDER,
-		// userProfileData.getGender());
-		//
-		// if (userProfileData.getBday() != null)
-		// contentValues.put(UserProfileTable.COLUMN_BDAY,
-		// userProfileData.getBday());
-		//
-		// if (userProfileData.getAddress() != null) {
-		// UserProfileData.Address address = userProfileData.getAddress();
-		//
-		// if (address.getHome() != null)
-		// contentValues.put(UserProfileTable.COLUMN_ADDRESS_HOME,
-		// address.getHome());
-		//
-		// if (address.getStreet() != null)
-		// contentValues.put(UserProfileTable.COLUMN_ADDRESS_STREET,
-		// address.getStreet());
-		//
-		// if (address.getLocality() != null)
-		// contentValues.put(UserProfileTable.COLUMN_ADDRESS_LOCALITY,
-		// address.getLocality());
-		//
-		// if (address.getCity() != null)
-		// contentValues.put(UserProfileTable.COLUMN_ADDRESS_CITY,
-		// address.getCity());
-		//
-		// if (address.getState() != null)
-		// contentValues.put(UserProfileTable.COLUMN_ADDRESS_STATE,
-		// address.getState());
-		//
-		// if (address.getCountry() != null)
-		// contentValues.put(UserProfileTable.COLUMN_ADDRESS_COUNTRY,
-		// address.getCountry());
-		//
-		// if (address.getPcode() != null)
-		// contentValues.put(UserProfileTable.COLUMN_ADDRESS_PCODE,
-		// address.getPcode());
-		// }
-		//
-		// if (userProfileData.getAvtar() != null) {
-		// UserProfileData.UserAvtar avtar = userProfileData.getAvtar();
-		//
-		// if (StringUtils.isNullOrEmpty(avtar.getBase64EncodedImage())) {
-		// contentValues.put(UserProfileTable.COLUMN_AVATAR, new byte[0]);
-		//
-		// } else {
-		// contentValues.put(UserProfileTable.COLUMN_AVATAR,
-		// Base64.decode(avtar.getBase64EncodedImage(), Base64.DEFAULT));
-		// }
-		//
-		// contentValues.put(UserProfileTable.COLUMN_AVATAR_MEDIA_TYPE,
-		// avtar.getImageType());
-		// }
-		//
-		// if (userProfileData.getDescription() != null) {
-		// contentValues.put(UserProfileTable.COLUMN_ABOUT,
-		// userProfileData.getDescription());
-		// }
-		//
-		// return dbHelper.update(UserProfileTable.TABLE_NAME, contentValues,
-		// UserProfileTable.COLUMN_JID + " = ?",
-		// new String[] { userProfileData.getJabberId().getBareJID() });
-
 	}
 
 	public UserProfileData getUserProfileData(String userJID) throws DbException {

@@ -22,7 +22,7 @@ public class StreamStartHandler implements EventHandler {
         updateUserProfileData();
     }
 
-    private void updateUserProfileData() {
+	private void updateUserProfileData() {
         AndroidUserManager userManager = (AndroidUserManager) Platform.getInstance().getUserManager();
         userManager.reloadUserData();
     }

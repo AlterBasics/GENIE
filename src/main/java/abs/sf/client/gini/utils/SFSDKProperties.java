@@ -7,16 +7,18 @@ import abs.sf.client.gini.exception.StringflowErrorException;
 import abs.sf.client.gini.managers.AndroidChatManager;
 
 public class SFSDKProperties {
-	public static final String SDK_PROPERTIES_RESOURCE = "conf/sf_sdk.properties";
+	private static final String SDK_PROPERTIES_RESOURCE = "conf/sf_sdk.properties";
 
-	public static final String ROSTER_VERSION = "roster_version";
-	public static final String DEVIICE_TOKEN = "device_token";
-	public static final String NOTIFICATION_SERVICE = "notification_service";
-	public static final String DOMAIN_NAME = "domain_name";
-	public static final String IS_CHAT_MARKERS_ENABLED = "is_chat_markers_enabled";
-	public static final String IS_MESSAGE_DELIVERY_RECEIPT_ENABLED = "is_message_delivery_receipt_enabled";
-	public static final String IS_CHAT_STATE_NOTIFICATION_ENABLED = "is_chat_state_notification_enabled";
-	public static final String IS_MEDIA_TRANSFER_ENABLED = "is_media_transfer_enabled";
+	private static final String ROSTER_VERSION = "roster_version";
+	private static final String DEVIICE_TOKEN = "device_token";
+	private static final String NOTIFICATION_SERVICE = "notification_service";
+	private static final String DOMAIN_NAME = "domain_name";
+	private static final String IS_CHAT_MARKERS_ENABLED = "is_chat_markers_enabled";
+	private static final String IS_MESSAGE_DELIVERY_RECEIPT_ENABLED = "is_message_delivery_receipt_enabled";
+	private static final String IS_CHAT_STATE_NOTIFICATION_ENABLED = "is_chat_state_notification_enabled";
+	private static final String IS_MEDIA_TRANSFER_ENABLED = "is_media_transfer_enabled";
+
+	private static final String H2_DB_FILE_PATH = "H2_DB_FILE_PATH";
 
 	private SFProperties sfProperties;
 	public static SFSDKProperties instance;
@@ -41,6 +43,14 @@ public class SFSDKProperties {
 		}
 
 		return instance;
+	}
+
+	public void setH2DbFilePath(String h2DbFilePath) throws StringflowErrorException {
+		this.sfProperties.getEditor().putString(H2_DB_FILE_PATH, h2DbFilePath).apply();
+	}
+
+	public String getH2DbFilePath() {
+		return this.sfProperties.getProperty(H2_DB_FILE_PATH, StringUtils.EMPTY);
 	}
 
 	public void setRosterVersion(int version) {

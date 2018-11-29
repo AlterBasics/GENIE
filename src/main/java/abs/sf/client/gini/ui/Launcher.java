@@ -29,14 +29,14 @@ public class Launcher extends Application {
 		setupPrimaryStage();
 
 		Parent root;
-		root = ResourceLoader.getInstance().loadChatController();
-//		if (AppProperties.getInstance().isPreviouslyLoggedin()) {
-//			root = ResourceLoader.getInstance().loadChatController();
-//			initiateBackgroundLogin();
-//
-//		} else {
-//			root = ResourceLoader.getInstance().loadLoginController();
-//		}
+		if (AppProperties.getInstance().isPreviouslyLoggedin()) {
+			root = ResourceLoader.getInstance().loadChatController();
+			initiateBackgroundLogin();
+
+		} else {
+			root = ResourceLoader.getInstance().loadLoginController();
+			createDatabaseSchema();
+		}
 
 		Scene mainScene = new Scene(root);
 		mainScene.setRoot(root);
@@ -44,6 +44,18 @@ public class Launcher extends Application {
 		pStage.setScene(mainScene);
 
 		pStage.show();
+	}
+
+	private void createDatabaseSchema() throws StringflowErrorException {
+		try {
+
+			SDKLoader.createDatabaseSchema(AppProperties.getInstance().getH2DatabaseFilePath());
+
+		} catch (StringflowErrorException e) {
+			LOGGER.log(Level.WARNING, "Failed to create datatbase Schema", e);
+			JFXUtils.showStringflowErrorAlert(e.getMessage());
+			throw e;
+		}
 	}
 
 	private void setupPrimaryStage() {

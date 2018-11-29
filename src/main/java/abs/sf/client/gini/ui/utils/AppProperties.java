@@ -97,8 +97,7 @@ public class AppProperties {
 				AppPropertiesName.APPLICATION_DEFAULT_NAME);
 	}
 
-	public static void main(String args[]) {
-		System.out.println(getInstance().getXMPPServerIP());
-
+	public String getH2DatabaseFilePath() {
+		return this.properties.getProperty(AppPropertiesName.APP_H2_DB_FILE_PATH, StringUtils.EMPTY);
 	}
 }

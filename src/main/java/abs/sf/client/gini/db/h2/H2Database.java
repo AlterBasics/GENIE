@@ -2,17 +2,17 @@ package abs.sf.client.gini.db.h2;
 
 import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.chrono.IsoEra;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
+
+import org.h2.jdbcx.JdbcConnectionPool;
 
 import abs.ixi.client.core.InitializationErrorException;
 import abs.ixi.client.util.DateUtils;
@@ -49,18 +49,25 @@ import abs.sf.client.gini.db.object.PresenceTable;
 import abs.sf.client.gini.db.object.RosterTable;
 import abs.sf.client.gini.db.object.UndeliverStanzaTable;
 import abs.sf.client.gini.db.object.UserProfileTable;
+import abs.sf.client.gini.exception.StringflowErrorException;
 import abs.sf.client.gini.messaging.ChatLine;
 import abs.sf.client.gini.messaging.ChatLine.MessageStatus;
 import abs.sf.client.gini.messaging.Conversation;
 import abs.sf.client.gini.messaging.MediaContent;
 import abs.sf.client.gini.messaging.UserPresence;
+import abs.sf.client.gini.utils.SFSDKProperties;
 
 public class H2Database implements Database {
 	private static final Logger LOGGER = Logger.getLogger(H2Database.class.getName());
 
+	private static final String user = "sf sf";
+	private static final String password = "sf";
+
+	private static final String DB_PROPERTIES = "FILE_LOCK=SOCKET;TRACE_LEVEL_FILE=3;TRACE_LEVEL_SYSTEM_OUT=3";
+
 	private String url;
-	private String user;
-	private String password;
+	private String dbFilePath;
+	private JdbcConnectionPool cp;
 
 	private static List<DatabaseTable> tables;
 
@@ -79,14 +86,34 @@ public class H2Database implements Database {
 		tables.add(new UndeliverStanzaTable());
 	}
 
-	public H2Database() {
+	public H2Database() throws DbException {
+		try {
 
+			this.dbFilePath = SFSDKProperties.getInstance().getH2DbFilePath();
+
+			if (StringUtils.isNullOrEmpty(this.dbFilePath)) {
+				throw new DbException("H2 Database file path not found");
+			}
+
+		} catch (StringflowErrorException e) {
+			throw new DbException("Failed to get db file Path due  to " + e.getMessage(), e);
+		}
 	}
 
 	@Override
 	public void init() throws InitializationErrorException {
-		// TODO Auto-generated method stub
+		this.url = buildDbURL();
+		this.cp = JdbcConnectionPool.create(url, user, password);
+	}
 
+	private String buildDbURL() {
+		StringBuilder urlBuilder = new StringBuilder("jdbc:h2:").append(this.dbFilePath);
+
+		if (!StringUtils.isNullOrEmpty(DB_PROPERTIES)) {
+			urlBuilder.append(DB_PROPERTIES);
+		}
+
+		return urlBuilder.toString();
 	}
 
 	private Connection getConnection() throws DbException {
@@ -94,7 +121,7 @@ public class H2Database implements Database {
 
 		try {
 
-			return DriverManager.getConnection(url, user, password);
+			return cp.getConnection();
 
 		} catch (SQLException e) {
 			LOGGER.warning("Error while getting database connection : " + e.getMessage());
@@ -131,8 +158,7 @@ public class H2Database implements Database {
 
 	@Override
 	public void close() {
-		// TODO Auto-generated method stub
-
+		this.cp.dispose();
 	}
 
 	@Override

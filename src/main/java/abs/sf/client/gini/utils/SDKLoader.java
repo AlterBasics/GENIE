@@ -1,3 +1,4 @@
+
 package abs.sf.client.gini.utils;
 
 import java.util.logging.Level;
@@ -10,6 +11,7 @@ import abs.ixi.client.core.Platform;
 import abs.ixi.client.core.event.Event;
 import abs.ixi.client.io.UndeliveredStanzaManager;
 import abs.ixi.client.io.XMPPStreamManager;
+import abs.ixi.client.lang.Supplier;
 import abs.ixi.client.net.ConnectionConfig;
 import abs.ixi.client.net.ConnectionManager;
 import abs.ixi.client.net.XMPPConnection;
@@ -46,9 +48,10 @@ public class SDKLoader {
 	 * @param xmppServerPort xmpp server port
 	 * @param mediaServerIP media server ip address
 	 * @param mediaServerPort media server port
-	 * @throws StringflowErrorException 
+	 * @throws StringflowErrorException
 	 */
-	public static void loadSDK(String xmppServerIP, int xmppServerPort, String mediaServerIP, int mediaServerPort) throws StringflowErrorException {
+	public static void loadSDK(String xmppServerIP, int xmppServerPort, String mediaServerIP, int mediaServerPort)
+			throws StringflowErrorException {
 		if (isSDKLoaded || loadingSDK) {
 			while (loadingSDK)
 				;
@@ -71,9 +74,10 @@ public class SDKLoader {
 	 * @param xmppConnectionconfig
 	 * @param mimeConnectionconfig
 	 * @param provider
-	 * @throws StringflowErrorException 
+	 * @throws StringflowErrorException
 	 */
-	public static void loadSDK(ConnectionConfig xmppConnectionconfig, ConnectionConfig mimeConnectionconfig) throws StringflowErrorException {
+	public static void loadSDK(ConnectionConfig xmppConnectionconfig, ConnectionConfig mimeConnectionconfig)
+			throws StringflowErrorException {
 		if (isSDKLoaded || loadingSDK) {
 			while (loadingSDK)
 				;
@@ -159,4 +163,23 @@ public class SDKLoader {
 		SFSDKProperties.getInstance().setRosterVersion(0);
 		isSDKLoaded = false;
 	}
+
+	public static void createDatabaseSchema(final String h2DbFilePath) throws StringflowErrorException {
+		LOGGER.log(Level.INFO, "Initiating db schema using db file path : ", h2DbFilePath);
+
+		try {
+			SFSDKProperties.getInstance().setH2DbFilePath(h2DbFilePath);
+			DbManager.getInstance().createDatabaseSchema();
+
+		} catch (StringflowErrorException e) {
+			LOGGER.log(Level.WARNING, "Failed to create db schema", e);
+			throw e;
+
+		} catch (DbException e) {
+			LOGGER.log(Level.WARNING, "Failed to create db schema", e);
+			throw new StringflowErrorException(e.getMessage(), e);
+		}
+
+	}
+
 }

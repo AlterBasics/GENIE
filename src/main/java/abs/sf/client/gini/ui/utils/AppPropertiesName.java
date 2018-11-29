@@ -13,4 +13,5 @@ interface AppPropertiesName {
 	String USER_NAME = "user.name";
 	String PASSWORD = "password";
 	String LOGIN_STATUS = "login.status";
+	String APP_H2_DB_FILE_PATH = "app.db.h2db.file.path";
 }
