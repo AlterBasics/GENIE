@@ -4,7 +4,7 @@ import abs.ixi.client.PushNotificationService;
 import abs.ixi.client.core.Platform;
 import abs.ixi.client.util.StringUtils;
 import abs.sf.client.gini.exception.StringflowErrorException;
-import abs.sf.client.gini.managers.AndroidChatManager;
+import abs.sf.client.gini.managers.AppChatManager;
 
 public class SFSDKProperties {
 	private static final String SDK_PROPERTIES_RESOURCE = "conf/sf_sdk.properties";
@@ -101,7 +101,7 @@ public class SFSDKProperties {
 	public void enableChatStateNotification() {
 		this.setIsChatStateNotificationEnabled(true);
 
-		AndroidChatManager chatManager = (AndroidChatManager) Platform.getInstance().getChatManager();
+		AppChatManager chatManager = (AppChatManager) Platform.getInstance().getChatManager();
 
 		if (chatManager != null) {
 			chatManager.setChatStateNotificationEnabled(true);
@@ -118,7 +118,7 @@ public class SFSDKProperties {
 	 */
 	public void enableMessageDeliveryReceipt() {
 		this.setIsMessageDeliveryReceiptEnabled(true);
-		AndroidChatManager chatManager = (AndroidChatManager) Platform.getInstance().getChatManager();
+		AppChatManager chatManager = (AppChatManager) Platform.getInstance().getChatManager();
 
 		if (chatManager != null) {
 			chatManager.setMessageDeliveryReceiptEnabled(true);
@@ -140,7 +140,7 @@ public class SFSDKProperties {
 	 */
 	public void enableChatMarkers() {
 		this.setIsChatMarkersEnabled(true);
-		AndroidChatManager chatManager = (AndroidChatManager) Platform.getInstance().getChatManager();
+		AppChatManager chatManager = (AppChatManager) Platform.getInstance().getChatManager();
 
 		if (chatManager != null) {
 			chatManager.setChatMarkersEnabled(true);
@@ -163,7 +163,7 @@ public class SFSDKProperties {
 	 */
 	public void disableChatStateNotification() {
 		this.setIsChatStateNotificationEnabled(false);
-		AndroidChatManager chatManager = (AndroidChatManager) Platform.getInstance().getChatManager();
+		AppChatManager chatManager = (AppChatManager) Platform.getInstance().getChatManager();
 
 		if (chatManager != null) {
 			chatManager.setChatStateNotificationEnabled(false);
@@ -179,7 +179,7 @@ public class SFSDKProperties {
 	 */
 	public void disableMessageDeliveryReceipt() {
 		this.setIsMessageDeliveryReceiptEnabled(false);
-		AndroidChatManager chatManager = (AndroidChatManager) Platform.getInstance().getChatManager();
+		AppChatManager chatManager = (AppChatManager) Platform.getInstance().getChatManager();
 
 		if (chatManager != null) {
 			chatManager.setMessageDeliveryReceiptEnabled(false);
@@ -195,7 +195,7 @@ public class SFSDKProperties {
 	 */
 	public void disableChatMarkers() {
 		this.setIsChatMarkersEnabled(false);
-		AndroidChatManager chatManager = (AndroidChatManager) Platform.getInstance().getChatManager();
+		AppChatManager chatManager = (AppChatManager) Platform.getInstance().getChatManager();
 
 		if (chatManager != null) {
 			chatManager.setChatMarkersEnabled(false);

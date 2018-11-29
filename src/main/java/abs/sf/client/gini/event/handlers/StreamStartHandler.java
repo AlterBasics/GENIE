@@ -9,7 +9,7 @@ import abs.ixi.client.core.Platform;
 import abs.ixi.client.core.event.Event;
 import abs.ixi.client.core.event.EventHandler;
 import abs.ixi.client.util.StringUtils;
-import abs.sf.client.gini.managers.AndroidUserManager;
+import abs.sf.client.gini.managers.AppUserManager;
 import abs.sf.client.gini.utils.SFSDKProperties;
 
 /**
@@ -33,7 +33,7 @@ public class StreamStartHandler implements EventHandler {
 	}
 
 	private void updateUserProfileData() {
-		AndroidUserManager userManager = (AndroidUserManager) Platform.getInstance().getUserManager();
+		AppUserManager userManager = (AppUserManager) Platform.getInstance().getUserManager();
 		userManager.reloadUserData();
 	}
 
@@ -56,7 +56,7 @@ public class StreamStartHandler implements EventHandler {
 	}
 
 	private void sendChatRoomRequest() {
-		AndroidUserManager userManager = (AndroidUserManager) Platform.getInstance().getUserManager();
+		AppUserManager userManager = (AppUserManager) Platform.getInstance().getUserManager();
 		userManager.sendGetChatRoomListRequest();
 	}
 

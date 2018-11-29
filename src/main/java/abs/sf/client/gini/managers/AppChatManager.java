@@ -6,12 +6,12 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import abs.ixi.client.ChatManager;
 import abs.ixi.client.core.Callback;
 import abs.ixi.client.core.Packet;
-import abs.ixi.client.core.Platform;
 import abs.ixi.client.core.event.Event;
 import abs.ixi.client.core.event.EventHandler;
 import abs.ixi.client.file.sfcm.ContentType;
@@ -35,14 +35,15 @@ import abs.ixi.client.xmpp.packet.MessageMedia;
 import abs.ixi.client.xmpp.packet.MessageSubject;
 import abs.ixi.client.xmpp.packet.MessageThread;
 import abs.sf.client.gini.db.DbManager;
+import abs.sf.client.gini.db.exception.DbException;
 import abs.sf.client.gini.exception.StringflowErrorException;
 import abs.sf.client.gini.messaging.ChatLine;
 import abs.sf.client.gini.messaging.ChatListener;
 import abs.sf.client.gini.messaging.Conversation;
 import abs.sf.client.gini.utils.SFSDKProperties;
 
-public class AndroidChatManager extends ChatManager {
-	private static final Logger LOGGER = Logger.getLogger(AndroidChatManager.class.getName());
+public class AppChatManager extends ChatManager {
+	private static final Logger LOGGER = Logger.getLogger(AppChatManager.class.getName());
 
 	private static final String MEDIA_RECEIVED_TEXT = "You received a media message";
 	private static final String MEDIA_SENT_TEXT = "You sent a media message";
@@ -52,7 +53,7 @@ public class AndroidChatManager extends ChatManager {
 	private boolean isChatStateNotificationEnabled;
 	private boolean isMessageDeliveryReceiptEnabled;
 
-	public AndroidChatManager(XMPPStreamManager streamManager) throws StringflowErrorException {
+	public AppChatManager(XMPPStreamManager streamManager) throws StringflowErrorException {
 		super(streamManager);
 		this.chatListeners = Collections.synchronizedList(new ArrayList<ChatListener>());
 		this.isChatMarkersEnabled = SFSDKProperties.getInstance().isChatMarkersEnabled();
@@ -97,9 +98,10 @@ public class AndroidChatManager extends ChatManager {
 	 * @param toJID
 	 * @param isGroup
 	 * @return
+	 * @throws StringflowErrorException
 	 * @throws InvalidJabberId
 	 */
-	public ChatLine sendTextMessage(String msg, JID toJID, boolean isGroup) {
+	public ChatLine sendTextMessage(String msg, JID toJID, boolean isGroup) throws StringflowErrorException {
 		return this.sendTextMessage(UUIDGenerator.secureId(), msg, toJID, isGroup);
 	}
 
@@ -111,8 +113,10 @@ public class AndroidChatManager extends ChatManager {
 	 * @param toJID
 	 * @param isGroup
 	 * @return
+	 * @throws StringflowErrorException
 	 */
-	public ChatLine sendTextMessage(String conversationId, String msg, JID toJID, boolean isGroup) {
+	public ChatLine sendTextMessage(String conversationId, String msg, JID toJID, boolean isGroup)
+			throws StringflowErrorException {
 		ChatLine chatLine = new ChatLine(conversationId, UUIDGenerator.secureId(), toJID, ChatLine.Direction.SEND);
 
 		chatLine.setContentType(ChatLine.ContentType.TEXT);
@@ -146,9 +150,10 @@ public class AndroidChatManager extends ChatManager {
 	 * @param isGroup Is media receiver is group or not
 	 * @param callback {@link Callback} to know media transmission status
 	 * @return
+	 * @throws StringflowErrorException
 	 */
 	public ChatLine sendMediaMessage(File mediaFile, byte[] mediaThumb, ContentType contentType, JID toJID,
-			boolean isGroup, Callback<String, FileTransfer.FailureReason> callback) {
+			boolean isGroup, Callback<String, FileTransfer.FailureReason> callback) throws StringflowErrorException {
 
 		return this.sendMediaMessage(UUIDGenerator.secureId(), mediaFile, mediaThumb, contentType, toJID, isGroup,
 				callback);
@@ -171,9 +176,11 @@ public class AndroidChatManager extends ChatManager {
 	 * @param isGroup Is media receiver is group or not
 	 * @param callback {@link Callback} to know media transmission status
 	 * @return
+	 * @throws StringflowErrorException
 	 */
 	public ChatLine sendMediaMessage(String conversationId, File mediaFile, byte[] mediaThumb, ContentType contentType,
-			JID toJID, boolean isGroup, Callback<String, FileTransfer.FailureReason> callback) {
+			JID toJID, boolean isGroup, Callback<String, FileTransfer.FailureReason> callback)
+			throws StringflowErrorException {
 		String mediaMessageId = UUIDGenerator.secureId();
 		ChatLine chatLine = new ChatLine(conversationId, mediaMessageId, toJID, ChatLine.Direction.SEND);
 
@@ -225,7 +232,14 @@ public class AndroidChatManager extends ChatManager {
 		this.downloadFile(from, mediaId, contentType, new Callback<File, FileTransfer.FailureReason>() {
 			@Override
 			public void onSuccess(File file) {
-				DbManager.getInstance().updateMediaPath(mediaId, file.getAbsolutePath());
+				try {
+
+					DbManager.getInstance().updateMediaPath(mediaId, file.getAbsolutePath());
+
+				} catch (DbException e) {
+					LOGGER.log(Level.WARNING,
+							"Failed to update media Path for mediaId : " + mediaId + " and file : " + file, e);
+				}
 				callback.onSuccess(file);
 			}
 
@@ -236,21 +250,47 @@ public class AndroidChatManager extends ChatManager {
 		});
 	}
 
-	private long storeMessageMediaContent(String mediaId, byte[] mediaThumb, File mediaFile, ContentType contentType) {
-		return DbManager.getInstance().storeMedia(mediaId, mediaThumb, mediaFile.getAbsolutePath(),
-				contentType.getMimeType());
+	private long storeMessageMediaContent(String mediaId, byte[] mediaThumb, File mediaFile, ContentType contentType)
+			throws StringflowErrorException {
+		try {
+
+			return DbManager.getInstance().storeMedia(mediaId, mediaThumb, mediaFile.getAbsolutePath(),
+					contentType.getMimeType());
+
+		} catch (Exception e) {
+			LOGGER.log(Level.WARNING, "Failed to store message media content with mediaId : " + mediaId, e);
+			throw new StringflowErrorException("Failed to store message media content due to " + e.getMessage(), e);
+		}
 	}
 
-	private void storeChatLine(ChatLine chatLine) {
-		DbManager.getInstance().addToChatStore(chatLine);
-		DbManager.getInstance().addOrUpdateConversation(chatLine);
+	private void storeChatLine(ChatLine chatLine) throws StringflowErrorException {
+		try {
+			DbManager.getInstance().addToChatStore(chatLine);
+			DbManager.getInstance().addOrUpdateConversation(chatLine);
+
+		} catch (Exception e) {
+			LOGGER.log(Level.WARNING, "Failed to store chatLine with messageId : " + chatLine.getMessageId()
+					+ " for pearJID : " + chatLine.getPeerBareJid(), e);
+			throw new StringflowErrorException("Failed to store chatLine due to " + e.getMessage(), e);
+		}
+
 	}
 
 	/**
 	 * This method is called when user has viewed all unSean messages.
+	 * 
+	 * @throws StringflowErrorException
 	 */
-	public void sendAllUnReadMessageReadReceipt(JID contactJID) {
-		List<ChatLine> unReadChatLines = DbManager.getInstance().getAllUnreadChatLines(contactJID.getBareJID());
+	public void sendAllUnReadMessageReadReceipt(JID contactJID) throws StringflowErrorException {
+		List<ChatLine> unReadChatLines = null;
+		try {
+			unReadChatLines = DbManager.getInstance().getAllUnreadChatLines(contactJID.getBareJID());
+
+		} catch (DbException e) {
+			LOGGER.log(Level.WARNING,
+					"Failed to fetch unread Chatline for sending read Receipt for contactJID : " + contactJID, e);
+			throw new StringflowErrorException("Failed to fetch unread Chatline for sending read Receipt", e);
+		}
 
 		if (!CollectionUtils.isNullOrEmpty(unReadChatLines)) {
 
@@ -265,8 +305,9 @@ public class AndroidChatManager extends ChatManager {
 	 * the sender know that receiver has viewed his message.
 	 *
 	 * @param chatLine
+	 * @throws StringflowErrorException
 	 */
-	public void sendMessageReadReceipt(ChatLine chatLine) {
+	public void sendMessageReadReceipt(ChatLine chatLine) throws StringflowErrorException {
 		try {
 			if (chatLine.isMarkable() && !chatLine.haveSean()) {
 				this.sendMsgCMDisplayedReceipt(chatLine.getMessageId(), new JID(chatLine.getPeerBareJid()),
@@ -275,25 +316,31 @@ public class AndroidChatManager extends ChatManager {
 				DbManager.getInstance().markMessageViewed(chatLine.getMessageId());
 			}
 		} catch (Exception e) {
-			LOGGER.warning("Failed to send read receipt for messageId : " + chatLine.getMessageId());
+			LOGGER.log(Level.WARNING, "Failed to send message read receipt for messageId : " + chatLine.getMessageId(),
+					e);
+			throw new StringflowErrorException("Failed To send Message Read Receipt due to" + e.getMessage(), e);
 		}
 	}
 
 	/**
 	 * This method should be called at the time of notification generation for
-	 * given chatline to let the sender know that receiver is acknowledged for
-	 * his message.
+	 * given {@link ChatLine} to let the sender know that receiver is
+	 * acknowledged for his message.
 	 *
 	 * @param chatLine
+	 * @throws StringflowErrorException
 	 */
-	public void sendMessageAcknowledgementReceipt(ChatLine chatLine) {
+	public void sendMessageAcknowledgementReceipt(ChatLine chatLine) throws StringflowErrorException {
 		try {
 			if (chatLine.isMarkable()) {
 				this.sendMsgCMAcknowledgedReceipt(chatLine.getMessageId(), new JID(chatLine.getPeerBareJid()),
 						DbManager.getInstance().isRosterGroup(chatLine.getPeerBareJid()));
 			}
 		} catch (Exception e) {
-			LOGGER.warning("Failed to send acknowledgement receipt for messageId : " + chatLine.getMessageId());
+			LOGGER.log(Level.WARNING,
+					"Failed to send acknowledgement receipt for messageId : " + chatLine.getMessageId(), e);
+			throw new StringflowErrorException("Failed to send acknowledgement receipt due to " + e.getMessage(), e);
+
 		}
 	}
 
@@ -302,8 +349,9 @@ public class AndroidChatManager extends ChatManager {
 	 * that receiver is acknowledged for his message.
 	 *
 	 * @param chatLine
+	 * @throws StringflowErrorException
 	 */
-	public void sendMessageReceivedReceipt(ChatLine chatLine) {
+	private void sendMessageReceivedReceipt(ChatLine chatLine) {
 		try {
 			if (chatLine.isMarkable()) {
 				this.sendMsgCMReceivedReceipt(chatLine.getMessageId(), new JID(chatLine.getPeerBareJid()),
@@ -316,7 +364,8 @@ public class AndroidChatManager extends ChatManager {
 			}
 
 		} catch (Exception e) {
-			LOGGER.warning("Failed to send message received receipt for messageId : " + chatLine.getMessageId());
+			LOGGER.log(Level.WARNING,
+					"Failed to send message received receipt for messageId : " + chatLine.getMessageId(), e);
 		}
 	}
 
@@ -365,30 +414,53 @@ public class AndroidChatManager extends ChatManager {
 	 * available for that contact.
 	 *
 	 * @param contactJID
+	 * @throws StringflowErrorException
 	 */
-	public void markNoUnreadConversation(JID contactJID) {
-		DbManager.getInstance().updateUnreadConversationCount(contactJID.getBareJID(), 0);
+	public void markNoUnreadConversation(JID contactJID) throws StringflowErrorException {
+		try {
+			DbManager.getInstance().updateUnreadConversationCount(contactJID.getBareJID(), 0);
+		} catch (DbException e) {
+			LOGGER.log(Level.WARNING, "Failed to update Unread Conversation Count", e);
+			throw new StringflowErrorException(
+					"Failed to update Unread Conversation Count due to database operation failure", e);
+		}
 	}
 
 	/**
 	 * @param contactJID
 	 * @param isGroup
 	 * @return all conversations for given contact.
+	 * @throws StringflowErrorException
 	 */
-	public List<ChatLine> getAllConversationChatLines(JID contactJID, boolean isGroup) {
-		List<ChatLine> allChatLines = DbManager.getInstance().fetchConversationChatlines(contactJID.getBareJID());
-		// TODO: Is it need to set pearName I think when we r persisting
-		// chatline at that time we detrmine pearname and store it in db .
-		// For dynamicly change of pear name we should determine pear name not
-		// at time of storing. Think about it.
-		return allChatLines;
+	public List<ChatLine> getAllConversationChatLines(JID contactJID, boolean isGroup) throws StringflowErrorException {
+		try {
+			List<ChatLine> allChatLines = DbManager.getInstance().fetchConversationChatlines(contactJID.getBareJID());
+			// TODO: Is it need to set pearName I think when we r persisting
+			// chatline at that time we detrmine pearname and store it in db .
+			// For dynamicly change of pear name we should determine pear name
+			// not
+			// at time of storing. Think about it.
+
+			return allChatLines;
+		} catch (Exception e) {
+			LOGGER.log(Level.WARNING, "Failed to get All Conversation Chatlines for contactJID " + contactJID, e);
+			throw new StringflowErrorException("Failed to get All Conversation Chatlines due to db operation failure",
+					e);
+		}
+
 	}
 
 	/**
 	 * @return All {@link Conversation} list for logged in user.
+	 * @throws StringflowErrorException
 	 */
-	public List<Conversation> getAllConversations() {
-		return DbManager.getInstance().fetchConversations();
+	public List<Conversation> getAllConversations() throws StringflowErrorException {
+		try {
+			return DbManager.getInstance().fetchConversations();
+		} catch (DbException e) {
+			LOGGER.log(Level.WARNING, "Failed to get All Conversation ", e);
+			throw new StringflowErrorException("Failed to get All Conversation due to db operation failure", e);
+		}
 	}
 
 	@Override
@@ -398,7 +470,15 @@ public class AndroidChatManager extends ChatManager {
 		if (packet instanceof Message) {
 			Message msg = (Message) packet;
 
-			ChatLine chatLine = prepareIncomingChatLine(msg);
+			ChatLine chatLine;
+
+			try {
+
+				chatLine = prepareIncomingChatLine(msg);
+
+			} catch (StringflowErrorException e1) {
+				return;
+			}
 
 			if (!CollectionUtils.isNullOrEmpty(msg.getContents())) {
 
@@ -415,10 +495,15 @@ public class AndroidChatManager extends ChatManager {
 
 					} else if (content.isContentType(MessageContent.MessageContentType.MEDIA)) {
 						MessageMedia media = (MessageMedia) content;
-						long mediaId = storeMessageMediaContent(media);
-						chatLine.setContentType(ChatLine.ContentType.MEDIA);
-						chatLine.setContentId(mediaId);
-						chatLine.setText(MEDIA_RECEIVED_TEXT);
+						try {
+							long mediaId = storeMessageMediaContent(media);
+							chatLine.setContentType(ChatLine.ContentType.MEDIA);
+							chatLine.setContentId(mediaId);
+							chatLine.setText(MEDIA_RECEIVED_TEXT);
+
+						} catch (StringflowErrorException e) {
+							return;
+						}
 
 					} else if (content.isContentType(MessageContent.MessageContentType.SUBJECT)) {
 						MessageSubject subject = (MessageSubject) content;
@@ -450,44 +535,68 @@ public class AndroidChatManager extends ChatManager {
 					} else if (content.isContentType(MessageContent.MessageContentType.MDR_RECEIVED)) {
 						MDRReceived received = (MDRReceived) content;
 
-						DbManager.getInstance().markAsReceived(received.getMessageId());
+						try {
+							DbManager.getInstance().markAsReceived(received.getMessageId());
 
-						for (ChatListener listener : this.chatListeners) {
-							listener.onMessageDeliveredToReceiver(received.getMessageId(), msg.getFrom());
+							for (ChatListener listener : this.chatListeners) {
+								listener.onMessageDeliveredToReceiver(received.getMessageId(), msg.getFrom());
+							}
+
+						} catch (DbException e) {
+							LOGGER.log(Level.WARNING, "Failed to mark MDR Received for message : "
+									+ received.getMessageId() + " from contact JID : " + msg.getFrom(), e);
+							e.printStackTrace();
 						}
 
 						return;
 
 					} else if (content.isContentType(MessageContent.MessageContentType.CM_RECEIVED)) {
 						CMReceived received = (CMReceived) content;
+						try {
+							DbManager.getInstance().markAsReceived(received.getMessageId());
 
-						DbManager.getInstance().markAsReceived(received.getMessageId());
-
-						for (ChatListener listener : this.chatListeners) {
-							listener.onMessageDeliveredToReceiver(received.getMessageId(), msg.getFrom());
+							for (ChatListener listener : this.chatListeners) {
+								listener.onMessageDeliveredToReceiver(received.getMessageId(), msg.getFrom());
+							}
+						} catch (DbException e) {
+							LOGGER.log(Level.WARNING, "Failed to mark CM Received for message : "
+									+ received.getMessageId() + " from contact JID : " + msg.getFrom(), e);
+							e.printStackTrace();
 						}
 
 						return;
 
 					} else if (content.isContentType(MessageContent.MessageContentType.CM_ACKNOWLEDGED)) {
 						CMAcknowledged acknowledged = (CMAcknowledged) content;
-						DbManager.getInstance().markAsAcknowledged(acknowledged.getMessageId());
+						try {
+							DbManager.getInstance().markAsAcknowledged(acknowledged.getMessageId());
 
-						for (ChatListener listener : this.chatListeners) {
-							listener.onMessageAcknowledgedToReceiver(acknowledged.getMessageId(), msg.getFrom());
+							for (ChatListener listener : this.chatListeners) {
+								listener.onMessageAcknowledgedToReceiver(acknowledged.getMessageId(), msg.getFrom());
+							}
+						} catch (DbException e) {
+							LOGGER.log(Level.WARNING, "Failed to mark CM Acknowledged for message : "
+									+ acknowledged.getMessageId() + " from contact JID : " + msg.getFrom(), e);
+							e.printStackTrace();
 						}
 
 						return;
 
 					} else if (content.isContentType(MessageContent.MessageContentType.CM_DISPLAYED)) {
 						CMDisplayed displayed = (CMDisplayed) content;
+						try {
+							DbManager.getInstance().markAsDisplayed(displayed.getMessageId(),
+									chatLine.getPeerBareJid());
 
-						DbManager.getInstance().markAsDisplayed(displayed.getMessageId(), chatLine.getPeerBareJid());
+							for (ChatListener listener : this.chatListeners) {
+								listener.onMessageViewedByReceiver(displayed.getMessageId(), msg.getFrom());
+							}
 
-						for (ChatListener listener : this.chatListeners) {
-							listener.onMessageViewedByReceiver(displayed.getMessageId(), msg.getFrom());
+						} catch (DbException e) {
+							LOGGER.log(Level.WARNING, "Failed to mark MDR displayed for message : "
+									+ displayed.getMessageId() + " from contact JID : " + msg.getFrom(), e);
+							e.printStackTrace();
 						}
-
 						return;
 
 					} else if (content.isContentType(MessageContent.MessageContentType.CSN_ACTIVE)) {
@@ -529,71 +638,97 @@ public class AndroidChatManager extends ChatManager {
 			if (chatLine.getContentType() == ChatLine.ContentType.TEXT
 					|| chatLine.getContentType() == ChatLine.ContentType.MEDIA) {
 
-				boolean isMessageAlreadyExsist = DbManager.getInstance()
-						.isMessageAlreadyExist(chatLine.getPeerBareJid(), chatLine.getMessageId());
+				try {
+					boolean isMessageAlreadyExsist = DbManager.getInstance()
+							.isMessageAlreadyExist(chatLine.getPeerBareJid(), chatLine.getMessageId());
 
-				if (!isMessageAlreadyExsist) {
-					storeChatLine(chatLine);
+					if (!isMessageAlreadyExsist) {
+						storeChatLine(chatLine);
 
-					sendMessageReceivedReceipt(chatLine);
+						sendMessageReceivedReceipt(chatLine);
 
-					// generateLocalBroadcast(chatLine);
+						// generateLocalBroadcast(chatLine);
 
-					notifyOnChatLine(chatLine);
+						notifyOnChatLine(chatLine);
+					}
+
+				} catch (Exception e) {
+					LOGGER.log(Level.WARNING, "Failed to store recevied message with messageID : " + msg.getId()
+							+ " from pearJID : " + msg.getFrom(), e);
 				}
 			}
 
 		}
 	}
 
-	private long storeMessageMediaContent(MessageMedia media) {
-		return DbManager.getInstance().storeMedia(media.getMediaId(), Base64.decode(media.getThumb(), Base64.DEFAULT),
-				null, media.getContentType().getMimeType());
+	private long storeMessageMediaContent(MessageMedia media) throws StringflowErrorException {
+		try {
+
+			return DbManager.getInstance().storeMedia(media.getMediaId(), Base64.getDecoder().decode(media.getThumb()),
+					null, media.getContentType().getMimeType());
+
+		} catch (DbException e) {
+			LOGGER.log(Level.WARNING, "Failed to Store Message Media Content for mediaId : " + media.getMediaId(), e);
+			throw new StringflowErrorException(
+					"Failed to Store Message Media Content due to database operation failure", e);
+		}
 	}
 
 	private void changeChatRoomSubject(JID roomJID, String subject) {
-		DbManager.getInstance().updateChatRoomSubject(roomJID.getBareJID(), subject);
-		// TODO: may send subject change to listener to reflect on UI at run
-		// time.
+		try {
+			DbManager.getInstance().updateChatRoomSubject(roomJID.getBareJID(), subject);
+			// TODO: may send subject change to listener to reflect on UI at run
+			// time.
+		} catch (DbException e) {
+			LOGGER.log(Level.WARNING, "Failed to Update ChatRoom subhject for roomJID : " + roomJID, e);
+		}
 	}
 
-	private ChatLine prepareIncomingChatLine(Message msg) {
-		String from = msg.getFrom().getBareJID();
+	private ChatLine prepareIncomingChatLine(Message msg) throws StringflowErrorException {
+		try {
+			String from = msg.getFrom().getBareJID();
 
-		ChatLine chatLine = new ChatLine(msg.getId(), from, ChatLine.Direction.RECEIVE);
-		chatLine.setMessageStatus(ChatLine.MessageStatus.INCOMMING_MESSAGE);
+			ChatLine chatLine = new ChatLine(msg.getId(), from, ChatLine.Direction.RECEIVE);
+			chatLine.setMessageStatus(ChatLine.MessageStatus.INCOMMING_MESSAGE);
 
-		if (msg.getFrom().getResource() != null) {
-			chatLine.setPeerResource(msg.getFrom().getResource().trim());
-		}
-		chatLine.setCreateTime(DateUtils.currentTimeInMiles());
-		chatLine.setDisplayTime(DateUtils.displayTime(DateUtils.currentTimeInMiles()));
+			if (msg.getFrom().getResource() != null) {
+				chatLine.setPeerResource(msg.getFrom().getResource().trim());
+			}
+			chatLine.setCreateTime(DateUtils.currentTimeInMiles());
+			chatLine.setDisplayTime(DateUtils.displayTime(DateUtils.currentTimeInMiles()));
 
-		if (msg.getType() == Message.MessageType.GROUP_CHAT) {
-			String memberNickName = chatLine.getPeerResource();
-			String memberJID = DbManager.getInstance().getChatRoomMemberJID(msg.getFrom().getBareJID(), memberNickName);
+			if (msg.getType() == Message.MessageType.GROUP_CHAT) {
+				String memberNickName = chatLine.getPeerResource();
+				String memberJID = DbManager.getInstance().getChatRoomMemberJID(msg.getFrom().getBareJID(),
+						memberNickName);
 
-			String userName = DbManager.getInstance().getRosterItemName(memberJID);
+				String userName = DbManager.getInstance().getRosterItemName(memberJID);
 
-			if (StringUtils.isNullOrEmpty(userName)) {
-				chatLine.setPeerName(memberNickName);
+				if (StringUtils.isNullOrEmpty(userName)) {
+					chatLine.setPeerName(memberNickName);
+
+				} else {
+					chatLine.setPeerName(userName);
+				}
 
 			} else {
-				chatLine.setPeerName(userName);
+				String userName = DbManager.getInstance().getRosterItemName(msg.getFrom().getBareJID());
+
+				if (StringUtils.isNullOrEmpty(userName)) {
+					chatLine.setPeerName(msg.getFrom().getNode());
+
+				} else {
+					chatLine.setPeerName(userName);
+				}
 			}
 
-		} else {
-			String userName = DbManager.getInstance().getRosterItemName(msg.getFrom().getBareJID());
-
-			if (StringUtils.isNullOrEmpty(userName)) {
-				chatLine.setPeerName(msg.getFrom().getNode());
-
-			} else {
-				chatLine.setPeerName(userName);
-			}
+			return chatLine;
+		} catch (DbException e) {
+			LOGGER.log(Level.WARNING, "Failed to prepare chatline for incomming message with messageId : " + msg.getId()
+					+ " from pearJID : " + msg.getFrom() + " Due to Database operation failure  ", e);
+			throw new StringflowErrorException("Failed to prepare chatline for incomming message with messageId : "
+					+ msg.getId() + " from pearJID : " + msg.getFrom() + " Due to Database operation failure  ", e);
 		}
-
-		return chatLine;
 	}
 
 	private void notifyOnChatLine(ChatLine chatLine) {
@@ -616,21 +751,28 @@ public class AndroidChatManager extends ChatManager {
 
 	public class MessageAckHandler implements EventHandler {
 		@Override
-		public void handle(Event e) {
-			List<Message> messages = (List<Message>) e.getSource();
+		public void handle(Event event) {
+			@SuppressWarnings("unchecked")
+			List<Message> messages = (List<Message>) event.getSource();
 
 			if (!CollectionUtils.isNullOrEmpty(messages)) {
 
 				for (Message message : messages) {
-					if (!DbManager.getInstance().isMessageAlreadyDelivered(message.getId())) {
+					try {
+						if (!DbManager.getInstance().isMessageAlreadyDelivered(message.getId())) {
 
-						DbManager.getInstance().updateDeliveryStatus(message.getId(),
-								ChatLine.MessageStatus.DELIVERED_TO_SERVER);
+							DbManager.getInstance().updateDeliveryStatus(message.getId(),
+									ChatLine.MessageStatus.DELIVERED_TO_SERVER);
 
-						for (ChatListener listener : chatListeners) {
-							listener.onMessageSent(message.getId(), message.getTo());
+							for (ChatListener listener : chatListeners) {
+								listener.onMessageSent(message.getId(), message.getTo());
+							}
 						}
+					} catch (DbException e) {
+						LOGGER.log(Level.WARNING, "Failed to handle server ack for messageId : " + message.getId()
+								+ "due to database operation failure", e);
 					}
+
 				}
 			}
 		}

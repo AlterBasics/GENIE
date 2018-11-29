@@ -10,7 +10,7 @@ import abs.ixi.client.core.Callback;
 import abs.ixi.client.io.StreamNegotiator;
 import abs.ixi.client.util.StringUtils;
 import abs.sf.client.gini.exception.StringflowErrorException;
-import abs.sf.client.gini.managers.AndroidUserManager;
+import abs.sf.client.gini.managers.AppUserManager;
 import abs.sf.client.gini.ui.Launcher;
 import abs.sf.client.gini.ui.utils.AppProperties;
 import abs.sf.client.gini.ui.utils.JFXUtils;
@@ -82,7 +82,7 @@ public class LoginController extends APPController implements Initializable {
 		boolean validated = validateInputs(userName, password);
 
 		if (validated) {
-			AndroidUserManager userManager = (AndroidUserManager) abs.ixi.client.core.Platform.getInstance()
+			AppUserManager userManager = (AppUserManager) abs.ixi.client.core.Platform.getInstance()
 					.getUserManager();
 
 			try {

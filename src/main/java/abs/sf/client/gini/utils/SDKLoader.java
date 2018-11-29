@@ -11,7 +11,6 @@ import abs.ixi.client.core.Platform;
 import abs.ixi.client.core.event.Event;
 import abs.ixi.client.io.UndeliveredStanzaManager;
 import abs.ixi.client.io.XMPPStreamManager;
-import abs.ixi.client.lang.Supplier;
 import abs.ixi.client.net.ConnectionConfig;
 import abs.ixi.client.net.ConnectionManager;
 import abs.ixi.client.net.XMPPConnection;
@@ -23,9 +22,9 @@ import abs.sf.client.gini.event.handlers.RosterUpdateHandler;
 import abs.sf.client.gini.event.handlers.StreamRestartHandler;
 import abs.sf.client.gini.event.handlers.StreamStartHandler;
 import abs.sf.client.gini.exception.StringflowErrorException;
-import abs.sf.client.gini.managers.AndroidChatManager;
-import abs.sf.client.gini.managers.AndroidPresenceManager;
-import abs.sf.client.gini.managers.AndroidUserManager;
+import abs.sf.client.gini.managers.AppChatManager;
+import abs.sf.client.gini.managers.AppPresenceManager;
+import abs.sf.client.gini.managers.AppUserManager;
 
 /**
  * SDKLoader loads Stringflow SDK into memory. As part of the sdk loading, sdk
@@ -107,9 +106,9 @@ public class SDKLoader {
 
 		XMPPStreamManager streamManager = new XMPPStreamManager(connection);
 
-		Platform.getInstance().addChatManager(new AndroidChatManager(streamManager));
-		Platform.getInstance().addUserManager(new AndroidUserManager(streamManager));
-		Platform.getInstance().addPresenceManager(new AndroidPresenceManager(streamManager));
+		Platform.getInstance().addChatManager(new AppChatManager(streamManager));
+		Platform.getInstance().addUserManager(new AppUserManager(streamManager));
+		Platform.getInstance().addPresenceManager(new AppPresenceManager(streamManager));
 
 		addEventListeners();
 	}
@@ -144,7 +143,7 @@ public class SDKLoader {
 		Platform.addEventHandler(Event.EventType.STREAM_RESTART, new StreamRestartHandler());
 
 		LOGGER.info("Adding Server Ack Handler");
-		AndroidChatManager chatManager = (AndroidChatManager) Platform.getInstance().getChatManager();
+		AppChatManager chatManager = (AppChatManager) Platform.getInstance().getChatManager();
 		Platform.addEventHandler(Event.EventType.MESSAGE_DELIVERED, chatManager.new MessageAckHandler());
 	}
 

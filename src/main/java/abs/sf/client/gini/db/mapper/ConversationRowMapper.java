@@ -13,7 +13,7 @@ public class ConversationRowMapper implements RowMapper<Conversation> {
 
 	@Override
 	public Conversation map(ResultSet rs) throws SQLException {
-		int conversationId = rs.getInt(1);
+	//	int conversationId = rs.getInt(1);
 		String jid = rs.getString(2);
 		String chatLine = rs.getString(3);
 		String chatLineType = rs.getString(4);

@@ -1438,8 +1438,8 @@ public class H2Database implements Database {
 
 		} catch (SQLException e) {
 
-			LOGGER.warning("Failed to Store the Media");
-			throw new DbException("Failed to Store the media", e);
+			LOGGER.warning("Failed to Store Media");
+			throw new DbException("Failed to Store media", e);
 
 		} finally {
 			SQLHelper.closeStatement(ps);
