@@ -60,6 +60,7 @@ import abs.sf.client.gini.utils.SFSDKProperties;
 public class H2Database implements Database {
 	private static final Logger LOGGER = Logger.getLogger(H2Database.class.getName());
 
+	private static final String COLON = ";";
 	private static final String user = "sf sf";
 	private static final String password = "sf";
 
@@ -110,7 +111,7 @@ public class H2Database implements Database {
 		StringBuilder urlBuilder = new StringBuilder("jdbc:h2:").append(this.dbFilePath);
 
 		if (!StringUtils.isNullOrEmpty(DB_PROPERTIES)) {
-			urlBuilder.append(DB_PROPERTIES);
+			urlBuilder.append(COLON).append(DB_PROPERTIES);
 		}
 
 		return urlBuilder.toString();

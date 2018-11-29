@@ -18,7 +18,7 @@ public class ConversationTable extends DatabaseTable {
     private static final String SQL_CREATE = "create table "
             + TABLE_NAME
             + "("
-            + COLUMN_CONVERSATION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + COLUMN_CONVERSATION_ID + " INT auto_increment primary key, "
             + COLUMN_PEER_JID + " TEXT not null, "
             + COLUMN_LAST_CHATLINE + " TEXT not null,"
             + COLUMN_LAST_CHATLINE_TYPE + " TEXT not null,"

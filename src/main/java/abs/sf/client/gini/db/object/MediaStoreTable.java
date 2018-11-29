@@ -17,10 +17,10 @@ public class MediaStoreTable extends DatabaseTable {
     private static final String SQL_CREATE = "create table "
             + TABLE_NAME
             + "("
-            + COL_UUID + " INTEGER primary key AUTOINCREMENT, "
-            + COL_MEDIA_ID + " TEXT UNIQUE not null, "
+            + COL_UUID + " INT auto_increment primary key, "
+            + COL_MEDIA_ID + " TEXT not null, "
             + COL_MEDIA_THUMB + " BLOB, "
-            + COL_MEDIA_PATH + " TEXT,"
+            + COL_MEDIA_PATH + " TEXT, "
             + COL_CONTENT_TYPE + " TEXT "
             + ");";
 

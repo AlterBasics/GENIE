@@ -18,7 +18,7 @@ public class ChatRoomMemberTable extends DatabaseTable {
     private static final String SQL_CREATE = "create table "
             + TABLE_NAME
             + "("
-            + COLUMN_ID + " INTEGER primary key autoincrement, "
+            + COLUMN_ID + " INT auto_increment primary key, "
             + COLUMN_MEMBER_JID + " TEXT not null, "
             + COLUMN_ROOM_JID + " TEXT not null,"
             + COLUMN_MEMBER_NICK_NAME + " TEXT,"

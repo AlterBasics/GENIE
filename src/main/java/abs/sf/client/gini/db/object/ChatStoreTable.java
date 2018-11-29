@@ -32,7 +32,7 @@ public class ChatStoreTable extends DatabaseTable {
     private static final String SQL_CREATE = "create table "
             + TABLE_NAME
             + "("
-            + COL_UUID + " INTEGER primary key AUTOINCREMENT, "
+            + COL_UUID + " INT auto_increment primary key, "
             + COL_CONVERSATION_ID + " TEXT, "
             + COL_MESSAGE_ID + " TEXT not null, "
             + COL_PEER_JID + " TEXT not null, "

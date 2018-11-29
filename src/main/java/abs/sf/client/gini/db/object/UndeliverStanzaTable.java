@@ -14,7 +14,7 @@ public class UndeliverStanzaTable extends DatabaseTable {
     private static final String SQL_CREATE = "create table "
             + TABLE_NAME
             + "("
-            + COL_UUID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + COL_UUID + " INT auto_increment primary key, "
             + COL_STANZA + " BLOB not null "
             + ");";
 

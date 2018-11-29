@@ -33,7 +33,7 @@ public class UserProfileTable extends DatabaseTable {
     private static final String SQL_CREATE = "create table "
             + TABLE_NAME
             + "("
-            + COLUMN_ID + " INTEGER primary key autoincrement, "
+            + COLUMN_ID + " INT auto_increment primary key, "
             + COLUMN_JID + " TEXT not null, "
             + COLUMN_FIRST_NAME + " TEXT,"
             + COLUMN_MIDDLE_NAME + " TEXT, "

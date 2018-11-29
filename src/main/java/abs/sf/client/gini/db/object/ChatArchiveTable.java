@@ -13,9 +13,11 @@ public class ChatArchiveTable extends DatabaseTable {
 	public static final String COLUMN_CREATE_TIME = "create_time";
 
 	// Database creation SQL statement
-	private static final String SQL_CREATE = "create table " + TABLE_NAME + "(" + COLUMN_ID
-			+ " INTEGER primary key autoincrement, " + COLUMN_JID + " VARCHAR(255) not null, " + COLUMN_MESSAGE
-			+ " TEXT not null," + COLUMN_CREATE_TIME + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP" + ");";
+	private static final String SQL_CREATE = "create table " + TABLE_NAME + "(" 
+	        + COLUMN_ID + " INT auto_increment primary key , " 
+			+ COLUMN_JID + " VARCHAR(255) not null, "
+	        + COLUMN_MESSAGE + " TEXT not null, " 
+			+ COLUMN_CREATE_TIME + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP " + ")";
 
 	public ChatArchiveTable() {
 		super(TABLE_NAME);

@@ -18,12 +18,12 @@ public class RosterTable extends DatabaseTable {
     private static final String SQL_CREATE = "create table "
             + TABLE_NAME
             + "("
-            + COLUMN_ID + " INTEGER primary key autoincrement, "
+            + COLUMN_ID + " INT auto_increment primary key, "
             + COLUMN_JID + " TEXT not null, "
             + COLUMN_NAME + " TEXT,"
             + COLUMN_ROOM_SUBJECT + " TEXT, "
             + COLUMN_ACCESS_MODE + " TEXT, "
-            + COLUMN_IS_GROUP + " INTEGER not null"
+            + COLUMN_IS_GROUP + " INT "
             + ");";
 
     public RosterTable() {
