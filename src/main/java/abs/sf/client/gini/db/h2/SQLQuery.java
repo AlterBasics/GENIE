@@ -206,9 +206,9 @@ public class SQLQuery {
 	public static final String SQL_UPDATE_CHAT_ROOM_SUBJECT = "UPDATE " + RosterTable.TABLE_NAME + " SET "
 			+ RosterTable.COLUMN_ROOM_SUBJECT + " = ?, " + " WHERE " + RosterTable.COLUMN_JID + " = ?";
 
-	public static final String SQL_TRUNCATE_ROSTER = "TRUNCATE " + RosterTable.TABLE_NAME;
+	public static final String SQL_TRUNCATE_ROSTER = "TRUNCATE TABLE " + RosterTable.TABLE_NAME;
 
-	public static final String SQL_INSERT_CHAT_ROOM_MEMBER = "INSER INTO " + ChatRoomMemberTable.TABLE_NAME + " ( "
+	public static final String SQL_INSERT_CHAT_ROOM_MEMBER = "INSERT INTO " + ChatRoomMemberTable.TABLE_NAME + " ( "
 			+ ChatRoomMemberTable.COLUMN_MEMBER_JID + " , " + ChatRoomMemberTable.COLUMN_MEMBER_NICK_NAME + " , "
 			+ ChatRoomMemberTable.COLUMN_AFFILATION + " , " + ChatRoomMemberTable.COLUMN_ROLE + " , "
 			+ ChatRoomMemberTable.COLUMN_ROOM_JID + " ) VALUES ( ?, ?, ?, ?, ?)";
@@ -223,7 +223,7 @@ public class SQLQuery {
 	public static final String SQL_DELETE_ALL_ROOM_MEMBER = "DELETE" + "FROM" + ChatRoomMemberTable.TABLE_NAME
 			+ " WHERE " + ChatRoomMemberTable.COLUMN_ROOM_JID + " = ? ";
 
-	public static final String SQL_INSERT_PRESENCE = "INSER INTO " + PresenceTable.TABLE_NAME + " ( "
+	public static final String SQL_INSERT_PRESENCE = "INSERT INTO " + PresenceTable.TABLE_NAME + " ( "
 			+ PresenceTable.COLUMN_JID + " , " + PresenceTable.COLUMN_PRESNCE + " , " + PresenceTable.COLUMN_MOOD
 			+ " , " + PresenceTable.COLUMN_STATUS + " , " + PresenceTable.COLUMN_LAST_UPDATE
 			+ " ) VALUES ( ?, ?, ?, ?, ?)";
@@ -286,6 +286,6 @@ public class SQLQuery {
 	public static final String SQL_PERSIST_UNDELIVERD_STANZA = "INSERT INTO " + UndeliverStanzaTable.TABLE_NAME + " ( "
 			+ UndeliverStanzaTable.COL_STANZA + ") " + "VALUES (?)";
 
-	public static final String SQL_TRUNCATE_UNDELIVERD_STANZA_TABLE = "TRUNCATE " + UndeliverStanzaTable.TABLE_NAME;
+	public static final String SQL_TRUNCATE_UNDELIVERD_STANZA_TABLE = "TRUNCATE TABLE " + UndeliverStanzaTable.TABLE_NAME;
 
 }

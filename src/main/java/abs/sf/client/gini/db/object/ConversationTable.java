@@ -22,8 +22,8 @@ public class ConversationTable extends DatabaseTable {
             + COLUMN_PEER_JID + " TEXT not null, "
             + COLUMN_LAST_CHATLINE + " TEXT not null,"
             + COLUMN_LAST_CHATLINE_TYPE + " TEXT not null,"
-            + COLUMN_LAST_UPDATE_TIME + " INTEGER, "
-            + COLUMN_UNREAD_CHATLINE_COUNT + " INTEGER not null "
+            + COLUMN_LAST_UPDATE_TIME + " BIGINT, "
+            + COLUMN_UNREAD_CHATLINE_COUNT + " INT not null "
             + ");";
 
     public ConversationTable() {

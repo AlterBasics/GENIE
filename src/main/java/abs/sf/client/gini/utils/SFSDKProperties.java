@@ -1,5 +1,7 @@
 package abs.sf.client.gini.utils;
 
+import java.util.logging.Logger;
+
 import abs.ixi.client.PushNotificationService;
 import abs.ixi.client.core.Platform;
 import abs.ixi.client.util.StringUtils;
@@ -39,14 +41,18 @@ public class SFSDKProperties {
 	 */
 	public static SFSDKProperties getInstance() throws StringflowErrorException {
 		if (instance == null) {
-			instance = new SFSDKProperties();
+			synchronized (SFSDKProperties.class) {
+				if (instance == null) {
+					instance = new SFSDKProperties();
+				}
+			}
 		}
 
 		return instance;
 	}
 
 	public void setH2DbFilePath(String h2DbFilePath) throws StringflowErrorException {
-		this.sfProperties.getEditor().putString(H2_DB_FILE_PATH, h2DbFilePath).apply();
+		this.sfProperties.getEditor().putString(H2_DB_FILE_PATH, h2DbFilePath).commit();
 	}
 
 	public String getH2DbFilePath() {
@@ -79,11 +85,13 @@ public class SFSDKProperties {
 	}
 
 	public void savePushNotifiactionDetatils(PushNotificationService service, String deviceToken) {
-		this.sfProperties.getEditor().put(NOTIFICATION_SERVICE, service.name()).put(DEVIICE_TOKEN, deviceToken).apply();
+		this.sfProperties.getEditor().putString(NOTIFICATION_SERVICE, service.name())
+				.putString(DEVIICE_TOKEN, deviceToken).apply();
 
 	}
 
 	public void setDomainName(String domainName) {
+		System.out.println("SAVING FROPERTY domain name>>>>>>>>>>>>> " + domainName);
 		this.sfProperties.getEditor().putString(DOMAIN_NAME, domainName).apply();
 	}
 

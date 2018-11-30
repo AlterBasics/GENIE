@@ -886,7 +886,10 @@ public class H2Database implements Database {
 
 	@Override
 	public void addChatRoomMember(ChatRoomMember member) throws DbException {
-		LOGGER.info("Add ChatRoomMember :" + member);
+		LOGGER.info("Add ChatRoomMember :" + member.getUserJID().getBareJID() + ":" +member.getNickName()
+				+ ":" + member.getAffiliation() == null ? null : member.getAffiliation().val()
+						+ ":" + member.getRole() == null ? null : member.getRole().val()
+								+ ":" + member.getRoomJID().getBareJID());
 
 		Connection conn = getConnection();
 		PreparedStatement ps = null;
@@ -896,7 +899,7 @@ public class H2Database implements Database {
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_INSERT_CHAT_ROOM_MEMBER,
 					new Object[] { member.getUserJID().getBareJID(), member.getNickName(),
 							member.getAffiliation() == null ? null : member.getAffiliation().val(),
-							member.getRole() == null ? null : member.getRole().val(), member.getRoomJID() });
+							member.getRole() == null ? null : member.getRole().val(), member.getRoomJID().getBareJID() });
 
 			ps.executeUpdate();
 
