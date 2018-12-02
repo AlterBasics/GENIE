@@ -14,7 +14,6 @@ import abs.sf.client.gini.exception.StringflowErrorException;
 
 /**
  * Wrapper around {@link Properties}. For proper handling of properties
- *
  */
 public class SFProperties {
 	private static final Logger LOGGER = Logger.getLogger(SFProperties.class.getName());
@@ -271,15 +270,12 @@ public class SFProperties {
 		public void apply() {
 			TaskExecutor.submit(() -> {
 				try {
-
 					commit();
 
 				} catch (StringflowErrorException e) {
 					LOGGER.log(Level.INFO, "Failed to save properties in property file : " + propertiesResource, e);
 				}
 			});
-
 		}
-
 	}
 }

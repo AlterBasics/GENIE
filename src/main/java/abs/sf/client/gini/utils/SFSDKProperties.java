@@ -1,7 +1,5 @@
 package abs.sf.client.gini.utils;
 
-import java.util.logging.Logger;
-
 import abs.ixi.client.PushNotificationService;
 import abs.ixi.client.core.Platform;
 import abs.ixi.client.util.StringUtils;
