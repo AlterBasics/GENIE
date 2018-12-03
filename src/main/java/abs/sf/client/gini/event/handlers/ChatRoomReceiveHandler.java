@@ -53,7 +53,7 @@ public class ChatRoomReceiveHandler implements EventHandler {
 		}
 	}
 
-	private void addingGroupToConversations(ChatRoom room) throws Exception {
+	private void  addingGroupToConversations(ChatRoom room) throws Exception {
 		if (!DbManager.getInstance().conversationExists(room.getRoomJID().getBareJID())) {
 			ChatLine chatLine = new ChatLine(UUIDGenerator.secureId(), room.getRoomJID().getBareJID(),
 					ChatLine.Direction.RECEIVE);

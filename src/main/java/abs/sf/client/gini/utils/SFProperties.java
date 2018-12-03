@@ -14,7 +14,6 @@ import abs.sf.client.gini.exception.StringflowErrorException;
 
 /**
  * Wrapper around {@link Properties}. For proper handling of properties
- *
  */
 public class SFProperties {
 	private static final Logger LOGGER = Logger.getLogger(SFProperties.class.getName());
@@ -27,13 +26,19 @@ public class SFProperties {
 		try {
 			this.propertiesResource = propertiesResource;
 			this.loadProperties();
+			this.showLoadedProperties();
 			this.editor = new Editor();
 		} catch (IOException e) {
-			LOGGER.log(Level.INFO, "Failed to load properties from file " + propertiesResource, e);
+			LOGGER.log(Level.WARNING, "Failed to load properties from file " + propertiesResource, e);
 			e.printStackTrace();
 			throw new StringflowErrorException("Failed to load properties from file " + propertiesResource, e);
 		}
 
+	}
+
+	private void showLoadedProperties() {
+		LOGGER.info("Loaded properties from file >> : " + propertiesResource);
+		this.properties.list(System.out);
 	}
 
 	private void loadProperties() throws IOException {
@@ -58,7 +63,8 @@ public class SFProperties {
 	 * @return
 	 */
 	public String getProperty(String key, String defaultValue) {
-		return this.properties.getProperty(key, defaultValue);
+		String value = this.properties.getProperty(key);
+		return value == null ? defaultValue : value;
 	}
 
 	/**
@@ -208,19 +214,7 @@ public class SFProperties {
 		 * @param value
 		 */
 		public Editor putBoolean(String key, Boolean value) {
-			properties.put(key, value);
-			return this;
-		}
-
-		/**
-		 * It will add key-value payer in memory map. To persist changes on disk
-		 * use {@link #commit()} or {@link #apply()}.
-		 * 
-		 * @param key
-		 * @param value
-		 */
-		public Editor put(String key, Object value) {
-			properties.put(key, value);
+			properties.put(key, Boolean.toString(value));
 			return this;
 		}
 
@@ -252,10 +246,13 @@ public class SFProperties {
 		 * @throws StringflowErrorException
 		 */
 		public void commit() throws StringflowErrorException {
+			LOGGER.info("COMMITING PROPERTIES for file >>>>>>>>>>>>>>> : " + propertiesResource);
 			try (OutputStream output = new FileOutputStream(
 					getClass().getClassLoader().getResource(propertiesResource).getPath())) {
 
 				properties.store(output, null);
+				LOGGER.info("COMMITED PROPERTIES IN file >>>>>>>>>>>>>>> : " + propertiesResource);
+				properties.list(System.out);
 
 			} catch (IOException e) {
 				LOGGER.log(Level.INFO, "Failed to save properties in property file : " + propertiesResource, e);
@@ -273,15 +270,12 @@ public class SFProperties {
 		public void apply() {
 			TaskExecutor.submit(() -> {
 				try {
-
 					commit();
 
 				} catch (StringflowErrorException e) {
 					LOGGER.log(Level.INFO, "Failed to save properties in property file : " + propertiesResource, e);
 				}
 			});
-
 		}
-
 	}
 }

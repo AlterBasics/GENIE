@@ -164,7 +164,7 @@ public class SDKLoader {
 	}
 
 	public static void createDatabaseSchema(final String h2DbFilePath) throws StringflowErrorException {
-		LOGGER.log(Level.INFO, "Initiating db schema using db file path : ", h2DbFilePath);
+		LOGGER.log(Level.INFO, "Initiating db schema using db file path : " + h2DbFilePath);
 
 		try {
 			SFSDKProperties.getInstance().setH2DbFilePath(h2DbFilePath);

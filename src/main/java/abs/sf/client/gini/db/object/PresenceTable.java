@@ -25,7 +25,7 @@ public class PresenceTable extends DatabaseTable {
             + COLUMN_PRESNCE + " TEXT, "
             + COLUMN_MOOD + " TEXT, "
             + COLUMN_STATUS + " TEXT, "
-            + COLUMN_LAST_UPDATE + " INTEGER not null"
+            + COLUMN_LAST_UPDATE + " BIGINT not null"
             + ");";
 
     public PresenceTable(){

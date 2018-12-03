@@ -27,7 +27,11 @@ public class AppProperties {
 	 */
 	public static AppProperties getInstance() throws StringflowErrorException {
 		if (instance == null) {
-			instance = new AppProperties();
+			synchronized (AppProperties.class) {
+				if (instance == null) {
+					instance = new AppProperties();
+				}
+			}
 		}
 
 		return instance;
