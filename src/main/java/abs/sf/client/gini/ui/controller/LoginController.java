@@ -123,13 +123,13 @@ public class LoginController extends APPController implements Initializable {
 										failureMesssage = "Something went wrong. Please try after sometime";
 									}
 
-									JFXUtils.showAlert(failureMesssage, AlertType.WARNING);
+									JFXUtils.showAlertOnApplicationThread(failureMesssage, AlertType.WARNING);
 								}
 							}
 
 							@Override
 							public void onFailure(Exception e) {
-								JFXUtils.showAlert("Loggin failed due to some error" + e.getMessage(),
+								JFXUtils.showAlertOnApplicationThread("Loggin failed due to some error" + e.getMessage(),
 										AlertType.WARNING);
 							}
 						});
