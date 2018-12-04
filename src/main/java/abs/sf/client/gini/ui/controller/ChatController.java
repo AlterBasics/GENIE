@@ -3,8 +3,13 @@ package abs.sf.client.gini.ui.controller;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import com.client.chatwindow.CellRenderer;
+import com.messages.Message;
+import com.messages.User;
 
 import abs.ixi.client.xmpp.packet.Roster;
 import abs.ixi.client.xmpp.packet.Roster.RosterItem;
@@ -12,6 +17,8 @@ import abs.sf.client.gini.exception.StringflowErrorException;
 import abs.sf.client.gini.managers.AppUserManager;
 import abs.sf.client.gini.ui.Launcher;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -24,6 +31,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.ComboBoxListCell;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -55,36 +63,36 @@ public class ChatController implements Initializable{
 	    private MenuBar ivMenuBar;
 	    
 	    @FXML
-	    private ListView userList;
+	    private List<RosterItem> userList;
 	    
-	    @FXML
-	    private	List<RosterItem> rosterItems;
-	    
-	    private List<Roster.RosterItem> contacts;
+	   
 	    
 	    private double xOffset;
 
 		private double yOffset;
+		
+		private ObservableList<RosterItem> items = FXCollections.observableArrayList();
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		
 		// TODO Auto-generated method stub
 		/* Drag and Drop */
-		anchorPane.setOnMousePressed(event -> {
-			xOffset = Launcher.getPrimaryStage().getX() - event.getScreenX();
-			yOffset = Launcher.getPrimaryStage().getY() - event.getScreenY();
-			anchorPane.setCursor(Cursor.CLOSED_HAND);
-		});
-
-		anchorPane.setOnMouseDragged(event -> {
-			Launcher.getPrimaryStage().setX(event.getScreenX() + xOffset);
-			Launcher.getPrimaryStage().setY(event.getScreenY() + yOffset);
-
-		});
-
-		anchorPane.setOnMouseReleased(event -> {
-			anchorPane.setCursor(Cursor.DEFAULT);
-		});
+//		anchorPane.setOnMousePressed(event -> {
+//			xOffset = Launcher.getPrimaryStage().getX() - event.getScreenX();
+//			yOffset = Launcher.getPrimaryStage().getY() - event.getScreenY();
+//			anchorPane.setCursor(Cursor.CLOSED_HAND);
+//		});
+//
+//		anchorPane.setOnMouseDragged(event -> {
+//			Launcher.getPrimaryStage().setX(event.getScreenX() + xOffset);
+//			Launcher.getPrimaryStage().setY(event.getScreenY() + yOffset);
+//
+//		});
+//
+//		anchorPane.setOnMouseReleased(event -> {
+//			anchorPane.setCursor(Cursor.DEFAULT);
+//		});
 		
 	}
 	
@@ -115,12 +123,12 @@ public class ChatController implements Initializable{
 	        if (isVisibleToUser) {
 				AppUserManager userManager = (AppUserManager) abs.ixi.client.core.Platform.getInstance()
 						.getUserManager();
-	            userList = (ListView) userManager.getRosterItemList();
-	            userList.setCellFactory(ComboBoxListCell.forListView(userManager.getRosterItemList()));
-	            Roster.RosterItem contactModel = contacts.get(position);
+				userList =  userManager.getRosterItemList();
+				
 	            
 	        }
 	           
 	        }
-
+	
+	
 }
