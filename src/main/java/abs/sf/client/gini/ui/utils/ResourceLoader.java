@@ -38,15 +38,16 @@ public class ResourceLoader {
 	public Parent loadLoginController() throws IOException {
 		return FXMLLoader.load(getClass().getClassLoader().getResource(Resources.LOGIN_VIEW_FXML));
 	}
-	
+
 	/**
 	 * Load {@link ChatController1} with fxml {@link Resources#MAIN_VIEW_FXML}
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
 	public Parent loadChatController() throws IOException {
-		
-		return FXMLLoader.load(getClass().getClassLoader().getResource(Resources.MAIN_VIEW_FXML));
+
+		return FXMLLoader.load(getClass().getClassLoader().getResource(Resources.CHAT_VIEW_FXML));
 	}
 
 	/**

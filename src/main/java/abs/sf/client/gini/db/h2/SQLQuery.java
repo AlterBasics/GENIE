@@ -232,7 +232,7 @@ public class SQLQuery {
 			+ PresenceTable.COLUMN_PRESNCE + " = IFNULL( ?, " + PresenceTable.COLUMN_PRESNCE + "),"
 			+ PresenceTable.COLUMN_MOOD + " = IFNULL( ?, " + PresenceTable.COLUMN_MOOD + "),"
 			+ PresenceTable.COLUMN_STATUS + " = IFNULL( ?, " + PresenceTable.COLUMN_STATUS + "),"
-			+ PresenceTable.COLUMN_LAST_UPDATE + " ? " + " WHERE " + PresenceTable.COLUMN_JID + " = ?";
+			+ PresenceTable.COLUMN_LAST_UPDATE + " = ? " + " WHERE " + PresenceTable.COLUMN_JID + " = ?";
 
 	public static final String SQL_DELETE_USER_PRESENE = "DELETE" + "FROM" + PresenceTable.TABLE_NAME + " WHERE "
 			+ PresenceTable.COLUMN_JID + " = ? ";

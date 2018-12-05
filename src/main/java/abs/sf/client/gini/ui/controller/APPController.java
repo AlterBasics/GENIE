@@ -2,18 +2,16 @@ package abs.sf.client.gini.ui.controller;
 
 import abs.sf.client.gini.ui.Launcher;
 import javafx.application.Platform;
-import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 
-public abstract class APPController implements Initializable { 
+public abstract class APPController implements Initializable {
 
 	public void showSceneOnPrimeryStage(Scene scene) {
 		Launcher.getPrimaryStage().setScene(scene);
 		Launcher.getPrimaryStage().show();
 	}
-	
-	@FXML
+
 	public void closeSystem() {
 		Platform.exit();
 		System.exit(0);
