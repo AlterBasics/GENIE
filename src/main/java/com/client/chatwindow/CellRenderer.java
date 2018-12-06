@@ -25,6 +25,7 @@ public class CellRenderer implements Callback<ListView<User>, ListCell<User>> {
 				super.updateItem(user, bln);
 				setGraphic(null);
 				setText(null);
+				
 				if (user != null) {
 					HBox hBox = new HBox();
 

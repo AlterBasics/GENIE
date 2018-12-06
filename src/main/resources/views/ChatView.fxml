@@ -31,20 +31,20 @@
             <Separator prefWidth="200.0" />
             <TabPane prefHeight="545.0" prefWidth="334.0" tabClosingPolicy="UNAVAILABLE">
               <tabs>
-                <Tab text="Untitled Tab 1">
+                <Tab text="Contacts">
                      <content>
                         <ScrollPane prefHeight="530.0" prefWidth="334.0">
                            <content>
-                              <ListView prefHeight="517.0" prefWidth="321.0" />
+                              <ListView fx:id="contactsListView" prefHeight="517.0" prefWidth="321.0" />
                            </content>
                         </ScrollPane>
                      </content>
                   </Tab>
-                <Tab text="Untitled Tab 2">
+                <Tab text="Conversations">
                      <content>
                         <ScrollPane prefHeight="200.0" prefWidth="200.0">
                            <content>
-                              <ListView prefHeight="517.0" prefWidth="321.0" />
+                              <ListView fx:id="conversationsListView" prefHeight="517.0" prefWidth="321.0" />
                            </content>
                         </ScrollPane>
                      </content>
@@ -53,7 +53,7 @@
             </TabPane>
          </children>
       </VBox>
-      <HBox layoutX="346.0" layoutY="-1.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="83.0" prefWidth="976.0">
+      <HBox layoutX="348.0" layoutY="-1.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="47.0" prefWidth="976.0">
          <children>
             <ImageView fx:id="contactImageView" fitHeight="83.0" fitWidth="102.0" pickOnBounds="true" preserveRatio="true" />
             <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="83.0" prefWidth="874.0">

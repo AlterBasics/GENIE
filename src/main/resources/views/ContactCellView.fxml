@@ -7,9 +7,9 @@
 <?import javafx.scene.layout.*?>
 
 
-<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="90.0" prefWidth="449.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<HBox fx:id="contactHBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="90.0" prefWidth="449.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" >
    <children>
-      <ImageView fx:id="contactImage" fitHeight="90.0" fitWidth="112.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="contactImageView" fitHeight="90.0" fitWidth="112.0" pickOnBounds="true" preserveRatio="true" />
       <VBox prefHeight="90.0" prefWidth="393.0">
          <children>
             <Label fx:id="contactNameLabel" prefHeight="60.0" prefWidth="336.0" text="Name">

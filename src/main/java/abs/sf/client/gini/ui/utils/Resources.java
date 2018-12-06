@@ -1,9 +1,10 @@
 package abs.sf.client.gini.ui.utils;
 
-interface Resources {
+public interface Resources {
 	String LOGIN_VIEW_FXML = "views/LoginView.fxml";
+	
 	String CHAT_VIEW_FXML = "views/ChatView.fxml";
-	String MAIN_VIEW_FXML= "views/MainView.fxml";
+	String CONTACT_CELL_VIEW_FXML = "view/ContactCellView.fxml";
 
 	
 	String APP_ICON_IMAGE = "images/plug.png";

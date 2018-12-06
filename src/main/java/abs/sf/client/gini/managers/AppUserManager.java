@@ -435,7 +435,7 @@ public class AppUserManager extends UserManager {
 	 * @return avatar
 	 * @throws StringflowErrorException
 	 */
-	public InputStream getUserAvatarBytes(JID useeJID) throws StringflowErrorException {
+	public InputStream getUserAvatar(JID useeJID) throws StringflowErrorException {
 		try {
 
 			return DbManager.getInstance().getUserAvatar(useeJID.getBareJID());
