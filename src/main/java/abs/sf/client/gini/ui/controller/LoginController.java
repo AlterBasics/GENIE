@@ -69,8 +69,9 @@ public class LoginController extends APPController implements Initializable {
 			scene.setRoot(root);
 			showSceneOnPrimeryStage(scene);
 
-		} catch (IOException e) {
-			LOGGER.log(Level.WARNING, "Failed to load ChatView", e);
+		} catch (Throwable e) {
+			LOGGER.log(Level.WARNING, "Failed to load ChatView " + e.getMessage(), e);
+			e.printStackTrace();
 			JFXUtils.showAlert("Failed to load ChatView", AlertType.WARNING);
 		}
 	}

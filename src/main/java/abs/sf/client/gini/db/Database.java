@@ -410,7 +410,7 @@ public interface Database extends Initializable {
 	 * @return
 	 * @throws DbException
 	 */
-	InputStream getUserAvatarBytes(String userJID) throws DbException;
+	InputStream getUserAvatar(String userJID) throws DbException;
 
 	/**
 	 * 

@@ -10,7 +10,8 @@ public class ContactCellRenderer implements Callback<ListView<RosterItem>, ListC
 
 	@Override
 	public ListCell<Parent> call(ListView<RosterItem> param) {
-		ListCell<Parent> listContact
+		return null;
+		
 	}
 
 }

@@ -178,7 +178,7 @@ public class SFProperties {
 		 * @param value
 		 */
 		public Editor putInt(String key, int value) {
-			properties.put(key, value);
+			properties.setProperty(key, Integer.toString(value));
 			return this;
 		}
 
@@ -190,7 +190,7 @@ public class SFProperties {
 		 * @param value
 		 */
 		public Editor putLong(String key, long value) {
-			properties.put(key, value);
+			properties.setProperty(key, Long.toString(value));
 			return this;
 		}
 
@@ -202,7 +202,7 @@ public class SFProperties {
 		 * @param value
 		 */
 		public Editor putFloat(String key, float value) {
-			properties.put(key, value);
+			properties.setProperty(key, Float.toString(value));
 			return this;
 		}
 
@@ -213,8 +213,8 @@ public class SFProperties {
 		 * @param key
 		 * @param value
 		 */
-		public Editor putBoolean(String key, Boolean value) {
-			properties.put(key, Boolean.toString(value));
+		public Editor putBoolean(String key, boolean value) {
+			properties.setProperty(key, Boolean.toString(value));
 			return this;
 		}
 

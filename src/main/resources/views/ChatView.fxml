@@ -29,9 +29,9 @@
                </children>
             </HBox>
             <Separator prefWidth="200.0" />
-            <TabPane prefHeight="545.0" prefWidth="334.0" tabClosingPolicy="UNAVAILABLE">
+            <TabPane fx:id="tabPane" prefHeight="545.0" prefWidth="334.0" tabClosingPolicy="UNAVAILABLE">
               <tabs>
-                <Tab text="Contacts">
+                <Tab fx:id="contactsTab" onSelectionChanged="#setContactsListView" text="Contacts">
                      <content>
                         <ScrollPane prefHeight="530.0" prefWidth="334.0">
                            <content>
@@ -40,7 +40,7 @@
                         </ScrollPane>
                      </content>
                   </Tab>
-                <Tab text="Conversations">
+                <Tab fx:id="conversationsTab" onSelectionChanged="#setConverstionsListView" text="Conversations">
                      <content>
                         <ScrollPane prefHeight="200.0" prefWidth="200.0">
                            <content>

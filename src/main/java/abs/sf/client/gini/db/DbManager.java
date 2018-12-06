@@ -585,7 +585,7 @@ public final class DbManager {
 	}
 
 	public InputStream getUserAvatar(String userJID) throws DbException {
-		return this.database.getUserAvatarBytes(userJID);
+		return this.database.getUserAvatar(userJID);
 	}
 
 	public long storeMedia(String mediaId, byte[] mediaThumb, String mediaPath, String contentType) throws DbException {

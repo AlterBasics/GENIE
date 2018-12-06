@@ -63,8 +63,8 @@ public class H2Database implements Database {
 	private static final String COLON = ";";
 	private static final String user = "sf sf";
 	private static final String password = "sf";
-
-	private static final String DB_PROPERTIES = "FILE_LOCK=SOCKET;TRACE_LEVEL_FILE=3;TRACE_LEVEL_SYSTEM_OUT=3";
+//FILE_LOCK=SOCKET;
+	private static final String DB_PROPERTIES = "TRACE_LEVEL_FILE=3;TRACE_LEVEL_SYSTEM_OUT=3";
 
 	private String url;
 	private String dbFilePath;
@@ -530,7 +530,7 @@ public class H2Database implements Database {
 
 		try {
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_INSERT_ROSTER_ITEM,
-					new Object[] { item.getJid(), item.getName(), 0, });
+					new Object[] { item.getJid().getBareJID(), item.getName(), 0, });
 
 			ps.executeUpdate();
 
@@ -886,10 +886,10 @@ public class H2Database implements Database {
 
 	@Override
 	public void addChatRoomMember(ChatRoomMember member) throws DbException {
-		LOGGER.info("Add ChatRoomMember :" + member.getUserJID().getBareJID() + ":" +member.getNickName()
-				+ ":" + member.getAffiliation() == null ? null : member.getAffiliation().val()
-						+ ":" + member.getRole() == null ? null : member.getRole().val()
-								+ ":" + member.getRoomJID().getBareJID());
+		LOGGER.info("Add ChatRoomMember :" + member.getUserJID().getBareJID() + ":" + member.getNickName() + ":"
+				+ member.getAffiliation() == null ? null
+						: member.getAffiliation().val() + ":" + member.getRole() == null ? null
+								: member.getRole().val() + ":" + member.getRoomJID().getBareJID());
 
 		Connection conn = getConnection();
 		PreparedStatement ps = null;
@@ -899,7 +899,8 @@ public class H2Database implements Database {
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_INSERT_CHAT_ROOM_MEMBER,
 					new Object[] { member.getUserJID().getBareJID(), member.getNickName(),
 							member.getAffiliation() == null ? null : member.getAffiliation().val(),
-							member.getRole() == null ? null : member.getRole().val(), member.getRoomJID().getBareJID() });
+							member.getRole() == null ? null : member.getRole().val(),
+							member.getRoomJID().getBareJID() });
 
 			ps.executeUpdate();
 
@@ -1399,7 +1400,7 @@ public class H2Database implements Database {
 	}
 
 	@Override
-	public InputStream getUserAvatarBytes(String userJID) throws DbException {
+	public InputStream getUserAvatar(String userJID) throws DbException {
 		LOGGER.info("Getting User Avtar: " + userJID);
 
 		Connection conn = getConnection();
@@ -1411,7 +1412,7 @@ public class H2Database implements Database {
 
 						@Override
 						public InputStream map(ResultSet rs) throws SQLException {
-							return rs.getBlob(1).getBinaryStream();
+							return rs.getBlob(1) == null ? null : rs.getBlob(1).getBinaryStream();
 						}
 					});
 

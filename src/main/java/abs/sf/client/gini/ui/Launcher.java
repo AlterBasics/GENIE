@@ -30,12 +30,12 @@ public class Launcher extends Application {
 
 		Parent root;
 		if (AppProperties.getInstance().isPreviouslyLoggedin()) {
-			root = ResourceLoader.getInstance().loadChatController();
 			initiateBackgroundLogin();
+			root = ResourceLoader.getInstance().loadChatController();
 
 		} else {
-			root = ResourceLoader.getInstance().loadLoginController();
 			createDatabaseSchema();
+			root = ResourceLoader.getInstance().loadLoginController();
 		}
 
 		Scene mainScene = new Scene(root);
