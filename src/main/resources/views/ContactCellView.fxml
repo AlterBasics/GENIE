@@ -6,10 +6,12 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-
-<HBox fx:id="contactHBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="90.0" prefWidth="449.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" >
+<HBox fx:id="contactHBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="47.0" prefWidth="269.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <ImageView fx:id="contactImageView" fitHeight="90.0" fitWidth="112.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="contactImageView" fitHeight="49.0" fitWidth="68.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../images/user_default.png" />
+         </image></ImageView>
       <VBox prefHeight="90.0" prefWidth="393.0">
          <children>
             <Label fx:id="contactNameLabel" prefHeight="60.0" prefWidth="336.0" text="Name">

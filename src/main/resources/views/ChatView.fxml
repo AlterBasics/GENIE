@@ -12,7 +12,10 @@
          <children>
             <HBox fx:id="userHBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="71.0" prefWidth="334.0">
                <children>
-                  <ImageView fx:id="userProfileImageView" fitHeight="83.0" fitWidth="99.0" pickOnBounds="true" preserveRatio="true" />
+                  <ImageView fx:id="userProfileImageView" fitHeight="83.0" fitWidth="99.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/user_default.png" />
+                     </image></ImageView>
                   <VBox fx:id="vBox2" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="54.0" prefWidth="226.0">
                      <children>
                         <Label fx:id="userNameLabel" prefHeight="48.0" prefWidth="226.0" text="UserNameLabel">
@@ -33,20 +36,12 @@
               <tabs>
                 <Tab fx:id="contactsTab" onSelectionChanged="#setContactsListView" text="Contacts">
                      <content>
-                        <ScrollPane prefHeight="530.0" prefWidth="334.0">
-                           <content>
-                              <ListView fx:id="contactsListView" prefHeight="517.0" prefWidth="321.0" />
-                           </content>
-                        </ScrollPane>
+                       <ListView fx:id="contactsListView" prefHeight="517.0" prefWidth="321.0" />
                      </content>
                   </Tab>
                 <Tab fx:id="conversationsTab" onSelectionChanged="#setConverstionsListView" text="Conversations">
                      <content>
-                        <ScrollPane prefHeight="200.0" prefWidth="200.0">
-                           <content>
-                              <ListView fx:id="conversationsListView" prefHeight="517.0" prefWidth="321.0" />
-                           </content>
-                        </ScrollPane>
+                        <ListView fx:id="conversationsListView" prefHeight="517.0" prefWidth="321.0" />
                      </content>
                   </Tab>
               </tabs>
