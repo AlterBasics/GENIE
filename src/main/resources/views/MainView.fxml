@@ -8,7 +8,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.shape.*?>
 
-<AnchorPane id="anchorPane" prefHeight="648.0" prefWidth="835.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="abs.sf.client.gini.ui.controller.ChatController">
+<AnchorPane id="anchorPane" prefHeight="648.0" prefWidth="835.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="abs.sf.client.gini.ui.controller.ChatBaseController">
    <children>
       <ImageView id="ivUser" fx:id="ivUser" fitHeight="66.0" fitWidth="79.0" layoutX="9.0" layoutY="39.0" pickOnBounds="true" preserveRatio="true">
          <image>

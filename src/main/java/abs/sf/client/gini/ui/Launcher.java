@@ -31,7 +31,7 @@ public class Launcher extends Application {
 		Parent root;
 		if (AppProperties.getInstance().isPreviouslyLoggedin()) {
 			initiateBackgroundLogin();
-			root = ResourceLoader.getInstance().loadChatController();
+			root = ResourceLoader.getInstance().loadChatBaseController();
 
 		} else {
 			createDatabaseSchema();

@@ -31,8 +31,9 @@ import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-public class ChatController implements Initializable {
-	private static final Logger LOGGER = Logger.getLogger(ChatController.class.getName());
+public class ChatBaseController implements Initializable {
+	private static final Logger LOGGER = Logger.getLogger(ChatBaseController.class.getName());
+	
 	private static final String DEFAULT_PRESENCE_STATUS = "online";
 
 	@FXML

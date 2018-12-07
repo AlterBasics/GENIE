@@ -45,9 +45,9 @@ public class ResourceLoader {
 	 * @return
 	 * @throws IOException
 	 */
-	public Parent loadChatController() throws IOException {
+	public Parent loadChatBaseController() throws IOException {
 
-		return FXMLLoader.load(getClass().getClassLoader().getResource(Resources.CHAT_VIEW_FXML));
+		return FXMLLoader.load(getClass().getClassLoader().getResource(Resources.CHAT_BASE_VIEW_FXML));
 	}
 
 	/**

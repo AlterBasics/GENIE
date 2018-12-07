@@ -1,6 +1,5 @@
 package abs.sf.client.gini.ui.controller;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -62,9 +61,9 @@ public class LoginController extends APPController implements Initializable {
 
 	}
 
-	private void showChatView() {
+	private void showChatBaseView() {
 		try {
-			Parent root = ResourceLoader.getInstance().loadChatController();
+			Parent root = ResourceLoader.getInstance().loadChatBaseController();
 			Scene scene = new Scene(root);
 			scene.setRoot(root);
 			showSceneOnPrimeryStage(scene);
@@ -83,8 +82,7 @@ public class LoginController extends APPController implements Initializable {
 		boolean validated = validateInputs(userName, password);
 
 		if (validated) {
-			AppUserManager userManager = (AppUserManager) abs.ixi.client.core.Platform.getInstance()
-					.getUserManager();
+			AppUserManager userManager = (AppUserManager) abs.ixi.client.core.Platform.getInstance().getUserManager();
 
 			try {
 				userManager.loginUser(userName, password, AppProperties.getInstance().getDomainName(),
@@ -102,7 +100,7 @@ public class LoginController extends APPController implements Initializable {
 
 											@Override
 											public void run() {
-												showChatView();
+												showChatBaseView();
 											}
 										});
 
@@ -130,8 +128,8 @@ public class LoginController extends APPController implements Initializable {
 
 							@Override
 							public void onFailure(Exception e) {
-								JFXUtils.showAlertOnApplicationThread("Loggin failed due to some error" + e.getMessage(),
-										AlertType.WARNING);
+								JFXUtils.showAlertOnApplicationThread(
+										"Loggin failed due to some error" + e.getMessage(), AlertType.WARNING);
 							}
 						});
 

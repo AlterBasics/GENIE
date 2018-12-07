@@ -54,7 +54,7 @@ public class ConversationCell {
 		this.lastMessageTimeLabel.setText(conversation.getDisplayTime());
 
 		if (!conversation.isOnline()) {
-			this.presenceImageView.setDisable(true);
+			this.presenceImageView.setVisible(false);
 		}
 
 		if (conversation.isGroup()) {
