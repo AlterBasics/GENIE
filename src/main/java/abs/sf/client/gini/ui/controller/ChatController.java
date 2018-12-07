@@ -13,7 +13,9 @@ import abs.ixi.client.xmpp.JID;
 import abs.ixi.client.xmpp.packet.Roster.RosterItem;
 import abs.ixi.client.xmpp.packet.UserProfileData;
 import abs.sf.client.gini.exception.StringflowErrorException;
+import abs.sf.client.gini.managers.AppChatManager;
 import abs.sf.client.gini.managers.AppUserManager;
+import abs.sf.client.gini.messaging.Conversation;
 import abs.sf.client.gini.ui.utils.JFXUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -56,12 +58,20 @@ public class ChatController implements Initializable {
 
 	@FXML
 	ObservableList<RosterItem> contactsObservableList = FXCollections.observableArrayList();
+	
+	@FXML
+	private ListView<Conversation> conversationsListView;
+
+	@FXML
+	ObservableList<Conversation> conversationsObservableList = FXCollections.observableArrayList();
 
 	private JID userJID;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		this.setupUserData();
+		this.setContactsListView();
+		this.setConverstionsListView();
 		setDefaultSelectedTab();
 	}
 
@@ -143,5 +153,42 @@ public class ChatController implements Initializable {
 
 	public void setConverstionsListView() {
 		LOGGER.info("Setting Conversations List View");
+		try {
+	        AppChatManager chatManager = (AppChatManager) Platform.getInstance().getChatManager();
+	        List<Conversation> conversationsList = chatManager.getAllConversations();
+	        
+			this.conversationsObservableList.setAll(conversationsList);
+			this.conversationsListView.setItems(this.conversationsObservableList);
+
+			this.conversationsListView.setCellFactory((u) -> {
+
+				return new ListCell<Conversation>() {
+					@Override
+					protected void updateItem(Conversation conversation, boolean bool) {
+						super.updateItem(conversation, bool);
+
+						if (conversation != null) {
+							try {
+								ConversationCell conversationCell = new ConversationCell(conversation);
+								setGraphic(conversationCell.getConversationCellGraphics());
+							} catch (Exception e) {
+								LOGGER.log(Level.WARNING,
+										"Failed to load Conversation cell for pear jid " + conversation.getPeerJid(), e);
+
+								JFXUtils.showAlert("Failed to load Contact cell for pear jid  " + conversation.getPeerJid(),
+										AlertType.WARNING);
+							}
+						}
+
+					}
+
+				};
+
+			});
+
+		} catch (StringflowErrorException e) {
+			LOGGER.log(Level.WARNING, "failed to setup conversation list view" + e);
+			JFXUtils.showAlert("Failed to setup conversation list view due to " + e.getMessage(), AlertType.WARNING);
+		}
 	}
 }

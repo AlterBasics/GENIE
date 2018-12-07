@@ -6,20 +6,20 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<HBox fx:id="contactHBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="47.0" prefWidth="269.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<HBox fx:id="contactHBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="57.0" prefWidth="302.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <ImageView fx:id="contactImageView" fitHeight="49.0" fitWidth="68.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="contactImageView" fitHeight="57.0" fitWidth="55.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../images/user_default.png" />
          </image></ImageView>
-      <VBox prefHeight="90.0" prefWidth="393.0">
+      <VBox prefHeight="57.0" prefWidth="248.0">
          <children>
-            <Label fx:id="contactNameLabel" prefHeight="60.0" prefWidth="336.0" text="Name">
+            <Label fx:id="contactNameLabel" prefHeight="31.0" prefWidth="220.0" text="Name">
                <padding>
                   <Insets left="10.0" />
                </padding>
             </Label>
-            <Label fx:id="contactStatusLabel" prefHeight="17.0" prefWidth="48.0" text="Status">
+            <Label fx:id="contactStatusLabel" prefHeight="30.0" prefWidth="220.0">
                <padding>
                   <Insets left="10.0" />
                </padding>

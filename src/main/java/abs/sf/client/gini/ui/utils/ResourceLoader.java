@@ -59,4 +59,13 @@ public class ResourceLoader {
 		return new Image(getClass().getClassLoader().getResource(Resources.APP_ICON_IMAGE).toString());
 	}
 
+	/**
+	 * Load group default image icon resource
+	 * {@link Resources#GROUP_DEFAULT_IMAGE}.
+	 * 
+	 * @return
+	 */
+	public Image loadGroupDefaultImage() {
+		return new Image(getClass().getClassLoader().getResource(Resources.GROUP_DEFAULT_IMAGE).toString());
+	}
 }
