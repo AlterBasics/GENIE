@@ -24,7 +24,7 @@ public class ChatLineRowMapper implements RowMapper<ChatLine> {
 		line.setMarkable(rs.getInt(12) == 1 ? true : false);
 		line.setHaveSean(rs.getInt(13) == 1 ? true : false);
 		line.setCsnActive(rs.getInt(14) == 1 ? true : false);
-
+		
 		return line;
 	}
 

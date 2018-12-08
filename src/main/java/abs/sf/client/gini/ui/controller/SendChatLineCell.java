@@ -7,12 +7,13 @@ import abs.sf.client.gini.ui.utils.ResourceLoader;
 import abs.sf.client.gini.ui.utils.Resources;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 
-public class SendChatLineCell {
+public class SendChatLineCell implements ChatLineCell {
 	@FXML
 	private AnchorPane chatLineAnchorPane;
 
@@ -78,7 +79,13 @@ public class SendChatLineCell {
 		}
 	}
 
-	public AnchorPane getChatLineCellGraphics() {
+	@Override
+	public Parent getChatLineCellGraphics() {
 		return this.chatLineAnchorPane;
+	}
+
+	@Override
+	public ChatLineCellType getChatLineCellType() {
+		return ChatLineCellType.SEND;
 	}
 }

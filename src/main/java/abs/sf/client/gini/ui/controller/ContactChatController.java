@@ -9,12 +9,12 @@ import java.util.logging.Logger;
 import abs.ixi.client.core.Platform;
 import abs.ixi.client.util.StringUtils;
 import abs.ixi.client.xmpp.JID;
-import abs.ixi.client.xmpp.packet.Presence;
-import abs.ixi.client.xmpp.packet.Presence.PresenceType;
 import abs.sf.client.gini.exception.StringflowErrorException;
 import abs.sf.client.gini.managers.AppChatManager;
+import abs.sf.client.gini.managers.AppPresenceManager;
 import abs.sf.client.gini.managers.AppUserManager;
 import abs.sf.client.gini.messaging.ChatLine;
+import abs.sf.client.gini.messaging.UserPresence;
 import abs.sf.client.gini.ui.utils.JFXUtils;
 import abs.sf.client.gini.ui.utils.ResourceLoader;
 import abs.sf.client.gini.ui.utils.Resources;
@@ -79,18 +79,30 @@ public class ContactChatController {
 
 	private void setViewData() throws Exception {
 		AppUserManager userManager = (AppUserManager) Platform.getInstance().getUserManager();
-		String contactRosterName = userManager.getRosterItemName(this.contactJID);
-
-		this.contactNameLabel
-				.setText(StringUtils.isNullOrEmpty(contactRosterName) ? this.contactJID.getNode() : contactRosterName);
-
-		Presence presence = userManager.getUserPresence(this.contactJID);
-
-		if (presence != null && presence.getType() == PresenceType.AVAILABLE) {
-			this.onlineStatusImageView.setVisible(true);
-		}
 
 		this.isGroup = userManager.checkIsChatRoom(this.contactJID);
+
+		if (isGroup) {
+			String roomSubject = userManager.getChatRoomSubject(this.contactJID);
+			this.contactNameLabel
+					.setText(StringUtils.isNullOrEmpty(roomSubject) ? this.contactJID.getNode() : roomSubject);
+
+		} else {
+			String contactRosterName = userManager.getRosterItemName(this.contactJID);
+
+			this.contactNameLabel.setText(
+					StringUtils.isNullOrEmpty(contactRosterName) ? this.contactJID.getNode() : contactRosterName);
+		}
+
+		AppPresenceManager presenceManager = (AppPresenceManager) Platform.getInstance().getPresenceManager();
+		UserPresence presence = presenceManager.getUserPresence(this.contactJID);
+
+		if (presence != null && presence.isOnline()) {
+			this.onlineStatusImageView.setVisible(true);
+
+		} else {
+			this.onlineStatusImageView.setVisible(false);
+		}
 
 		InputStream contactImageStream = userManager.getUserAvatar(this.contactJID);
 
@@ -122,8 +134,16 @@ public class ContactChatController {
 
 					if (chatLine != null) {
 						try {
-							SendChatLineCell contactCell = new SendChatLineCell(chatLine);
-							// setGraphic(contactCell.getContactCellGraphics());
+							ChatLineCell chatLineCell;
+							if (chatLine.getDirection() == ChatLine.Direction.RECEIVE) {
+								chatLineCell = new ReceiveChatlineCell(chatLine);
+							} else {
+								chatLineCell = new SendChatLineCell(chatLine);
+
+							}
+
+							setGraphic(chatLineCell.getChatLineCellGraphics());
+
 						} catch (Exception e) {
 							LOGGER.log(Level.WARNING,
 									"Failed to load ChatLine cell for given chatLine " + chatLine.getContentId(), e);

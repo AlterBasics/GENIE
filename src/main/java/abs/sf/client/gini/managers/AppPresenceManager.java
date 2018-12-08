@@ -7,9 +7,12 @@ import abs.ixi.client.PresenceManager;
 import abs.ixi.client.core.Packet;
 import abs.ixi.client.core.Platform;
 import abs.ixi.client.io.XMPPStreamManager;
+import abs.ixi.client.xmpp.JID;
 import abs.ixi.client.xmpp.packet.Presence;
 import abs.sf.client.gini.db.DbManager;
 import abs.sf.client.gini.db.exception.DbException;
+import abs.sf.client.gini.exception.StringflowErrorException;
+import abs.sf.client.gini.messaging.UserPresence;
 
 public class AppPresenceManager extends PresenceManager {
 	private static final Logger LOGGER = Logger.getLogger(AppPresenceManager.class.getName());
@@ -43,6 +46,19 @@ public class AppPresenceManager extends PresenceManager {
 				AppUserManager androidUserManager = (AppUserManager) Platform.getInstance().getUserManager();
 				androidUserManager.reloadUserData(presence.getFrom());
 			}
+		}
+	}
+
+	public UserPresence getUserPresence(JID userJID) throws StringflowErrorException {
+		try {
+			return DbManager.getInstance().getPresenceDetails(userJID.getBareJID());
+
+		} catch (DbException e) {
+			String errorMessage = "Failed to get user presence detail for userJID " + userJID + " due to "
+					+ e.getMessage();
+
+			LOGGER.log(Level.WARNING, errorMessage, e);
+			throw new StringflowErrorException(errorMessage, e);
 		}
 	}
 }

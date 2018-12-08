@@ -324,7 +324,7 @@ public interface Database extends Initializable {
 	 * Getting ChatRoom Details roomJID
 	 */
 	ChatRoom getChatRoomDetails(String roomJID) throws DbException;
-
+	
 	/**
 	 * Getting ChatRoom JID roomName
 	 */
@@ -501,4 +501,6 @@ public interface Database extends Initializable {
 	 * @throws DbException
 	 */
 	List<Stanza> fetchAllUndeliverStanzas() throws DbException;
+
+	
 }

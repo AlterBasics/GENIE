@@ -18,7 +18,6 @@ import abs.ixi.client.util.StringUtils;
 import abs.ixi.client.util.UUIDGenerator;
 import abs.ixi.client.xmpp.JID;
 import abs.ixi.client.xmpp.packet.ChatRoom;
-import abs.ixi.client.xmpp.packet.Presence;
 import abs.ixi.client.xmpp.packet.Roster;
 import abs.ixi.client.xmpp.packet.UserProfileData;
 import abs.sf.client.gini.db.DbManager;
@@ -104,6 +103,24 @@ public class AppUserManager extends UserManager {
 
 		} catch (DbException e) {
 			String errorMessage = "Failed to get chatRoom Details due to database operations failure";
+
+			LOGGER.log(Level.WARNING, errorMessage, e);
+			throw new StringflowErrorException(errorMessage, e);
+		}
+	}
+	
+	/**
+	 * ChatRoom subject from cache
+	 * @param contactJID
+	 * @return room subject
+	 * @throws StringflowErrorException 
+	 */
+	public String getChatRoomSubject(JID roomJID) throws StringflowErrorException {
+		try {
+			return DbManager.getInstance().getChatRoomSubject(roomJID.getBareJID());
+
+		} catch (DbException e) {
+			String errorMessage = "Failed to get chatRoom subject due to database operations failure";
 
 			LOGGER.log(Level.WARNING, errorMessage, e);
 			throw new StringflowErrorException(errorMessage, e);
@@ -539,10 +556,6 @@ public class AppUserManager extends UserManager {
 	public void shutdownSDK() throws StringflowErrorException {
 		Platform.getInstance().shutdown();
 		SDKLoader.unloadSdk();
-	}
-
-	public Presence getUserPresence(JID contactJID) {
-		return null;
 	}
 
 }

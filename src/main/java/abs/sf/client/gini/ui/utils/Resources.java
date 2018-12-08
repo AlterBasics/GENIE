@@ -7,6 +7,7 @@ public interface Resources {
 	String COVERSATION_CELL_VIEW_FXML = "views/ConversationCellView.fxml";
 	String CONTACT_CHAT_VIEW_FXML = "views/ContactChatView.fxml";
 	String SEND_CHATLINE_VIEW_FXML = "views/SendChatlineView.fxml";
+	String RECEIVE_CHATLINE_VIEW_FXML = "views/ReceiveChatlineView.fxml";
 
 	String APP_ICON_IMAGE = "images/stringflow_icon_image.png";
 	String GROUP_DEFAULT_IMAGE = "images/group_default_image.png";

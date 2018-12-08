@@ -63,7 +63,7 @@ public class H2Database implements Database {
 	private static final String COLON = ";";
 	private static final String user = "sf sf";
 	private static final String password = "sf";
-//FILE_LOCK=SOCKET;
+	// FILE_LOCK=SOCKET;
 	private static final String DB_PROPERTIES = "TRACE_LEVEL_FILE=3;TRACE_LEVEL_SYSTEM_OUT=3";
 
 	private String url;

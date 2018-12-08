@@ -84,7 +84,7 @@ public class SQLQuery {
 			+ RosterTable.COLUMN_NAME + ", " + RosterTable.COLUMN_ROOM_SUBJECT + ", " + RosterTable.COLUMN_ACCESS_MODE
 			+ " FROM " + RosterTable.TABLE_NAME + " WHERE " + RosterTable.COLUMN_JID + " = ? " + " AND "
 			+ RosterTable.COLUMN_IS_GROUP + " = 1";
-
+	
 	public static final String FETCH_CHAT_ROOM_JID = "SELECT " + RosterTable.COLUMN_JID + " FROM "
 			+ RosterTable.TABLE_NAME + " WHERE " + RosterTable.COLUMN_NAME + " = ? " + " AND "
 			+ RosterTable.COLUMN_IS_GROUP + " = 1";
