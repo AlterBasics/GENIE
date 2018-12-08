@@ -1,13 +1,18 @@
 package abs.sf.client.gini.ui.controller;
 
 import java.io.IOException;
+import java.io.InputStream;
 
+import abs.ixi.client.core.Platform;
 import abs.ixi.client.xmpp.JID;
 import abs.ixi.client.xmpp.packet.Roster.RosterItem;
+import abs.sf.client.gini.exception.StringflowErrorException;
+import abs.sf.client.gini.managers.AppUserManager;
 import abs.sf.client.gini.ui.utils.Resources;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
@@ -26,24 +31,33 @@ public class ContactCell {
 
 	private RosterItem rosterItem;
 
-	public ContactCell(RosterItem rosterItem) throws IOException {
+	public ContactCell(RosterItem rosterItem) throws Exception {
+		initView();
+		this.rosterItem = rosterItem;
+
+		this.setCellData();
+	}
+
+	private void initView() throws IOException {
 		FXMLLoader fxmlLoader = new FXMLLoader(
 				getClass().getClassLoader().getResource(Resources.CONTACT_CELL_VIEW_FXML));
 
 		fxmlLoader.setController(this);
 		fxmlLoader.load();
-
-		this.rosterItem = rosterItem;
-
-		initView();
 	}
 
-	private void initView() {
+	private void setCellData() throws StringflowErrorException  {
 		this.contactNameLabel.setText(rosterItem.getName());
-
 		// TODO: show presence later
 		this.contactStatusLabel.setText("");
 
+		AppUserManager userManager = (AppUserManager) Platform.getInstance().getUserManager();
+
+		InputStream contactImageStream = userManager.getUserAvatar(this.rosterItem.getJid());
+
+		if (contactImageStream != null) {
+			this.contactImageView.setImage(new Image(contactImageStream));
+		}
 	}
 
 	public HBox getContactCellGraphics() {

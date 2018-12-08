@@ -1,13 +1,20 @@
 package abs.sf.client.gini.ui.controller;
 
 import java.io.IOException;
+import java.io.InputStream;
 
+import abs.ixi.client.core.Platform;
+import abs.ixi.client.xmpp.InvalidJabberId;
+import abs.ixi.client.xmpp.JID;
+import abs.sf.client.gini.exception.StringflowErrorException;
+import abs.sf.client.gini.managers.AppUserManager;
 import abs.sf.client.gini.messaging.Conversation;
 import abs.sf.client.gini.ui.utils.ResourceLoader;
 import abs.sf.client.gini.ui.utils.Resources;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 
@@ -35,19 +42,22 @@ public class ConversationCell {
 
 	private Conversation conversation;
 
-	public ConversationCell(Conversation conversation) throws IOException {
+	public ConversationCell(Conversation conversation) throws Exception {
+		initView();
+		this.conversation = conversation;
+
+		this.setCellData();
+	}
+
+	private void initView() throws IOException {
 		FXMLLoader fxmlLoader = new FXMLLoader(
 				getClass().getClassLoader().getResource(Resources.COVERSATION_CELL_VIEW_FXML));
 
 		fxmlLoader.setController(this);
 		fxmlLoader.load();
-
-		this.conversation = conversation;
-
-		initView();
 	}
 
-	private void initView() {
+	private void setCellData() throws StringflowErrorException, InvalidJabberId {
 		this.contactNameLabel.setText(conversation.getPeerName());
 		this.lastMessageOrTypingLabel.setText(conversation.getLastChatLine());
 		this.unreadMessageCountLabel.setText(Integer.toString(conversation.getUnreadChatLines()));
@@ -57,7 +67,13 @@ public class ConversationCell {
 			this.presenceImageView.setVisible(false);
 		}
 
-		if (conversation.isGroup()) {
+		AppUserManager userManager = (AppUserManager) Platform.getInstance().getUserManager();
+		InputStream contactImageStream = userManager.getUserAvatar(new JID(this.conversation.getPeerJid()));
+
+		if (contactImageStream != null) {
+			this.contactImageView.setImage(new Image(contactImageStream));
+
+		} else if (conversation.isGroup()) {
 			this.contactImageView.setImage(ResourceLoader.getInstance().loadGroupDefaultImage());
 		}
 	}

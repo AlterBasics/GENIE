@@ -18,6 +18,7 @@ import abs.ixi.client.util.StringUtils;
 import abs.ixi.client.util.UUIDGenerator;
 import abs.ixi.client.xmpp.JID;
 import abs.ixi.client.xmpp.packet.ChatRoom;
+import abs.ixi.client.xmpp.packet.Presence;
 import abs.ixi.client.xmpp.packet.Roster;
 import abs.ixi.client.xmpp.packet.UserProfileData;
 import abs.sf.client.gini.db.DbManager;
@@ -435,10 +436,30 @@ public class AppUserManager extends UserManager {
 	 * @return avatar
 	 * @throws StringflowErrorException
 	 */
-	public InputStream getUserAvatar(JID useeJID) throws StringflowErrorException {
+	public InputStream getUserAvatar(JID userJID) throws StringflowErrorException {
 		try {
 
-			return DbManager.getInstance().getUserAvatar(useeJID.getBareJID());
+			return DbManager.getInstance().getUserAvatar(userJID.getBareJID());
+
+		} catch (DbException e) {
+			String errorMessage = "Failed to get user Avatar due to database operation failure";
+			LOGGER.log(Level.WARNING, errorMessage, e);
+			throw new StringflowErrorException(errorMessage, e);
+		}
+	}
+	
+	/**
+	 * It will return cached user avatar from local DB. To refresh data first
+	 * use {@link #reloadUserData()}. which will reload user data from server.
+	 *
+	 * @param useeJID
+	 * @return avatar
+	 * @throws StringflowErrorException
+	 */
+	public InputStream getUserAvatar(String userJID) throws StringflowErrorException {
+		try {
+
+			return DbManager.getInstance().getUserAvatar(userJID);
 
 		} catch (DbException e) {
 			String errorMessage = "Failed to get user Avatar due to database operation failure";
@@ -518,6 +539,10 @@ public class AppUserManager extends UserManager {
 	public void shutdownSDK() throws StringflowErrorException {
 		Platform.getInstance().shutdown();
 		SDKLoader.unloadSdk();
+	}
+
+	public Presence getUserPresence(JID contactJID) {
+		return null;
 	}
 
 }

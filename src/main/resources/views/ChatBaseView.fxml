@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.control.*?>
@@ -16,7 +17,7 @@
                      <image>
                         <Image url="@../images/user_default.png" />
                      </image></ImageView>
-                  <VBox fx:id="vBox2" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="54.0" prefWidth="226.0">
+                  <VBox fx:id="vBox2" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="83.0" prefWidth="257.0">
                      <children>
                         <Label fx:id="userNameLabel" prefHeight="48.0" prefWidth="226.0" text="UserNameLabel">
                            <padding>
@@ -48,35 +49,15 @@
             </TabPane>
          </children>
       </VBox>
-      <HBox layoutX="348.0" layoutY="-1.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="47.0" prefWidth="976.0">
-         <children>
-            <ImageView fx:id="contactImageView" fitHeight="83.0" fitWidth="102.0" pickOnBounds="true" preserveRatio="true" />
-            <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="83.0" prefWidth="874.0">
-               <children>
-                  <Label fx:id="contactNameLabel" prefHeight="44.0" prefWidth="508.0" text="ContactNameLabel">
-                     <padding>
-                        <Insets left="10.0" />
-                     </padding></Label>
-                  <Separator prefWidth="200.0" />
-                  <Label fx:id="contactStatusLabel" prefHeight="40.0" prefWidth="505.0" text="ContactStatusLabel">
-                     <padding>
-                        <Insets left="10.0" />
-                     </padding></Label>
-               </children>
-            </VBox>
-         </children>
-      </HBox>
-      <HBox layoutX="352.0" layoutY="582.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="47.0" prefWidth="956.0">
-         <children>
-            <TextArea fx:id="messageTextArea" prefHeight="57.0" prefWidth="881.0" />
-         </children>
-      </HBox>
-      <ScrollPane hbarPolicy="NEVER" layoutX="346.0" layoutY="87.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="495.0" prefWidth="976.0" vbarPolicy="ALWAYS">
-         <content>
-            <ListView fx:id="chatListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="494.0" prefWidth="956.0" />
-         </content>
-      </ScrollPane>
       <Separator layoutX="334.0" layoutY="1.0" orientation="VERTICAL" prefHeight="618.0" prefWidth="8.0" />
-      <Separator layoutX="342.0" layoutY="81.0" prefHeight="11.0" prefWidth="968.0" />
+      <AnchorPane fx:id="contactChatViewAnchorPane" layoutX="346.0" prefHeight="631.0" prefWidth="977.0">
+         <children>
+            <Label fx:id="welcomeMessageLabel" layoutX="338.0" layoutY="214.0" prefHeight="120.0" prefWidth="408.0" text="WELCOME">
+               <font>
+                  <Font size="36.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
    </children>
 </AnchorPane>

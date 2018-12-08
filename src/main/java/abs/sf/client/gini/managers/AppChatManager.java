@@ -432,7 +432,7 @@ public class AppChatManager extends ChatManager {
 	 * @return all conversations for given contact.
 	 * @throws StringflowErrorException
 	 */
-	public List<ChatLine> getAllConversationChatLines(JID contactJID, boolean isGroup) throws StringflowErrorException {
+	public List<ChatLine> getAllConversationChatLines(JID contactJID) throws StringflowErrorException {
 		try {
 			List<ChatLine> allChatLines = DbManager.getInstance().fetchConversationChatlines(contactJID.getBareJID());
 			// TODO: Is it need to set pearName I think when we r persisting

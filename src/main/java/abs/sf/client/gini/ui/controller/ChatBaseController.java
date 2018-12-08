@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import abs.ixi.client.core.Platform;
 import abs.ixi.client.util.StringUtils;
+import abs.ixi.client.xmpp.InvalidJabberId;
 import abs.ixi.client.xmpp.JID;
 import abs.ixi.client.xmpp.packet.Roster.RosterItem;
 import abs.ixi.client.xmpp.packet.UserProfileData;
@@ -19,6 +20,7 @@ import abs.sf.client.gini.messaging.Conversation;
 import abs.sf.client.gini.ui.utils.JFXUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert.AlertType;
@@ -30,11 +32,16 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 
 public class ChatBaseController implements Initializable {
 	private static final Logger LOGGER = Logger.getLogger(ChatBaseController.class.getName());
-	
+
 	private static final String DEFAULT_PRESENCE_STATUS = "online";
+
+	@FXML
+	private AnchorPane contactChatViewAnchorPane;
 
 	@FXML
 	private ImageView userProfileImageView;
@@ -55,11 +62,14 @@ public class ChatBaseController implements Initializable {
 	private Label userStatusLabel;
 
 	@FXML
+	private Label welcomeMessageLabel;
+
+	@FXML
 	private ListView<RosterItem> contactsListView;
 
 	@FXML
 	ObservableList<RosterItem> contactsObservableList = FXCollections.observableArrayList();
-	
+
 	@FXML
 	private ListView<Conversation> conversationsListView;
 
@@ -95,13 +105,16 @@ public class ChatBaseController implements Initializable {
 			}
 
 			String userName = userProfileData.getUserName();
-			this.userNameLabel.setText(StringUtils.isNullOrEmpty(userName) ? this.userJID.getNode() : userName);
+			String name = StringUtils.isNullOrEmpty(userName) ? this.userJID.getNode() : userName;
+			this.userNameLabel.setText(name);
+			this.welcomeMessageLabel.setText(getWelcomeMessage(name));
+
 			this.userStatusLabel.setText(DEFAULT_PRESENCE_STATUS);
 
 			InputStream profileStream = userManager.getUserAvatar(this.userJID);
 
 			if (profileStream != null) {
-				userProfileImageView.setImage(new Image(profileStream));
+				this.userProfileImageView.setImage(new Image(profileStream));
 			}
 
 		} catch (StringflowErrorException e) {
@@ -109,6 +122,10 @@ public class ChatBaseController implements Initializable {
 			JFXUtils.showStringflowErrorAlert(e.getMessage());
 		}
 
+	}
+
+	private String getWelcomeMessage(String name) {
+		return "Welcome, " + name;
 	}
 
 	public void setContactsListView() {
@@ -132,11 +149,11 @@ public class ChatBaseController implements Initializable {
 								ContactCell contactCell = new ContactCell(rosterItem);
 								setGraphic(contactCell.getContactCellGraphics());
 							} catch (Exception e) {
-								LOGGER.log(Level.WARNING,
-										"Failed to load Contact cell for roster item " + rosterItem.getJid(), e);
+								LOGGER.log(Level.WARNING, "Failed to load Contact cell for roster item "
+										+ rosterItem.getJid() + " due to " + e.getMessage(), e);
 
-								JFXUtils.showAlert("Failed to load Contact cell for roster item " + rosterItem.getJid(),
-										AlertType.WARNING);
+								JFXUtils.showAlert("Failed to load Contact cell for roster item " + rosterItem.getJid()
+										+ " due to " + e.getMessage(), AlertType.WARNING);
 							}
 						}
 
@@ -146,18 +163,40 @@ public class ChatBaseController implements Initializable {
 
 			});
 
+			this.contactsListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+				@Override
+				public void handle(MouseEvent event) {
+					RosterItem clickedContact = contactsListView.getSelectionModel().getSelectedItem();
+					openContactChatView(clickedContact.getJid());
+				}
+			});
 		} catch (StringflowErrorException e) {
 			LOGGER.log(Level.WARNING, "failed to setup contact list view" + e);
 			JFXUtils.showAlert("Failed to setup contact list view due to " + e.getMessage(), AlertType.WARNING);
 		}
 	}
 
+	private void openContactChatView(JID contactJID) {
+		try {
+			ContactChatController chatController = new ContactChatController(contactJID);
+			this.contactChatViewAnchorPane.getChildren().setAll(chatController.getContactChatViewGraphics());
+		} catch (Exception e) {
+			LOGGER.log(Level.WARNING,
+					"Failed to open contact chat view for contactJID " + contactJID + " due to " + e.getMessage(), e);
+			JFXUtils.showAlert(
+					"Failed to open contact chat view for contactJID " + contactJID + " due to " + e.getMessage(),
+					AlertType.WARNING);
+		}
+
+	}
+
 	public void setConverstionsListView() {
 		LOGGER.info("Setting Conversations List View");
 		try {
-	        AppChatManager chatManager = (AppChatManager) Platform.getInstance().getChatManager();
-	        List<Conversation> conversationsList = chatManager.getAllConversations();
-	        
+			AppChatManager chatManager = (AppChatManager) Platform.getInstance().getChatManager();
+			List<Conversation> conversationsList = chatManager.getAllConversations();
+
 			this.conversationsObservableList.setAll(conversationsList);
 			this.conversationsListView.setItems(this.conversationsObservableList);
 
@@ -173,11 +212,11 @@ public class ChatBaseController implements Initializable {
 								ConversationCell conversationCell = new ConversationCell(conversation);
 								setGraphic(conversationCell.getConversationCellGraphics());
 							} catch (Exception e) {
-								LOGGER.log(Level.WARNING,
-										"Failed to load Conversation cell for pear jid " + conversation.getPeerJid(), e);
+								LOGGER.log(Level.WARNING, "Failed to load Conversation cell for pear jid "
+										+ conversation.getPeerJid() + " due to " + e.getMessage(), e);
 
-								JFXUtils.showAlert("Failed to load Contact cell for pear jid  " + conversation.getPeerJid(),
-										AlertType.WARNING);
+								JFXUtils.showAlert("Failed to load Contact cell for pear jid  "
+										+ conversation.getPeerJid() + " due to " + e.getMessage(), AlertType.WARNING);
 							}
 						}
 
@@ -185,6 +224,27 @@ public class ChatBaseController implements Initializable {
 
 				};
 
+			});
+
+			this.conversationsListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+				@Override
+				public void handle(MouseEvent event) {
+					Conversation conversation = conversationsListView.getSelectionModel().getSelectedItem();
+					try {
+
+						openContactChatView(new JID(conversation.getPeerJid()));
+
+					} catch (InvalidJabberId e) {
+						LOGGER.log(Level.WARNING,
+								"Failed to setup conversation list on mouse click listener for pearJID : "
+										+ conversation.getPeerJid() + "due to " + e.getMessage(),
+								e);
+						JFXUtils.showAlert("Failed to setup conversation list on mouse click listener for pearJID : "
+								+ conversation.getPeerJid() + "due to " + e.getMessage(), AlertType.WARNING);
+
+					}
+				}
 			});
 
 		} catch (StringflowErrorException e) {
