@@ -122,7 +122,7 @@ public class ContactChatController {
 
 					if (chatLine != null) {
 						try {
-							ChatLineCell contactCell = new ChatLineCell(chatLine);
+							SendChatLineCell contactCell = new SendChatLineCell(chatLine);
 							// setGraphic(contactCell.getContactCellGraphics());
 						} catch (Exception e) {
 							LOGGER.log(Level.WARNING,

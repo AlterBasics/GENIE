@@ -68,4 +68,20 @@ public class ResourceLoader {
 	public Image loadGroupDefaultImage() {
 		return new Image(getClass().getClassLoader().getResource(Resources.GROUP_DEFAULT_IMAGE).toString());
 	}
-}
+	
+	public Image loadMessageNotDeliveredToServerImage() {
+		return new Image(getClass().getClassLoader().getResource(Resources.MESSAGE_NOT_DELIVERED_TO_SERVER).toString());
+	}
+	
+	public Image loadMessageDeliverToServerImage() {
+		return new Image(getClass().getClassLoader().getResource(Resources.MESSAGE_DELIVERED_TO_SERVER_IMAGE).toString());
+	}
+	
+	public Image loadMessageDeliveredToReceiverImage() {
+		return new Image(getClass().getClassLoader().getResource(Resources.MESSAGE_DELIVERED_TO_RECEIVER_IMAGE).toString());
+	}
+	
+	public Image loadMessageHasViewdByReceiverImage() {
+		return new Image(getClass().getClassLoader().getResource(Resources.MESSAGE_VIEWED_BY_RECEIVER_IMAGE).toString());
+	}
+} 
