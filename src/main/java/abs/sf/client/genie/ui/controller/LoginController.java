@@ -71,7 +71,7 @@ public class LoginController extends APPController implements Initializable {
 		} catch (Throwable e) {
 			LOGGER.log(Level.WARNING, "Failed to load ChatView " + e.getMessage(), e);
 			e.printStackTrace();
-			JFXUtils.showAlert("Failed to load ChatView", AlertType.WARNING);
+			JFXUtils.showAlert("Failed to load ChatBaseView " + e.getMessage(), AlertType.WARNING);
 		}
 	}
 
