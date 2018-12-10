@@ -29,10 +29,14 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 
 public class ContactChatController {
 	private static final Logger LOGGER = Logger.getLogger(ContactChatController.class.getName());
+
+	private static final AppChatManager chatManager = (AppChatManager) Platform.getInstance().getChatManager();
 
 	@FXML
 	private VBox contactChatViewVBox;
@@ -67,6 +71,7 @@ public class ContactChatController {
 		this.contactJID = contactJID;
 
 		setViewData();
+		setupMessageTextArea();
 	}
 
 	private void initView() throws IOException {
@@ -75,6 +80,34 @@ public class ContactChatController {
 
 		fxmlLoader.setController(this);
 		fxmlLoader.load();
+	}
+
+	private void setupMessageTextArea() {
+		messageTextArea.addEventFilter(KeyEvent.KEY_PRESSED, ke -> {
+			if (ke.getCode().equals(KeyCode.ENTER)) {
+				sendButtonAction();
+				ke.consume();
+			}
+		});
+
+	}
+
+	public void sendButtonAction() {
+		String msg = messageTextArea.getText().trim();
+		messageTextArea.clear();
+
+		if (!StringUtils.isNullOrEmpty(msg)) {
+			try {
+				ChatLine chatLine = chatManager.sendTextMessage(msg, this.contactJID, this.isGroup);
+				this.chatObservableList.add(chatLine);
+			} catch (StringflowErrorException e) {
+				LOGGER.log(Level.WARNING, "Failed to send Message to " + this.contactJID + " due to " + e.getMessage(),
+						e);
+
+				JFXUtils.showAlert("Failed to send Message to " + this.contactJID + " due to " + e.getMessage(),
+						AlertType.WARNING);
+			}
+		}
 	}
 
 	private void setViewData() throws Exception {
@@ -119,8 +152,7 @@ public class ContactChatController {
 	}
 
 	private void setChatLineListView() throws StringflowErrorException {
-		AppChatManager chatManager = (AppChatManager) Platform.getInstance().getChatManager();
-		List<ChatLine> allChatLines = chatManager.getAllConversationChatLines(contactJID);
+		List<ChatLine> allChatLines = chatManager.getAllConversationChatLines(this.contactJID, this.isGroup);
 
 		this.chatObservableList.setAll(allChatLines);
 		this.chatListView.setItems(this.chatObservableList);

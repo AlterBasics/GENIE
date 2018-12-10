@@ -117,9 +117,9 @@ public class ChatController1 implements Initializable {
 		user.add(new User("Vishal"));
 		user.add(new User("Akhil"));
 		ObservableList<User> list = FXCollections.observableList(user);
-		
+
 		this.userList.setItems(list);
-		
+
 		statusComboBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				try {

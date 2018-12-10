@@ -428,19 +428,52 @@ public class AppChatManager extends ChatManager {
 
 	/**
 	 * @param contactJID
-	 * @param isGroup
+	 * @param isChatRomm
 	 * @return all conversations for given contact.
 	 * @throws StringflowErrorException
 	 */
-	public List<ChatLine> getAllConversationChatLines(JID contactJID) throws StringflowErrorException {
+	public List<ChatLine> getAllConversationChatLines(JID contactJID, boolean isChatRoom)
+			throws StringflowErrorException {
 		try {
 			List<ChatLine> allChatLines = DbManager.getInstance().fetchConversationChatlines(contactJID.getBareJID());
-			// TODO: Is it need to set pearName I think when we r persisting
-			// chatline at that time we detrmine pearname and store it in db .
-			// For dynamicly change of pear name we should determine pear name
-			// not
-			// at time of storing. Think about it.
 
+			if (CollectionUtils.isNullOrEmpty(allChatLines)) {
+				return allChatLines;
+			}
+
+			if (isChatRoom) {
+				for (ChatLine chatLine : allChatLines) {
+					if (chatLine.getDirection() == ChatLine.Direction.RECEIVE) {
+						String memberNickName = chatLine.getPeerResource();
+
+						String memberJID = DbManager.getInstance().getChatRoomMemberJID(chatLine.getPeerBareJid(),
+								memberNickName);
+
+						String userName = DbManager.getInstance().getRosterItemName(memberJID);
+
+						if (StringUtils.isNullOrEmpty(userName)) {
+							chatLine.setPeerName(memberNickName);
+
+						} else {
+							chatLine.setPeerName(userName);
+						}
+					}
+				}
+
+			} else {
+				for (ChatLine chatLine : allChatLines) {
+					if (chatLine.getDirection() == ChatLine.Direction.RECEIVE) {
+						String userName = DbManager.getInstance().getRosterItemName(chatLine.getPeerBareJid());
+
+						if (StringUtils.isNullOrEmpty(userName)) {
+							chatLine.setPeerName(new JID(chatLine.getPeerBareJid()).getNode());
+
+						} else {
+							chatLine.setPeerName(userName);
+						}
+					}
+				}
+			}
 			return allChatLines;
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Failed to get All Conversation Chatlines for contactJID " + contactJID, e);
