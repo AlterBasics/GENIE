@@ -1,4 +1,4 @@
-package abs.sf.client.gini.ui.controller;
+package abs.sf.client.genie.ui.controller;
 
 import javafx.scene.Parent;
 

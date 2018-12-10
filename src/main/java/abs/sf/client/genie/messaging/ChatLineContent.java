@@ -1,4 +1,4 @@
-package abs.sf.client.gini.messaging;
+package abs.sf.client.genie.messaging;
 
 /**
  * A contract for all the contents which can be captured inside

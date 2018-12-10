@@ -1,4 +1,4 @@
-package abs.sf.client.gini.db.mapper;
+package abs.sf.client.genie.db.mapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -7,7 +7,7 @@ import abs.ixi.client.util.DateUtils;
 import abs.ixi.client.util.StringUtils;
 import abs.ixi.client.xmpp.packet.Presence.PresenceStatus;
 import abs.ixi.client.xmpp.packet.Presence.PresenceType;
-import abs.sf.client.gini.messaging.UserPresence;
+import abs.sf.client.genie.messaging.UserPresence;
 
 public class PresenceRowMapper implements RowMapper<UserPresence> {
 

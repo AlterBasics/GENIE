@@ -1,4 +1,4 @@
-package abs.sf.client.gini.event.handlers;
+package abs.sf.client.genie.event.handlers;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -9,8 +9,8 @@ import abs.ixi.client.core.Platform;
 import abs.ixi.client.core.event.Event;
 import abs.ixi.client.core.event.EventHandler;
 import abs.ixi.client.util.StringUtils;
-import abs.sf.client.gini.managers.AppUserManager;
-import abs.sf.client.gini.utils.SFSDKProperties;
+import abs.sf.client.genie.managers.AppUserManager;
+import abs.sf.client.genie.utils.SFSDKProperties;
 
 /**
  * {@link EventHandler} implementation to handle

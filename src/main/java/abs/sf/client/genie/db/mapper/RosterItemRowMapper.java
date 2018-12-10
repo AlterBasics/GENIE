@@ -1,4 +1,4 @@
-package abs.sf.client.gini.db.mapper;
+package abs.sf.client.genie.db.mapper;
 
 import java.sql.SQLException;
 

@@ -1,4 +1,4 @@
-package abs.sf.client.gini.utils;
+package abs.sf.client.genie.utils;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import abs.ixi.client.util.TaskExecutor;
-import abs.sf.client.gini.exception.StringflowErrorException;
+import abs.sf.client.genie.exception.StringflowErrorException;
 
 /**
  * Wrapper around {@link Properties}. For proper handling of properties

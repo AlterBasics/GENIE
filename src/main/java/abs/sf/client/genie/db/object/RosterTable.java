@@ -1,4 +1,4 @@
-package abs.sf.client.gini.db.object;
+package abs.sf.client.genie.db.object;
 
 import java.sql.Connection;
 import java.sql.SQLException;

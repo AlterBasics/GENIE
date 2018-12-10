@@ -1,14 +1,14 @@
-package abs.sf.client.gini.db.h2;
+package abs.sf.client.genie.db.h2;
 
-import abs.sf.client.gini.db.object.ChatRoomMemberTable;
-import abs.sf.client.gini.db.object.ChatStoreTable;
-import abs.sf.client.gini.db.object.ConversationTable;
-import abs.sf.client.gini.db.object.MediaStoreTable;
-import abs.sf.client.gini.db.object.PresenceTable;
-import abs.sf.client.gini.db.object.RosterTable;
-import abs.sf.client.gini.db.object.UndeliverStanzaTable;
-import abs.sf.client.gini.db.object.UserProfileTable;
-import abs.sf.client.gini.messaging.ChatLine;
+import abs.sf.client.genie.db.object.ChatRoomMemberTable;
+import abs.sf.client.genie.db.object.ChatStoreTable;
+import abs.sf.client.genie.db.object.ConversationTable;
+import abs.sf.client.genie.db.object.MediaStoreTable;
+import abs.sf.client.genie.db.object.PresenceTable;
+import abs.sf.client.genie.db.object.RosterTable;
+import abs.sf.client.genie.db.object.UndeliverStanzaTable;
+import abs.sf.client.genie.db.object.UserProfileTable;
+import abs.sf.client.genie.messaging.ChatLine;
 
 /**
  * All the SQL queries used across the SDK.

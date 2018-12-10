@@ -1,4 +1,4 @@
-package abs.sf.client.gini.utils;
+package abs.sf.client.genie.utils;
 
 public class SFConstants {
 	public static final String ACTION_ON_MESSAGE = "abs.sf.beach.android.ON_MESSAGE";

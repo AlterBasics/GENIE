@@ -1,4 +1,4 @@
-package abs.sf.client.gini	.db.exception;
+package abs.sf.client.genie.db.exception;
 
 
 import java.sql.SQLException;

@@ -1,4 +1,4 @@
-package abs.sf.client.gini.ui.utils;
+package abs.sf.client.genie.ui.utils;
 
 public interface Resources {
 	String LOGIN_VIEW_FXML = "views/LoginView.fxml";

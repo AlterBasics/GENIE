@@ -1,4 +1,4 @@
-package abs.sf.client.gini.ui.controller;
+package abs.sf.client.genie.ui.controller;
 
 import java.io.IOException;
 import java.net.URL;
@@ -20,7 +20,7 @@ import com.messages.bubble.BubbledLabel;
 import com.traynotifications.animations.AnimationType;
 import com.traynotifications.notification.TrayNotification;
 
-import abs.sf.client.gini.ui.Launcher;
+import abs.sf.client.genie.ui.Launcher;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;

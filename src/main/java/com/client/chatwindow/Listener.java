@@ -13,7 +13,7 @@ import com.messages.Message;
 import com.messages.MessageType;
 import com.messages.Status;
 
-import abs.sf.client.gini.ui.controller.ChatController1;
+import abs.sf.client.genie.ui.controller.ChatController1;
 
 public class Listener implements Runnable {
 	//private static final Logger logger = LoggerFactory.getLogger(Listener.class);

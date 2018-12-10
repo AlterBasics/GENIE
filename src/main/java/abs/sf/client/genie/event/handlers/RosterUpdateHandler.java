@@ -1,4 +1,4 @@
-package abs.sf.client.gini.event.handlers;
+package abs.sf.client.genie.event.handlers;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -8,9 +8,9 @@ import abs.ixi.client.core.event.Event.EventType;
 import abs.ixi.client.core.event.EventHandler;
 import abs.ixi.client.xmpp.PresenceSubscription;
 import abs.ixi.client.xmpp.packet.Roster;
-import abs.sf.client.gini.db.DbManager;
-import abs.sf.client.gini.db.object.RosterTable;
-import abs.sf.client.gini.utils.SFSDKProperties;
+import abs.sf.client.genie.db.DbManager;
+import abs.sf.client.genie.db.object.RosterTable;
+import abs.sf.client.genie.utils.SFSDKProperties;
 
 /**
  * {@link EventHandler} implementation to handle {@link EventType#ROSTER_UPDATE}

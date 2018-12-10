@@ -1,4 +1,4 @@
-package abs.sf.client.gini.ui.controller;
+package abs.sf.client.genie.ui.controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -8,12 +8,12 @@ import java.util.logging.Logger;
 import abs.ixi.client.core.Callback;
 import abs.ixi.client.io.StreamNegotiator;
 import abs.ixi.client.util.StringUtils;
-import abs.sf.client.gini.exception.StringflowErrorException;
-import abs.sf.client.gini.managers.AppUserManager;
-import abs.sf.client.gini.ui.Launcher;
-import abs.sf.client.gini.ui.utils.AppProperties;
-import abs.sf.client.gini.ui.utils.JFXUtils;
-import abs.sf.client.gini.ui.utils.ResourceLoader;
+import abs.sf.client.genie.exception.StringflowErrorException;
+import abs.sf.client.genie.managers.AppUserManager;
+import abs.sf.client.genie.ui.Launcher;
+import abs.sf.client.genie.ui.utils.AppProperties;
+import abs.sf.client.genie.ui.utils.JFXUtils;
+import abs.sf.client.genie.ui.utils.ResourceLoader;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;

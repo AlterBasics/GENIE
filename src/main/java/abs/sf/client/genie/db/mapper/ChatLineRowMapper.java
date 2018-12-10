@@ -1,10 +1,10 @@
-package abs.sf.client.gini.db.mapper;
+package abs.sf.client.genie.db.mapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import abs.ixi.client.util.DateUtils;
-import abs.sf.client.gini.messaging.ChatLine;
+import abs.sf.client.genie.messaging.ChatLine;
 
 public class ChatLineRowMapper implements RowMapper<ChatLine> {
 

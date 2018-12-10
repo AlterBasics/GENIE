@@ -1,7 +1,7 @@
-package abs.sf.client.gini.messaging;
+package abs.sf.client.genie.messaging;
 
 import abs.ixi.client.util.DateUtils;
-import abs.sf.client.gini.messaging.ChatLine.ContentType;
+import abs.sf.client.genie.messaging.ChatLine.ContentType;
 
 public class Conversation {
     private String peerJid;

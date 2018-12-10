@@ -1,4 +1,4 @@
-package abs.sf.client.gini.event.handlers;
+package abs.sf.client.genie.event.handlers;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -11,9 +11,9 @@ import abs.ixi.client.util.CollectionUtils;
 import abs.ixi.client.util.DateUtils;
 import abs.ixi.client.util.UUIDGenerator;
 import abs.ixi.client.xmpp.packet.ChatRoom;
-import abs.sf.client.gini.db.DbManager;
-import abs.sf.client.gini.messaging.ChatLine;
-import abs.sf.client.gini.messaging.Conversation;
+import abs.sf.client.genie.db.DbManager;
+import abs.sf.client.genie.messaging.ChatLine;
+import abs.sf.client.genie.messaging.Conversation;
 
 /**
  * {@link EventHandler} implementation to handle

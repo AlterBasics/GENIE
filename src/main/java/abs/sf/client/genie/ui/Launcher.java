@@ -1,13 +1,13 @@
-package abs.sf.client.gini.ui;
+package abs.sf.client.genie.ui;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import abs.sf.client.gini.exception.StringflowErrorException;
-import abs.sf.client.gini.ui.utils.AppProperties;
-import abs.sf.client.gini.ui.utils.JFXUtils;
-import abs.sf.client.gini.ui.utils.ResourceLoader;
-import abs.sf.client.gini.utils.SDKLoader;
+import abs.sf.client.genie.exception.StringflowErrorException;
+import abs.sf.client.genie.ui.utils.AppProperties;
+import abs.sf.client.genie.ui.utils.JFXUtils;
+import abs.sf.client.genie.ui.utils.ResourceLoader;
+import abs.sf.client.genie.utils.SDKLoader;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Parent;

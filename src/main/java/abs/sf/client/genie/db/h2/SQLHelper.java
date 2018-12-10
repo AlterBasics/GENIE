@@ -1,4 +1,4 @@
-package abs.sf.client.gini.db.h2;
+package abs.sf.client.genie.db.h2;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import abs.ixi.client.util.CollectionUtils;
-import abs.sf.client.gini.db.exception.DbException;
-import abs.sf.client.gini.db.mapper.RowMapper;
+import abs.sf.client.genie.db.exception.DbException;
+import abs.sf.client.genie.db.mapper.RowMapper;
 
 public class SQLHelper {
 	private static final Logger LOGGER = Logger.getLogger(SQLHelper.class.getName());

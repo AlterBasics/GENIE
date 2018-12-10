@@ -1,6 +1,6 @@
 package com.traynotifications.models;
 
-import abs.sf.client.gini.ui.common.Location;
+import abs.sf.client.genie.ui.common.Location;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.layout.AnchorPane;

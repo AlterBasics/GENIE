@@ -1,9 +1,9 @@
-package abs.sf.client.gini.db.mapper;
+package abs.sf.client.genie.db.mapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import abs.ixi.client.file.sfcm.ContentType;
-import abs.sf.client.gini.messaging.MediaContent;
+import abs.sf.client.genie.messaging.MediaContent;
 
 public class MediaRowMapper implements RowMapper<MediaContent> {
 

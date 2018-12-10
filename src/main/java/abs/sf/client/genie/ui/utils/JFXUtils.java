@@ -1,4 +1,4 @@
-package abs.sf.client.gini.ui.utils;
+package abs.sf.client.genie.ui.utils;
 
 import javafx.application.Platform;
 import javafx.scene.control.Alert;

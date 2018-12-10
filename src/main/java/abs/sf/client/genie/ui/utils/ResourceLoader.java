@@ -1,9 +1,9 @@
-package abs.sf.client.gini.ui.utils;
+package abs.sf.client.genie.ui.utils;
 
 import java.io.IOException;
 
-import abs.sf.client.gini.ui.controller.ChatController1;
-import abs.sf.client.gini.ui.controller.LoginController;
+import abs.sf.client.genie.ui.controller.ChatController1;
+import abs.sf.client.genie.ui.controller.LoginController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.image.Image;

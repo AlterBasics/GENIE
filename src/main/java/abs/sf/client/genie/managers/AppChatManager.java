@@ -1,4 +1,4 @@
-package abs.sf.client.gini.managers;
+package abs.sf.client.genie.managers;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -34,13 +34,13 @@ import abs.ixi.client.xmpp.packet.MessageDelay;
 import abs.ixi.client.xmpp.packet.MessageMedia;
 import abs.ixi.client.xmpp.packet.MessageSubject;
 import abs.ixi.client.xmpp.packet.MessageThread;
-import abs.sf.client.gini.db.DbManager;
-import abs.sf.client.gini.db.exception.DbException;
-import abs.sf.client.gini.exception.StringflowErrorException;
-import abs.sf.client.gini.messaging.ChatLine;
-import abs.sf.client.gini.messaging.ChatListener;
-import abs.sf.client.gini.messaging.Conversation;
-import abs.sf.client.gini.utils.SFSDKProperties;
+import abs.sf.client.genie.db.DbManager;
+import abs.sf.client.genie.db.exception.DbException;
+import abs.sf.client.genie.exception.StringflowErrorException;
+import abs.sf.client.genie.messaging.ChatLine;
+import abs.sf.client.genie.messaging.ChatListener;
+import abs.sf.client.genie.messaging.Conversation;
+import abs.sf.client.genie.utils.SFSDKProperties;
 
 public class AppChatManager extends ChatManager {
 	private static final Logger LOGGER = Logger.getLogger(AppChatManager.class.getName());

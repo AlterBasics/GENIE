@@ -1,4 +1,4 @@
-package abs.sf.client.gini.managers;
+package abs.sf.client.genie.managers;
 
 import java.io.File;
 import java.io.InputStream;
@@ -20,11 +20,11 @@ import abs.ixi.client.xmpp.JID;
 import abs.ixi.client.xmpp.packet.ChatRoom;
 import abs.ixi.client.xmpp.packet.Roster;
 import abs.ixi.client.xmpp.packet.UserProfileData;
-import abs.sf.client.gini.db.DbManager;
-import abs.sf.client.gini.db.exception.DbException;
-import abs.sf.client.gini.exception.StringflowErrorException;
-import abs.sf.client.gini.utils.SDKLoader;
-import abs.sf.client.gini.utils.SFSDKProperties;
+import abs.sf.client.genie.db.DbManager;
+import abs.sf.client.genie.db.exception.DbException;
+import abs.sf.client.genie.exception.StringflowErrorException;
+import abs.sf.client.genie.utils.SDKLoader;
+import abs.sf.client.genie.utils.SFSDKProperties;
 
 public class AppUserManager extends UserManager {
 	private static final Logger LOGGER = Logger.getLogger(AppUserManager.class.getName());

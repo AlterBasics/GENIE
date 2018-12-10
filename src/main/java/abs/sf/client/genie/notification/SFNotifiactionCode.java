@@ -1,4 +1,4 @@
-package abs.sf.client.gini.notification;
+package abs.sf.client.genie.notification;
 
 public enum SFNotifiactionCode {
 	RE_CONNECT(1000),

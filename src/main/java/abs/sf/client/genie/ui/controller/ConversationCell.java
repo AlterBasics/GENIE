@@ -1,4 +1,4 @@
-package abs.sf.client.gini.ui.controller;
+package abs.sf.client.genie.ui.controller;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,11 +6,11 @@ import java.io.InputStream;
 import abs.ixi.client.core.Platform;
 import abs.ixi.client.xmpp.InvalidJabberId;
 import abs.ixi.client.xmpp.JID;
-import abs.sf.client.gini.exception.StringflowErrorException;
-import abs.sf.client.gini.managers.AppUserManager;
-import abs.sf.client.gini.messaging.Conversation;
-import abs.sf.client.gini.ui.utils.ResourceLoader;
-import abs.sf.client.gini.ui.utils.Resources;
+import abs.sf.client.genie.exception.StringflowErrorException;
+import abs.sf.client.genie.managers.AppUserManager;
+import abs.sf.client.genie.messaging.Conversation;
+import abs.sf.client.genie.ui.utils.ResourceLoader;
+import abs.sf.client.genie.ui.utils.Resources;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;

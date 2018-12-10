@@ -1,4 +1,4 @@
-package abs.sf.client.gini.ui.common;
+package abs.sf.client.genie.ui.common;
 
 public class Location {
 	private double x, y;

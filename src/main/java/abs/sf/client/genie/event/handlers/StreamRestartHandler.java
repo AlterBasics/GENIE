@@ -1,4 +1,4 @@
-package abs.sf.client.gini.event.handlers;
+package abs.sf.client.genie.event.handlers;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -6,8 +6,8 @@ import java.util.logging.Logger;
 import abs.ixi.client.core.Platform;
 import abs.ixi.client.core.event.Event;
 import abs.ixi.client.core.event.EventHandler;
-import abs.sf.client.gini.managers.AppUserManager;
-import abs.sf.client.gini.utils.SFSDKProperties;
+import abs.sf.client.genie.managers.AppUserManager;
+import abs.sf.client.genie.utils.SFSDKProperties;
 
 public class StreamRestartHandler implements EventHandler {
 	private static final Logger LOGGER = Logger.getLogger(StreamRestartHandler.class.getName());

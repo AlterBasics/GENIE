@@ -1,4 +1,4 @@
-package abs.sf.client.gini.db.exception;
+package abs.sf.client.genie.db.exception;
 
 /**
  * Captures database related exception for application layer. Ideally it should

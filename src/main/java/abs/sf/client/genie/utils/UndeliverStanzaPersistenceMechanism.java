@@ -1,4 +1,4 @@
-package abs.sf.client.gini.utils;
+package abs.sf.client.genie.utils;
 
 import java.io.IOException;
 import java.util.List;
@@ -8,8 +8,8 @@ import java.util.logging.Logger;
 import abs.ixi.client.io.UndeliveredStanzaManager;
 import abs.ixi.client.util.CollectionUtils;
 import abs.ixi.client.xmpp.packet.Stanza;
-import abs.sf.client.gini.db.DbManager;
-import abs.sf.client.gini.db.exception.DbException;
+import abs.sf.client.genie.db.DbManager;
+import abs.sf.client.genie.db.exception.DbException;
 
 public class UndeliverStanzaPersistenceMechanism implements UndeliveredStanzaManager.PersistenceMechanism {
 	private static final Logger LOGGER = Logger.getLogger(UndeliverStanzaPersistenceMechanism.class.getName());

@@ -1,5 +1,5 @@
 
-package abs.sf.client.gini.utils;
+package abs.sf.client.genie.utils;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,17 +14,17 @@ import abs.ixi.client.io.XMPPStreamManager;
 import abs.ixi.client.net.ConnectionConfig;
 import abs.ixi.client.net.ConnectionManager;
 import abs.ixi.client.net.XMPPConnection;
-import abs.sf.client.gini.db.DbManager;
-import abs.sf.client.gini.db.exception.DbException;
-import abs.sf.client.gini.event.handlers.ChatRoomReceiveHandler;
-import abs.sf.client.gini.event.handlers.RosterReceiveHandler;
-import abs.sf.client.gini.event.handlers.RosterUpdateHandler;
-import abs.sf.client.gini.event.handlers.StreamRestartHandler;
-import abs.sf.client.gini.event.handlers.StreamStartHandler;
-import abs.sf.client.gini.exception.StringflowErrorException;
-import abs.sf.client.gini.managers.AppChatManager;
-import abs.sf.client.gini.managers.AppPresenceManager;
-import abs.sf.client.gini.managers.AppUserManager;
+import abs.sf.client.genie.db.DbManager;
+import abs.sf.client.genie.db.exception.DbException;
+import abs.sf.client.genie.event.handlers.ChatRoomReceiveHandler;
+import abs.sf.client.genie.event.handlers.RosterReceiveHandler;
+import abs.sf.client.genie.event.handlers.RosterUpdateHandler;
+import abs.sf.client.genie.event.handlers.StreamRestartHandler;
+import abs.sf.client.genie.event.handlers.StreamStartHandler;
+import abs.sf.client.genie.exception.StringflowErrorException;
+import abs.sf.client.genie.managers.AppChatManager;
+import abs.sf.client.genie.managers.AppPresenceManager;
+import abs.sf.client.genie.managers.AppUserManager;
 
 /**
  * SDKLoader loads Stringflow SDK into memory. As part of the sdk loading, sdk

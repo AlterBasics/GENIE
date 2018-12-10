@@ -1,8 +1,8 @@
-package abs.sf.client.gini.ui.utils;
+package abs.sf.client.genie.ui.utils;
 
 import abs.ixi.client.util.StringUtils;
-import abs.sf.client.gini.exception.StringflowErrorException;
-import abs.sf.client.gini.utils.SFProperties;
+import abs.sf.client.genie.exception.StringflowErrorException;
+import abs.sf.client.genie.utils.SFProperties;
 
 public class AppProperties {
 	private static final String APP_PROPERTIES_RESOURCE = "conf/app.properties";
@@ -21,7 +21,7 @@ public class AppProperties {
 	}
 
 	/**
-	 * Returns the singleton instance of {@code GINIAppProperties}
+	 * Returns the singleton instance of {@code genieAppProperties}
 	 * 
 	 * @throws StringflowErrorException
 	 */

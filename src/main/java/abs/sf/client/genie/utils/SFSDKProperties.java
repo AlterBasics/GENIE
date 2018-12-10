@@ -1,10 +1,10 @@
-package abs.sf.client.gini.utils;
+package abs.sf.client.genie.utils;
 
 import abs.ixi.client.PushNotificationService;
 import abs.ixi.client.core.Platform;
 import abs.ixi.client.util.StringUtils;
-import abs.sf.client.gini.exception.StringflowErrorException;
-import abs.sf.client.gini.managers.AppChatManager;
+import abs.sf.client.genie.exception.StringflowErrorException;
+import abs.sf.client.genie.managers.AppChatManager;
 
 public class SFSDKProperties {
 	private static final String SDK_PROPERTIES_RESOURCE = "conf/sf_sdk.properties";

@@ -1,4 +1,4 @@
-package abs.sf.client.gini.managers;
+package abs.sf.client.genie.managers;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -9,10 +9,10 @@ import abs.ixi.client.core.Platform;
 import abs.ixi.client.io.XMPPStreamManager;
 import abs.ixi.client.xmpp.JID;
 import abs.ixi.client.xmpp.packet.Presence;
-import abs.sf.client.gini.db.DbManager;
-import abs.sf.client.gini.db.exception.DbException;
-import abs.sf.client.gini.exception.StringflowErrorException;
-import abs.sf.client.gini.messaging.UserPresence;
+import abs.sf.client.genie.db.DbManager;
+import abs.sf.client.genie.db.exception.DbException;
+import abs.sf.client.genie.exception.StringflowErrorException;
+import abs.sf.client.genie.messaging.UserPresence;
 
 public class AppPresenceManager extends PresenceManager {
 	private static final Logger LOGGER = Logger.getLogger(AppPresenceManager.class.getName());

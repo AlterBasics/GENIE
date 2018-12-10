@@ -1,4 +1,4 @@
-package abs.sf.client.gini.db;
+package abs.sf.client.genie.db;
 
 import java.io.InputStream;
 import java.util.List;
@@ -12,14 +12,14 @@ import abs.ixi.client.xmpp.packet.UserProfileData;
 import abs.ixi.client.xmpp.packet.Presence.PresenceType;
 import abs.ixi.client.xmpp.packet.Roster.RosterItem;
 import abs.ixi.client.xmpp.packet.UserSearchData.Item;
-import abs.sf.client.gini.db.exception.DbException;
-import abs.sf.client.gini.db.object.ChatStoreTable;
-import abs.sf.client.gini.db.object.ConversationTable;
-import abs.sf.client.gini.db.object.RosterTable;
-import abs.sf.client.gini.messaging.ChatLine;
-import abs.sf.client.gini.messaging.Conversation;
-import abs.sf.client.gini.messaging.MediaContent;
-import abs.sf.client.gini.messaging.UserPresence;
+import abs.sf.client.genie.db.exception.DbException;
+import abs.sf.client.genie.db.object.ChatStoreTable;
+import abs.sf.client.genie.db.object.ConversationTable;
+import abs.sf.client.genie.db.object.RosterTable;
+import abs.sf.client.genie.messaging.ChatLine;
+import abs.sf.client.genie.messaging.Conversation;
+import abs.sf.client.genie.messaging.MediaContent;
+import abs.sf.client.genie.messaging.UserPresence;
 
 public interface Database extends Initializable {
 	/**
