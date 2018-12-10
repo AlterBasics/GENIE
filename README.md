@@ -1,2 +1,2 @@
-# GINI
+# GENIE
 Stringflow Desktop Agent
