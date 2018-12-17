@@ -132,7 +132,21 @@ public class AppChatManager extends ChatManager {
 		this.sendTextMessage(conversationId, chatLine.getMessageId(), chatLine.getText(), toJID, isGroup,
 				isChatMarkersEnabled, isMessageDeliveryReceiptEnabled, isChatStateNotificationEnabled);
 
+		notifyForSendMessage(chatLine);
 		return chatLine;
+	}
+
+	/**
+	 * notify for send message
+	 * 
+	 * @param chatLine
+	 */
+	private void notifyForSendMessage(ChatLine chatLine) {
+		if (!CollectionUtils.isNullOrEmpty(this.chatListeners)) {
+			for (ChatListener listener : this.chatListeners) {
+				listener.onNewMessageSend(chatLine);
+			}
+		}
 	}
 
 	/**
@@ -200,6 +214,7 @@ public class AppChatManager extends ChatManager {
 				Base64.getEncoder().encodeToString(mediaThumb), toJID, isGroup, isChatMarkersEnabled,
 				isMessageDeliveryReceiptEnabled, isChatStateNotificationEnabled);
 
+		this.notifyForSendMessage(chatLine);
 		this.uploadFile(mediaMessageId, mediaFile, contentType, toJID, callback);
 
 		return chatLine;
@@ -682,7 +697,7 @@ public class AppChatManager extends ChatManager {
 
 						// generateLocalBroadcast(chatLine);
 
-						notifyOnChatLine(chatLine);
+						notifyOnNewMessageReceived(chatLine);
 					}
 
 				} catch (Exception e) {
@@ -764,7 +779,7 @@ public class AppChatManager extends ChatManager {
 		}
 	}
 
-	private void notifyOnChatLine(ChatLine chatLine) {
+	private void notifyOnNewMessageReceived(ChatLine chatLine) {
 		if (!CollectionUtils.isNullOrEmpty(this.chatListeners)) {
 			for (ChatListener listener : this.chatListeners) {
 				listener.onNewMessageReceived(chatLine);
@@ -798,7 +813,7 @@ public class AppChatManager extends ChatManager {
 									ChatLine.MessageStatus.DELIVERED_TO_SERVER);
 
 							for (ChatListener listener : chatListeners) {
-								listener.onMessageSent(message.getId(), message.getTo());
+								listener.onMessageDeliveredToServer(message.getId(), message.getTo());
 							}
 						}
 					} catch (DbException e) {

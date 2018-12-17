@@ -9,14 +9,20 @@ public interface ChatListener {
      * @param line
      */
     void onNewMessageReceived(final ChatLine line);
-
+    
+    /**
+     * This method is used to handle new sent message on UI.
+     * @param line
+     */
+    void onNewMessageSend(final ChatLine line);
+    
     /**
      * When message is delivered from user device, this method is called to notify delivery on UI.
      *
      * @param messageId
      * @param contactJID
      */
-    void onMessageSent(final String messageId, final JID contactJID);
+    void onMessageDeliveredToServer(final String messageId, final JID contactJID);
 
     /**
      * When message is delivered to message receiver, this method is called to notify on UI.

@@ -35,12 +35,12 @@
             <Separator prefWidth="200.0" />
             <TabPane fx:id="tabPane" prefHeight="545.0" prefWidth="334.0" tabClosingPolicy="UNAVAILABLE">
               <tabs>
-                <Tab fx:id="contactsTab" onSelectionChanged="#setContactsListView" text="Contacts">
+                <Tab fx:id="contactsTab" onSelectionChanged="#refreshContacts" text="Contacts">
                      <content>
                        <ListView fx:id="contactsListView" prefHeight="517.0" prefWidth="321.0" />
                      </content>
                   </Tab>
-                <Tab fx:id="conversationsTab" onSelectionChanged="#setConverstionsListView" text="Conversations">
+                <Tab fx:id="conversationsTab" onSelectionChanged="#refreshConversations" text="Conversations">
                      <content>
                         <ListView fx:id="conversationsListView" prefHeight="517.0" prefWidth="321.0" />
                      </content>

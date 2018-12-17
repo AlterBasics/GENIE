@@ -16,6 +16,8 @@ import abs.ixi.client.xmpp.packet.UserProfileData;
 import abs.sf.client.genie.exception.StringflowErrorException;
 import abs.sf.client.genie.managers.AppChatManager;
 import abs.sf.client.genie.managers.AppUserManager;
+import abs.sf.client.genie.messaging.ChatLine;
+import abs.sf.client.genie.messaging.ChatListener;
 import abs.sf.client.genie.messaging.Conversation;
 import abs.sf.client.genie.ui.utils.JFXUtils;
 import javafx.collections.FXCollections;
@@ -35,7 +37,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
-public class ChatBaseController implements Initializable {
+public class ChatBaseController implements Initializable, ChatListener {
 	private static final Logger LOGGER = Logger.getLogger(ChatBaseController.class.getName());
 
 	private static final String DEFAULT_PRESENCE_STATUS = "online";
@@ -74,7 +76,9 @@ public class ChatBaseController implements Initializable {
 	private ListView<Conversation> conversationsListView;
 
 	@FXML
-	ObservableList<Conversation> conversationsObservableList = FXCollections.observableArrayList();
+	private ObservableList<Conversation> conversationsObservableList = FXCollections.observableArrayList();
+
+	private ContactChatController chatController;
 
 	private JID userJID;
 
@@ -84,11 +88,22 @@ public class ChatBaseController implements Initializable {
 		this.setContactsListView();
 		this.setConverstionsListView();
 		setDefaultSelectedTab();
+		registerAsChatListener();
+	}
+
+	private void registerAsChatListener() {
+		AppChatManager chatManager = (AppChatManager) Platform.getInstance().getChatManager();
+		chatManager.addChatListener(this);
 	}
 
 	private void setDefaultSelectedTab() {
 		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
-		selectionModel.select(contactsTab);
+		selectionModel.select(conversationsTab);
+	}
+
+	private boolean isConversationTabSelected() {
+		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+		return selectionModel.getSelectedItem() == conversationsTab;
 	}
 
 	private void setupUserData() {
@@ -171,7 +186,9 @@ public class ChatBaseController implements Initializable {
 					openContactChatView(clickedContact.getJid());
 				}
 			});
-		} catch (StringflowErrorException e) {
+		} catch (
+
+		StringflowErrorException e) {
 			LOGGER.log(Level.WARNING, "failed to setup contact list view" + e);
 			JFXUtils.showAlert("Failed to setup contact list view due to " + e.getMessage(), AlertType.WARNING);
 		}
@@ -179,7 +196,7 @@ public class ChatBaseController implements Initializable {
 
 	private void openContactChatView(JID contactJID) {
 		try {
-			ContactChatController chatController = new ContactChatController(contactJID);
+			this.chatController = new ContactChatController(contactJID);
 			this.contactChatViewAnchorPane.getChildren().setAll(chatController.getContactChatViewGraphics());
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING,
@@ -234,7 +251,7 @@ public class ChatBaseController implements Initializable {
 					try {
 
 						openContactChatView(new JID(conversation.getPeerJid()));
-
+						refreshConversations();
 					} catch (InvalidJabberId e) {
 						LOGGER.log(Level.WARNING,
 								"Failed to setup conversation list on mouse click listener for pearJID : "
@@ -247,9 +264,142 @@ public class ChatBaseController implements Initializable {
 				}
 			});
 
-		} catch (StringflowErrorException e) {
+		} catch (
+
+		StringflowErrorException e) {
 			LOGGER.log(Level.WARNING, "failed to setup conversation list view" + e);
 			JFXUtils.showAlert("Failed to setup conversation list view due to " + e.getMessage(), AlertType.WARNING);
 		}
 	}
+
+	public void refreshConversations() {
+		try {
+			AppChatManager chatManager = (AppChatManager) Platform.getInstance().getChatManager();
+			List<Conversation> conversationsList = chatManager.getAllConversations();
+
+			this.conversationsObservableList.setAll(conversationsList);
+		} catch (StringflowErrorException e) {
+			LOGGER.log(Level.WARNING, "failed to refresh conversation list view" + e);
+			JFXUtils.showAlert("Failed to refresh conversation list view due to " + e.getMessage(), AlertType.WARNING);
+		}
+
+	}
+
+	public void refreshContacts() {
+		try {
+			AppUserManager userManager = (AppUserManager) Platform.getInstance().getUserManager();
+
+			List<RosterItem> rosterItemList = userManager.getRosterItemList();
+			this.contactsObservableList.setAll(rosterItemList);
+		} catch (StringflowErrorException e) {
+			LOGGER.log(Level.WARNING, "failed to refresh conversation list view" + e);
+			JFXUtils.showAlert("Failed to refresh conversation list view due to " + e.getMessage(), AlertType.WARNING);
+		}
+
+	}
+
+	@Override
+	public void onNewMessageReceived(ChatLine line) {
+		if (this.chatController != null) {
+			this.chatController.onNewMessageReceived(line);
+		}
+
+		if (isConversationTabSelected()) {
+			refreshConversations();
+		}
+	}
+
+	@Override
+	public void onNewMessageSend(ChatLine line) {
+		if (this.chatController != null) {
+			this.chatController.onNewMessageSend(line);
+		}
+
+		if (isConversationTabSelected()) {
+			refreshConversations();
+		}
+	}
+
+	@Override
+	public void onMessageDeliveredToServer(String messageId, JID contactJID) {
+		if (this.chatController != null) {
+			this.chatController.onMessageDeliveredToServer(messageId, contactJID);
+		}
+	}
+
+	@Override
+	public void onMessageDeliveredToReceiver(String messageId, JID contactJID) {
+		if (this.chatController != null) {
+			this.chatController.onMessageDeliveredToReceiver(messageId, contactJID);
+		}
+	}
+
+	@Override
+	public void onMessageAcknowledgedToReceiver(String messageId, JID contactJID) {
+		if (this.chatController != null) {
+			this.chatController.onMessageAcknowledgedToReceiver(messageId, contactJID);
+		}
+	}
+
+	@Override
+	public void onMessageViewedByReceiver(String messageId, JID contactJID) {
+		if (this.chatController != null) {
+			this.chatController.onMessageViewedByReceiver(messageId, contactJID);
+		}
+	}
+
+	@Override
+	public void onContactTypingStarted(JID contactJID) {
+		if (this.chatController != null) {
+			this.chatController.onContactTypingStarted(contactJID);
+		}
+
+		this.conversationsObservableList.stream()
+				.filter((v) -> StringUtils.safeEquals(v.getPeerJid(), contactJID.getBareJID())).findFirst()
+				.ifPresent((v) -> {
+					v.setTyping(false);
+				});
+	}
+
+	@Override
+	public void onContactTypingPaused(JID contactJID) {
+		if (this.chatController != null) {
+			this.chatController.onContactTypingPaused(contactJID);
+		}
+
+		this.conversationsObservableList.stream()
+				.filter((v) -> StringUtils.safeEquals(v.getPeerJid(), contactJID.getBareJID())).findFirst()
+				.ifPresent((v) -> {
+					v.setTyping(false);
+				});
+	}
+
+	@Override
+	public void onContactInactivityInUserChat(JID contactJID) {
+		if (this.chatController != null) {
+			this.chatController.onContactInactivityInUserChat(contactJID);
+		}
+
+		this.conversationsObservableList.stream()
+				.filter((v) -> StringUtils.safeEquals(v.getPeerJid(), contactJID.getBareJID())).findFirst()
+				.ifPresent((v) -> {
+					v.setTyping(false);
+				});
+
+	}
+
+	@Override
+	public void onContactGoneFromUserChat(JID contactJID) {
+		if (this.chatController != null) {
+			this.chatController.onContactGoneFromUserChat(contactJID);
+		}
+
+		this.conversationsObservableList.stream()
+				.filter((v) -> StringUtils.safeEquals(v.getPeerJid(), contactJID.getBareJID())).findFirst()
+				.ifPresent((v) -> {
+					v.setTyping(false);
+				});
+
+	}
+
 }

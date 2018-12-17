@@ -59,7 +59,11 @@ public class ConversationCell {
 
 	private void setCellData() throws StringflowErrorException, InvalidJabberId {
 		this.contactNameLabel.setText(conversation.getPeerName());
-		this.lastMessageOrTypingLabel.setText(conversation.getLastChatLine());
+
+		if (!conversation.isTyping()) {
+			this.lastMessageOrTypingLabel.setText(conversation.getLastChatLine());
+		}
+
 		this.unreadMessageCountLabel.setText(Integer.toString(conversation.getUnreadChatLines()));
 		this.lastMessageTimeLabel.setText(conversation.getDisplayTime());
 

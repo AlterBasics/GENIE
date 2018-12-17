@@ -14,6 +14,7 @@ import abs.sf.client.genie.managers.AppChatManager;
 import abs.sf.client.genie.managers.AppPresenceManager;
 import abs.sf.client.genie.managers.AppUserManager;
 import abs.sf.client.genie.messaging.ChatLine;
+import abs.sf.client.genie.messaging.ChatLine.MessageStatus;
 import abs.sf.client.genie.messaging.UserPresence;
 import abs.sf.client.genie.ui.utils.JFXUtils;
 import abs.sf.client.genie.ui.utils.ResourceLoader;
@@ -72,6 +73,35 @@ public class ContactChatController {
 
 		setViewData();
 		setupMessageTextArea();
+		sendReadReceiptforAllUnreadMessage();
+		markNoUnreadConversation();
+	}
+
+	private void sendReadReceiptforAllUnreadMessage() {
+		try {
+			chatManager.sendAllUnReadMessageReadReceipt(contactJID);
+		} catch (StringflowErrorException e) {
+			LOGGER.log(Level.WARNING,
+					"Failed to send message read receipt for all unread messages with error " + e.getMessage(), e);
+
+			JFXUtils.showAlert(
+					"Failed to send message read receipt for all unread messages with error " + e.getMessage(),
+					AlertType.WARNING);
+
+		}
+
+	}
+
+	private void markNoUnreadConversation() {
+		try {
+			chatManager.markNoUnreadConversation(contactJID);
+		} catch (StringflowErrorException e) {
+			LOGGER.log(Level.WARNING, "Failed to mark no unread conversationd with error " + e.getMessage(), e);
+
+			JFXUtils.showAlert("Failed to mark no unread conversationd with error " + e.getMessage(),
+					AlertType.WARNING);
+
+		}
 	}
 
 	private void initView() throws IOException {
@@ -98,8 +128,9 @@ public class ContactChatController {
 
 		if (!StringUtils.isNullOrEmpty(msg)) {
 			try {
-				ChatLine chatLine = chatManager.sendTextMessage(msg, this.contactJID, this.isGroup);
-				this.chatObservableList.add(chatLine);
+
+				chatManager.sendTextMessage(msg, this.contactJID, this.isGroup);
+
 			} catch (StringflowErrorException e) {
 				LOGGER.log(Level.WARNING, "Failed to send Message to " + this.contactJID + " due to " + e.getMessage(),
 						e);
@@ -176,6 +207,7 @@ public class ContactChatController {
 
 							setGraphic(chatLineCell.getChatLineCellGraphics());
 
+							
 						} catch (Exception e) {
 							LOGGER.log(Level.WARNING,
 									"Failed to load ChatLine cell for given chatLine " + chatLine.getContentId(), e);
@@ -189,12 +221,121 @@ public class ContactChatController {
 				}
 
 			};
-
 		});
+
+		this.scrollChatListViewAtEnd();
 	}
 
 	public VBox getContactChatViewGraphics() {
 		return this.contactChatViewVBox;
+	}
+
+	private void scrollChatListViewAtEnd() {
+		int endEndex = this.chatObservableList.size() - 1;
+		this.chatListView.scrollTo(endEndex);
+	}
+
+	public void onNewMessageReceived(ChatLine line) {
+		if (StringUtils.safeEquals(line.getPeerBareJid(), this.contactJID.getBareJID(), false)) {
+			this.chatObservableList.add(line);
+			scrollChatListViewAtEnd();
+			try {
+				chatManager.sendMessageReadReceipt(line);
+			} catch (StringflowErrorException e) {
+				LOGGER.log(Level.WARNING, "Failed to send message read receipt for messageId " + line.getMessageId()
+						+ " with error " + e.getMessage(), e);
+
+				JFXUtils.showAlert("Failed to send message read receipt for messageId " + line.getMessageId()
+						+ " with error " + e.getMessage(), AlertType.WARNING);
+			}
+
+			try {
+				chatManager.markNoUnreadConversation(this.contactJID);
+			} catch (StringflowErrorException e) {
+				LOGGER.log(Level.WARNING, "Failed to mark no unread conversationd with error " + e.getMessage(), e);
+
+				JFXUtils.showAlert("Failed to mark no unread conversationd with error " + e.getMessage(),
+						AlertType.WARNING);
+			}
+
+		}
+	}
+
+	public void onNewMessageSend(ChatLine line) {
+		if (StringUtils.safeEquals(line.getPeerBareJid(), this.contactJID.getBareJID(), false)) {
+			this.chatObservableList.add(line);
+			scrollChatListViewAtEnd();
+		}
+	}
+
+	public void onMessageDeliveredToServer(String messageId, JID pearJID) {
+		if (pearJID.equals(contactJID)) {
+			for (int index = this.chatObservableList.size() - 1; index >= 0; index--) {
+				ChatLine chaline = this.chatObservableList.get(index);
+				if (StringUtils.safeEquals(chaline.getMessageId(), messageId)) {
+					chaline.setMessageStatus(MessageStatus.DELIVERED_TO_SERVER);
+					break;
+				}
+			}
+		}
+
+	}
+
+	public void onMessageDeliveredToReceiver(String messageId, JID pearJID) {
+		if (pearJID.equals(contactJID)) {
+			for (int index = this.chatObservableList.size() - 1; index >= 0; index--) {
+				ChatLine chaline = this.chatObservableList.get(index);
+				if (StringUtils.safeEquals(chaline.getMessageId(), messageId)) {
+					chaline.setMessageStatus(MessageStatus.DELIVERED_TO_RECEIVER);
+					break;
+				}
+			}
+		}
+	}
+
+	public void onMessageAcknowledgedToReceiver(String messageId, JID pearJID) {
+		if (pearJID.equals(contactJID)) {
+			for (int index = this.chatObservableList.size() - 1; index >= 0; index--) {
+				ChatLine chaline = this.chatObservableList.get(index);
+				if (StringUtils.safeEquals(chaline.getMessageId(), messageId)) {
+					chaline.setMessageStatus(MessageStatus.RECEIVER_IS_ACKNOWLEDGED);
+					break;
+				}
+			}
+		}
+	}
+
+	public void onMessageViewedByReceiver(String messageId, JID pearJID) {
+		if (pearJID.equals(contactJID)) {
+			for (int index = this.chatObservableList.size() - 1; index >= 0; index--) {
+				ChatLine chaline = this.chatObservableList.get(index);
+				if (StringUtils.safeEquals(chaline.getMessageId(), messageId)) {
+					chaline.setMessageStatus(MessageStatus.RECEIVER_HAS_VIEWED);
+					break;
+				}
+			}
+		}
+	}
+
+	public void onContactTypingStarted(JID pearJID) {
+		if (pearJID.equals(contactJID)) {
+			this.typingLabel.setVisible(true);
+		}
+	}
+
+	public void onContactTypingPaused(JID contactJID2) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void onContactInactivityInUserChat(JID contactJID2) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void onContactGoneFromUserChat(JID contactJID2) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
