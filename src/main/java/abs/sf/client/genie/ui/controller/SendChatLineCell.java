@@ -9,7 +9,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 
@@ -18,7 +17,7 @@ public class SendChatLineCell implements ChatLineCell {
 	private AnchorPane chatLineAnchorPane;
 
 	@FXML
-	private TextArea messageTextArea;
+	private Label messageLabel;
 
 	@FXML
 	private Label messageTimeLabel;
@@ -44,7 +43,7 @@ public class SendChatLineCell implements ChatLineCell {
 	}
 
 	private void setCellData() {
-		this.messageTextArea.setText(this.chatLine.getText());
+		this.messageLabel.setText(this.chatLine.getText());
 		this.messageTimeLabel.setText(this.chatLine.getDisplayTime());
 		setChatLineStatusImage();
 	}
@@ -53,7 +52,7 @@ public class SendChatLineCell implements ChatLineCell {
 		switch (this.chatLine.getMessageStatus()) {
 
 		case NOT_DELIVERED_TO_SERVER:
-			this.messageStatusImageView.setVisible(false);
+			this.messageStatusImageView.setImage(ResourceLoader.getInstance().loadMessageNotDeliveredToServerImage());
 			break;
 
 		case DELIVERED_TO_SERVER:

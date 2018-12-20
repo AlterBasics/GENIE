@@ -56,6 +56,10 @@ public class AppProperties {
 		this.properties.getEditor().putString(AppPropertiesName.USER_NAME, val).apply();
 	}
 
+	public void removeUsername() {
+		this.remove(AppPropertiesName.USER_NAME);
+	}
+
 	public String getUsername() {
 		return this.properties.getProperty(AppPropertiesName.USER_NAME, StringUtils.EMPTY);
 	}
@@ -64,12 +68,20 @@ public class AppProperties {
 		this.properties.getEditor().putString(AppPropertiesName.PASSWORD, val).apply();
 	}
 
+	public void removePassword() {
+		this.remove(AppPropertiesName.PASSWORD);
+	}
+
 	public String getPassword() {
 		return this.properties.getProperty(AppPropertiesName.PASSWORD, StringUtils.EMPTY);
 	}
 
 	public void setLoginStatus(boolean status) {
 		this.properties.getEditor().putBoolean(AppPropertiesName.LOGIN_STATUS, status).apply();
+	}
+
+	public void removeLoginStatus() {
+		this.remove(AppPropertiesName.LOGIN_STATUS);
 	}
 
 	public boolean isPreviouslyLoggedin() {

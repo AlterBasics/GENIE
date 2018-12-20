@@ -51,6 +51,17 @@ public class ResourceLoader {
 	}
 
 	/**
+	 * Load {@link ChatController1} with fxml {@link Resources#MAIN_VIEW_FXML}
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public Parent loadLoadingView() throws IOException {
+
+		return FXMLLoader.load(getClass().getClassLoader().getResource(Resources.LOADING_VIEW_FXML));
+	}
+
+	/**
 	 * Load Application icon Image resource {@link Resources#APP_ICON_IMAGE}.
 	 * 
 	 * @return
@@ -68,20 +79,23 @@ public class ResourceLoader {
 	public Image loadGroupDefaultImage() {
 		return new Image(getClass().getClassLoader().getResource(Resources.GROUP_DEFAULT_IMAGE).toString());
 	}
-	
+
 	public Image loadMessageNotDeliveredToServerImage() {
 		return new Image(getClass().getClassLoader().getResource(Resources.MESSAGE_NOT_DELIVERED_TO_SERVER).toString());
 	}
-	
+
 	public Image loadMessageDeliverToServerImage() {
-		return new Image(getClass().getClassLoader().getResource(Resources.MESSAGE_DELIVERED_TO_SERVER_IMAGE).toString());
+		return new Image(
+				getClass().getClassLoader().getResource(Resources.MESSAGE_DELIVERED_TO_SERVER_IMAGE).toString());
 	}
-	
+
 	public Image loadMessageDeliveredToReceiverImage() {
-		return new Image(getClass().getClassLoader().getResource(Resources.MESSAGE_DELIVERED_TO_RECEIVER_IMAGE).toString());
+		return new Image(
+				getClass().getClassLoader().getResource(Resources.MESSAGE_DELIVERED_TO_RECEIVER_IMAGE).toString());
 	}
-	
+
 	public Image loadMessageHasViewdByReceiverImage() {
-		return new Image(getClass().getClassLoader().getResource(Resources.MESSAGE_VIEWED_BY_RECEIVER_IMAGE).toString());
+		return new Image(
+				getClass().getClassLoader().getResource(Resources.MESSAGE_VIEWED_BY_RECEIVER_IMAGE).toString());
 	}
-} 
+}

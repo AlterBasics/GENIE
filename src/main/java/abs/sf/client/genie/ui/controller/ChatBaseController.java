@@ -300,105 +300,168 @@ public class ChatBaseController implements Initializable, ChatListener {
 
 	@Override
 	public void onNewMessageReceived(ChatLine line) {
-		if (this.chatController != null) {
-			this.chatController.onNewMessageReceived(line);
-		}
+		javafx.application.Platform.runLater(new Runnable() {
 
-		if (isConversationTabSelected()) {
-			refreshConversations();
-		}
+			@Override
+			public void run() {
+				if (chatController != null) {
+					chatController.onNewMessageReceived(line);
+				}
+
+				if (isConversationTabSelected()) {
+					refreshConversations();
+				}
+			}
+		});
 	}
 
 	@Override
 	public void onNewMessageSend(ChatLine line) {
-		if (this.chatController != null) {
-			this.chatController.onNewMessageSend(line);
-		}
+		javafx.application.Platform.runLater(new Runnable() {
 
-		if (isConversationTabSelected()) {
-			refreshConversations();
-		}
+			@Override
+			public void run() {
+				if (chatController != null) {
+					chatController.onNewMessageSend(line);
+				}
+
+				if (isConversationTabSelected()) {
+					refreshConversations();
+				}
+			}
+		});
+
 	}
 
 	@Override
 	public void onMessageDeliveredToServer(String messageId, JID contactJID) {
-		if (this.chatController != null) {
-			this.chatController.onMessageDeliveredToServer(messageId, contactJID);
-		}
+		javafx.application.Platform.runLater(new Runnable() {
+
+			@Override
+			public void run() {
+				if (chatController != null) {
+					chatController.onMessageDeliveredToServer(messageId, contactJID);
+				}
+			}
+		});
 	}
 
 	@Override
 	public void onMessageDeliveredToReceiver(String messageId, JID contactJID) {
-		if (this.chatController != null) {
-			this.chatController.onMessageDeliveredToReceiver(messageId, contactJID);
-		}
+		javafx.application.Platform.runLater(new Runnable() {
+
+			@Override
+			public void run() {
+				if (chatController != null) {
+					chatController.onMessageDeliveredToReceiver(messageId, contactJID);
+				}
+			}
+		});
+
 	}
 
 	@Override
 	public void onMessageAcknowledgedToReceiver(String messageId, JID contactJID) {
-		if (this.chatController != null) {
-			this.chatController.onMessageAcknowledgedToReceiver(messageId, contactJID);
-		}
+		javafx.application.Platform.runLater(new Runnable() {
+
+			@Override
+			public void run() {
+				if (chatController != null) {
+					chatController.onMessageAcknowledgedToReceiver(messageId, contactJID);
+				}
+			}
+		});
 	}
 
 	@Override
 	public void onMessageViewedByReceiver(String messageId, JID contactJID) {
-		if (this.chatController != null) {
-			this.chatController.onMessageViewedByReceiver(messageId, contactJID);
-		}
+		javafx.application.Platform.runLater(new Runnable() {
+
+			@Override
+			public void run() {
+				if (chatController != null) {
+					chatController.onMessageViewedByReceiver(messageId, contactJID);
+				}
+			}
+		});
 	}
 
 	@Override
 	public void onContactTypingStarted(JID contactJID) {
-		if (this.chatController != null) {
-			this.chatController.onContactTypingStarted(contactJID);
-		}
+		javafx.application.Platform.runLater(new Runnable() {
 
-		this.conversationsObservableList.stream()
-				.filter((v) -> StringUtils.safeEquals(v.getPeerJid(), contactJID.getBareJID())).findFirst()
-				.ifPresent((v) -> {
-					v.setTyping(false);
-				});
+			@Override
+			public void run() {
+				if (chatController != null) {
+					chatController.onContactTypingStarted(contactJID);
+				}
+
+				conversationsObservableList.stream()
+						.filter((v) -> StringUtils.safeEquals(v.getPeerJid(), contactJID.getBareJID())).findFirst()
+						.ifPresent((v) -> {
+							v.setTyping(false);
+						});
+			}
+		});
 	}
 
 	@Override
 	public void onContactTypingPaused(JID contactJID) {
-		if (this.chatController != null) {
-			this.chatController.onContactTypingPaused(contactJID);
-		}
+		javafx.application.Platform.runLater(new Runnable() {
 
-		this.conversationsObservableList.stream()
-				.filter((v) -> StringUtils.safeEquals(v.getPeerJid(), contactJID.getBareJID())).findFirst()
-				.ifPresent((v) -> {
-					v.setTyping(false);
-				});
+			@Override
+			public void run() {
+				if (chatController != null) {
+					chatController.onContactTypingPaused(contactJID);
+				}
+
+				conversationsObservableList.stream()
+						.filter((v) -> StringUtils.safeEquals(v.getPeerJid(), contactJID.getBareJID())).findFirst()
+						.ifPresent((v) -> {
+							v.setTyping(false);
+						});
+			}
+		});
+
 	}
 
 	@Override
 	public void onContactInactivityInUserChat(JID contactJID) {
-		if (this.chatController != null) {
-			this.chatController.onContactInactivityInUserChat(contactJID);
-		}
+		javafx.application.Platform.runLater(new Runnable() {
 
-		this.conversationsObservableList.stream()
-				.filter((v) -> StringUtils.safeEquals(v.getPeerJid(), contactJID.getBareJID())).findFirst()
-				.ifPresent((v) -> {
-					v.setTyping(false);
-				});
+			@Override
+			public void run() {
+				if (chatController != null) {
+					chatController.onContactInactivityInUserChat(contactJID);
+				}
+
+				conversationsObservableList.stream()
+						.filter((v) -> StringUtils.safeEquals(v.getPeerJid(), contactJID.getBareJID())).findFirst()
+						.ifPresent((v) -> {
+							v.setTyping(false);
+						});
+			}
+		});
 
 	}
 
 	@Override
 	public void onContactGoneFromUserChat(JID contactJID) {
-		if (this.chatController != null) {
-			this.chatController.onContactGoneFromUserChat(contactJID);
-		}
+		javafx.application.Platform.runLater(new Runnable() {
 
-		this.conversationsObservableList.stream()
-				.filter((v) -> StringUtils.safeEquals(v.getPeerJid(), contactJID.getBareJID())).findFirst()
-				.ifPresent((v) -> {
-					v.setTyping(false);
-				});
+			@Override
+			public void run() {
+				if (chatController != null) {
+					chatController.onContactGoneFromUserChat(contactJID);
+				}
+
+				conversationsObservableList.stream()
+						.filter((v) -> StringUtils.safeEquals(v.getPeerJid(), contactJID.getBareJID())).findFirst()
+						.ifPresent((v) -> {
+							v.setTyping(false);
+						});
+			}
+		});
 
 	}
 

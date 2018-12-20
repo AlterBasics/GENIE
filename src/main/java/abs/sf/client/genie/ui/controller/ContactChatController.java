@@ -207,7 +207,6 @@ public class ContactChatController {
 
 							setGraphic(chatLineCell.getChatLineCellGraphics());
 
-							
 						} catch (Exception e) {
 							LOGGER.log(Level.WARNING,
 									"Failed to load ChatLine cell for given chatLine " + chatLine.getContentId(), e);
@@ -238,6 +237,7 @@ public class ContactChatController {
 	public void onNewMessageReceived(ChatLine line) {
 		if (StringUtils.safeEquals(line.getPeerBareJid(), this.contactJID.getBareJID(), false)) {
 			this.chatObservableList.add(line);
+			chatListView.refresh();
 			scrollChatListViewAtEnd();
 			try {
 				chatManager.sendMessageReadReceipt(line);
@@ -264,6 +264,7 @@ public class ContactChatController {
 	public void onNewMessageSend(ChatLine line) {
 		if (StringUtils.safeEquals(line.getPeerBareJid(), this.contactJID.getBareJID(), false)) {
 			this.chatObservableList.add(line);
+			chatListView.refresh();
 			scrollChatListViewAtEnd();
 		}
 	}
@@ -274,6 +275,7 @@ public class ContactChatController {
 				ChatLine chaline = this.chatObservableList.get(index);
 				if (StringUtils.safeEquals(chaline.getMessageId(), messageId)) {
 					chaline.setMessageStatus(MessageStatus.DELIVERED_TO_SERVER);
+					chatListView.refresh();
 					break;
 				}
 			}
@@ -287,6 +289,7 @@ public class ContactChatController {
 				ChatLine chaline = this.chatObservableList.get(index);
 				if (StringUtils.safeEquals(chaline.getMessageId(), messageId)) {
 					chaline.setMessageStatus(MessageStatus.DELIVERED_TO_RECEIVER);
+					chatListView.refresh();
 					break;
 				}
 			}
@@ -299,6 +302,7 @@ public class ContactChatController {
 				ChatLine chaline = this.chatObservableList.get(index);
 				if (StringUtils.safeEquals(chaline.getMessageId(), messageId)) {
 					chaline.setMessageStatus(MessageStatus.RECEIVER_IS_ACKNOWLEDGED);
+					chatListView.refresh();
 					break;
 				}
 			}
@@ -311,6 +315,7 @@ public class ContactChatController {
 				ChatLine chaline = this.chatObservableList.get(index);
 				if (StringUtils.safeEquals(chaline.getMessageId(), messageId)) {
 					chaline.setMessageStatus(MessageStatus.RECEIVER_HAS_VIEWED);
+					chatListView.refresh();
 					break;
 				}
 			}
@@ -320,22 +325,29 @@ public class ContactChatController {
 	public void onContactTypingStarted(JID pearJID) {
 		if (pearJID.equals(contactJID)) {
 			this.typingLabel.setVisible(true);
+			chatListView.refresh();
 		}
 	}
 
-	public void onContactTypingPaused(JID contactJID2) {
-		// TODO Auto-generated method stub
-
+	public void onContactTypingPaused(JID pearJID) {
+		if (pearJID.equals(contactJID)) {
+			this.typingLabel.setVisible(false);
+			chatListView.refresh();
+		}
 	}
 
-	public void onContactInactivityInUserChat(JID contactJID2) {
-		// TODO Auto-generated method stub
-
+	public void onContactInactivityInUserChat(JID pearJID) {
+		if (pearJID.equals(contactJID)) {
+			this.typingLabel.setVisible(false);
+			chatListView.refresh();
+		}
 	}
 
-	public void onContactGoneFromUserChat(JID contactJID2) {
-		// TODO Auto-generated method stub
-
+	public void onContactGoneFromUserChat(JID pearJID) {
+		if (pearJID.equals(contactJID)) {
+			this.typingLabel.setVisible(false);
+			chatListView.refresh();
+		}
 	}
 
 }

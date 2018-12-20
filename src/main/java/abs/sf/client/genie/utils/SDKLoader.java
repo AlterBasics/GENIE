@@ -62,6 +62,7 @@ public class SDKLoader {
 
 			LOGGER.info("initializing SDK objects...");
 			initializeSDKObjects(con);
+			initilizeSDKDefaultProperties();
 			sdkLoaded();
 		}
 	}
@@ -88,6 +89,8 @@ public class SDKLoader {
 
 			LOGGER.info("initializing SDK objects...");
 			initializeSDKObjects(con);
+
+			initilizeSDKDefaultProperties();
 			sdkLoaded();
 		}
 	}
@@ -111,6 +114,11 @@ public class SDKLoader {
 		Platform.getInstance().addPresenceManager(new AppPresenceManager(streamManager));
 
 		addEventListeners();
+	}
+
+	private static void initilizeSDKDefaultProperties() throws StringflowErrorException {
+		SFSDKProperties.getInstance().enableChatMarkers();
+		SFSDKProperties.getInstance().enableChatStateNotification();
 	}
 
 	private static void setupUndeliveredStanzaManager() {

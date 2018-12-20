@@ -6,14 +6,18 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="chatLineAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="77.0" prefWidth="628.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane fx:id="chatLineAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="62.0" prefWidth="628.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <TextArea fx:id="messageTextArea" editable="false" layoutY="22.0" prefHeight="55.0" prefWidth="415.0" wrapText="true" />
-      <Label fx:id="messageTimeLabel" layoutX="375.0" prefHeight="25.0" prefWidth="38.0">
-         <font>
-            <Font size="13.0" />
-         </font>
-      </Label>
-      <Label fx:id="pearNameLabel" prefHeight="25.0" prefWidth="380.0" />
+      <VBox prefHeight="77.0" prefWidth="383.0">
+         <children>
+            <HBox prefHeight="24.0" prefWidth="489.0">
+               <children>
+                  <Label fx:id="pearNameLabel" prefHeight="17.0" prefWidth="350.0" text="Label" />
+                  <Label fx:id="messageTimeLabel" prefHeight="25.0" prefWidth="51.0" text="Label" />
+               </children>
+            </HBox>
+            <Label fx:id="messageLabel" prefHeight="72.0" prefWidth="498.0" text="Label" wrapText="true" />
+         </children>
+      </VBox>
    </children>
 </AnchorPane>

@@ -8,7 +8,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
 
 public class ReceiveChatlineCell implements ChatLineCell{
@@ -16,7 +15,7 @@ public class ReceiveChatlineCell implements ChatLineCell{
 	private AnchorPane chatLineAnchorPane;
 
 	@FXML
-	private TextArea messageTextArea;
+	private Label messageLabel;
 
 	@FXML
 	private Label messageTimeLabel;
@@ -42,7 +41,7 @@ public class ReceiveChatlineCell implements ChatLineCell{
 	}
 
 	private void setCellData() {
-		this.messageTextArea.setText(this.chatLine.getText());
+		this.messageLabel.setText(this.chatLine.getText());
 		this.messageTimeLabel.setText(this.chatLine.getDisplayTime());
 		this.pearNameLabel.setText(this.chatLine.getPeerName());
 	}
