@@ -6,14 +6,14 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="chatLineAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="52.0" prefWidth="974.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane fx:id="chatLineAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="52.0" prefWidth="957.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <HBox layoutX="511.0" prefHeight="52.0" prefWidth="463.0">
+      <HBox layoutX="511.0" prefHeight="52.0" prefWidth="446.0">
          <children>
-            <Label fx:id="messageLabel" prefHeight="50.0" prefWidth="451.0" text="hiiii" wrapText="true" />
+            <Label fx:id="messageLabel" prefHeight="50.0" prefWidth="413.0" text="hiiii" wrapText="true" />
             <VBox prefHeight="52.0" prefWidth="13.0">
                <children>
-                  <Label fx:id="messageTimeLabel" prefHeight="34.0" prefWidth="54.0" text="Label" />
+                  <Label fx:id="messageTimeLabel" prefHeight="26.0" prefWidth="58.0" text="Label" />
                   <ImageView fx:id="messageStatusImageView" fitHeight="26.0" fitWidth="57.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </VBox>

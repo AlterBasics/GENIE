@@ -32,7 +32,7 @@
       <ListView fx:id="chatListView" prefHeight="581.0" prefWidth="968.0" />
       <HBox prefHeight="111.0" prefWidth="971.0">
          <children>
-            <TextArea fx:id="messageTextArea" prefHeight="54.0" prefWidth="891.0" />
+            <TextArea fx:id="messageTextArea" prefHeight="54.0" prefWidth="891.0" wrapText="true" />
          </children>
       </HBox>
    </children>

@@ -270,7 +270,7 @@ public class ContactChatController {
 	}
 
 	public void onMessageDeliveredToServer(String messageId, JID pearJID) {
-		if (pearJID.equals(contactJID)) {
+		if (StringUtils.safeEquals(pearJID.getBareJID(), contactJID.getBareJID(), false)) {
 			for (int index = this.chatObservableList.size() - 1; index >= 0; index--) {
 				ChatLine chaline = this.chatObservableList.get(index);
 				if (StringUtils.safeEquals(chaline.getMessageId(), messageId)) {
@@ -284,7 +284,7 @@ public class ContactChatController {
 	}
 
 	public void onMessageDeliveredToReceiver(String messageId, JID pearJID) {
-		if (pearJID.equals(contactJID)) {
+		if (StringUtils.safeEquals(pearJID.getBareJID(), contactJID.getBareJID(), false)) {
 			for (int index = this.chatObservableList.size() - 1; index >= 0; index--) {
 				ChatLine chaline = this.chatObservableList.get(index);
 				if (StringUtils.safeEquals(chaline.getMessageId(), messageId)) {
@@ -297,7 +297,7 @@ public class ContactChatController {
 	}
 
 	public void onMessageAcknowledgedToReceiver(String messageId, JID pearJID) {
-		if (pearJID.equals(contactJID)) {
+		if (StringUtils.safeEquals(pearJID.getBareJID(), contactJID.getBareJID(), false)) {
 			for (int index = this.chatObservableList.size() - 1; index >= 0; index--) {
 				ChatLine chaline = this.chatObservableList.get(index);
 				if (StringUtils.safeEquals(chaline.getMessageId(), messageId)) {
@@ -310,7 +310,7 @@ public class ContactChatController {
 	}
 
 	public void onMessageViewedByReceiver(String messageId, JID pearJID) {
-		if (pearJID.equals(contactJID)) {
+		if (StringUtils.safeEquals(pearJID.getBareJID(), contactJID.getBareJID(), false)) {
 			for (int index = this.chatObservableList.size() - 1; index >= 0; index--) {
 				ChatLine chaline = this.chatObservableList.get(index);
 				if (StringUtils.safeEquals(chaline.getMessageId(), messageId)) {
@@ -323,28 +323,28 @@ public class ContactChatController {
 	}
 
 	public void onContactTypingStarted(JID pearJID) {
-		if (pearJID.equals(contactJID)) {
+		if (StringUtils.safeEquals(pearJID.getBareJID(), contactJID.getBareJID(), false)) {
 			this.typingLabel.setVisible(true);
 			chatListView.refresh();
 		}
 	}
 
 	public void onContactTypingPaused(JID pearJID) {
-		if (pearJID.equals(contactJID)) {
+		if (StringUtils.safeEquals(pearJID.getBareJID(), contactJID.getBareJID(), false)) {
 			this.typingLabel.setVisible(false);
 			chatListView.refresh();
 		}
 	}
 
 	public void onContactInactivityInUserChat(JID pearJID) {
-		if (pearJID.equals(contactJID)) {
+		if (StringUtils.safeEquals(pearJID.getBareJID(), contactJID.getBareJID(), false)) {
 			this.typingLabel.setVisible(false);
 			chatListView.refresh();
 		}
 	}
 
 	public void onContactGoneFromUserChat(JID pearJID) {
-		if (pearJID.equals(contactJID)) {
+		if (StringUtils.safeEquals(pearJID.getBareJID(), contactJID.getBareJID(), false)) {
 			this.typingLabel.setVisible(false);
 			chatListView.refresh();
 		}
