@@ -21,6 +21,7 @@ import abs.ixi.client.util.ObjectUtils;
 import abs.ixi.client.util.StringUtils;
 import abs.ixi.client.xmpp.JID;
 import abs.ixi.client.xmpp.packet.ChatRoom;
+import abs.ixi.client.xmpp.packet.ChatRoom.AccessMode;
 import abs.ixi.client.xmpp.packet.ChatRoom.ChatRoomMember;
 import abs.ixi.client.xmpp.packet.Presence.PresenceType;
 import abs.ixi.client.xmpp.packet.Roster.RosterItem;
@@ -791,9 +792,9 @@ public class H2Database implements Database {
 
 		try {
 
-			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_INSERT_CHAT_ROOM,
-					new Object[] { chatRoom.getRoomJID().getBareJID(), chatRoom.getName(), chatRoom.getSubject(),
-							chatRoom.getAccessMode().val(), 1 });
+			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_INSERT_CHAT_ROOM, new Object[] {
+					chatRoom.getRoomJID().getBareJID(), chatRoom.getName(), chatRoom.getSubject(),
+					chatRoom.getAccessMode() == null ? AccessMode.PRIVATE.val() : chatRoom.getAccessMode().val(), 1 });
 
 			synchronized (RosterTable.class) {
 				ps.executeUpdate();
