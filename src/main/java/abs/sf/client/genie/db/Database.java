@@ -78,6 +78,14 @@ public interface Database extends Initializable {
 	void updateConversation(Conversation conv) throws DbException;
 
 	/**
+	 * Adding or updating conversation for given {@link ChatLine}.
+	 * 
+	 * @param line
+	 * @throws DbException
+	 */
+	void addOrUpdateConversation(ChatLine line) throws DbException;
+
+	/**
 	 * Get UnRead Conversation count from peerJID
 	 * 
 	 * @param peerJID
@@ -324,7 +332,7 @@ public interface Database extends Initializable {
 	 * Getting ChatRoom Details roomJID
 	 */
 	ChatRoom getChatRoomDetails(String roomJID) throws DbException;
-	
+
 	/**
 	 * Getting ChatRoom JID roomName
 	 */
@@ -502,5 +510,4 @@ public interface Database extends Initializable {
 	 */
 	List<Stanza> fetchAllUndeliverStanzas() throws DbException;
 
-	
 }

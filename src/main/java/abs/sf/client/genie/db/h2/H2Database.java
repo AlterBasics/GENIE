@@ -10,6 +10,7 @@ import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.h2.jdbcx.JdbcConnectionPool;
@@ -125,8 +126,7 @@ public class H2Database implements Database {
 			return cp.getConnection();
 
 		} catch (SQLException e) {
-			LOGGER.warning("Error while getting database connection : " + e.getMessage());
-
+			LOGGER.log(Level.WARNING, "Error while getting database connection : " + e.getMessage(), e);
 			throw new DbException("Failed to get database connection", e);
 		}
 
@@ -143,11 +143,14 @@ public class H2Database implements Database {
 				try {
 
 					LOGGER.info("Creating SQL Table : " + table.getName());
-					table.drop(conn);
-					table.create(conn);
+
+					synchronized (table.getClass()) {
+						table.drop(conn);
+						table.create(conn);
+					}
 
 				} catch (Exception e) {
-					LOGGER.warning("Failed to crete SQL table : " + table.getName());
+					LOGGER.log(Level.WARNING, "Failed to crete SQL table : " + table.getName(), e);
 					throw new DbException("Failed to crete SQL table", e);
 				}
 			}
@@ -173,10 +176,13 @@ public class H2Database implements Database {
 				try {
 
 					LOGGER.info("droping SQL Table : " + table.getName());
-					table.drop(conn);
+
+					synchronized (table.getClass()) {
+						table.drop(conn);
+					}
 
 				} catch (Exception e) {
-					LOGGER.warning("Failed to drop SQL table : " + table.getName());
+					LOGGER.log(Level.WARNING, "Failed to drop SQL table : " + table.getName(), e);
 					throw new DbException("Failed to drop SQL table", e);
 				}
 			}
@@ -198,10 +204,12 @@ public class H2Database implements Database {
 				try {
 
 					LOGGER.info("Truncating SQL Table : " + table.getName());
-					table.truncate(conn);
+					synchronized (table.getClass()) {
+						table.truncate(conn);
+					}
 
 				} catch (Exception e) {
-					LOGGER.warning("Failed to truncate SQL table : " + table.getName());
+					LOGGER.log(Level.WARNING, "Failed to truncate SQL table : " + table.getName(), e);
 					throw new DbException("Failed to truncate SQL table", e);
 				}
 			}
@@ -218,11 +226,11 @@ public class H2Database implements Database {
 		Connection conn = this.getConnection();
 
 		try {
-
-			List<Conversation> conversations = SQLHelper.query(conn, SQLQuery.FETCH_CONVERSATIONS,
-					new ConversationRowMapper());
-
-			return conversations;
+			synchronized (ConversationTable.class) {
+				synchronized (RosterTable.class) {
+					return SQLHelper.query(conn, SQLQuery.FETCH_CONVERSATIONS, new ConversationRowMapper());
+				}
+			}
 
 		} finally {
 			SQLHelper.closeConnection(conn);
@@ -241,8 +249,11 @@ public class H2Database implements Database {
 		LOGGER.info("Checking online status for user " + userJID);
 		Connection conn = this.getConnection();
 		try {
+			String presence;
 
-			String presence = SQLHelper.queryString(conn, SQLQuery.FETCH_PRESENCE_STATUS, new Object[] { userJID });
+			synchronized (PresenceTable.class) {
+				presence = SQLHelper.queryString(conn, SQLQuery.FETCH_PRESENCE_STATUS, new Object[] { userJID });
+			}
 
 			return StringUtils.safeEquals(presence, PresenceType.AVAILABLE.val(), false);
 
@@ -260,14 +271,17 @@ public class H2Database implements Database {
 		PreparedStatement ps = null;
 
 		try {
+
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_INSERT_CONVERSATION,
 					new Object[] { conv.getPeerJid(), conv.getLastChatLine(), conv.getLastChatLineType().name(),
 							DateUtils.currentTimeInMiles(), conv.getUnreadChatLines() });
 
-			ps.executeUpdate();
+			synchronized (ConversationTable.class) {
+				ps.executeUpdate();
+			}
 
 		} catch (SQLException e) {
-			LOGGER.warning("Failed to add new Conversation");
+			LOGGER.log(Level.WARNING, "Failed to add new Conversation", e);
 			throw new DbException("Failed to add new Conversation", e);
 
 		} finally {
@@ -285,14 +299,17 @@ public class H2Database implements Database {
 		PreparedStatement ps = null;
 
 		try {
+
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_CONVERSATION,
 					new Object[] { conv.getLastChatLine(), conv.getLastChatLineType().name(),
 							DateUtils.currentTimeInMiles(), conv.getUnreadChatLines(), conv.getPeerJid() });
 
-			ps.executeUpdate();
+			synchronized (ConversationTable.class) {
+				ps.executeUpdate();
+			}
 
 		} catch (SQLException e) {
-			LOGGER.warning("Failed to update Conversation");
+			LOGGER.log(Level.WARNING, "Failed to update Conversation", e);
 			throw new DbException("Failed to update a Conversation", e);
 
 		} finally {
@@ -303,13 +320,41 @@ public class H2Database implements Database {
 	}
 
 	@Override
+	public void addOrUpdateConversation(ChatLine line) throws DbException {
+		synchronized (ConversationTable.class) {
+			if (this.conversationExists(line.getPeerBareJid())) {
+				Conversation conv = new Conversation(line);
+
+				if (line.getDirection() == ChatLine.Direction.RECEIVE) {
+					int unread = this.getUnreadConversationCount(line.getPeerBareJid());
+					conv.setUnreadChatLines(unread + 1);
+				}
+
+				this.updateConversation(conv);
+
+			} else {
+				Conversation conv = new Conversation(line);
+
+				if (line.getDirection() == ChatLine.Direction.RECEIVE) {
+					conv.setUnreadChatLines(1);
+				}
+
+				this.addConversation(conv);
+			}
+		}
+
+	}
+
+	@Override
 	public int getUnreadConversationCount(String peerJID) throws DbException {
 		LOGGER.info("Geting unread conversation count user " + peerJID);
 		Connection conn = this.getConnection();
 
 		try {
+			synchronized (ConversationTable.class) {
+				return SQLHelper.queryInt(conn, SQLQuery.FETCH_UNREAD_CHATLINE_COUNT, new String[] { peerJID });
 
-			return SQLHelper.queryInt(conn, SQLQuery.FETCH_UNREAD_CHATLINE_COUNT, new String[] { peerJID });
+			}
 
 		} finally {
 			SQLHelper.closeConnection(conn);
@@ -324,13 +369,16 @@ public class H2Database implements Database {
 		PreparedStatement ps = null;
 
 		try {
+
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_UNREAD_CONVERSATION_COUNT,
 					new Object[] { unreadConversationCount, peerJID });
 
-			ps.executeUpdate();
+			synchronized (ConversationTable.class) {
+				ps.executeUpdate();
+			}
 
 		} catch (SQLException e) {
-			LOGGER.warning("Failed to update unread Conversation count");
+			LOGGER.log(Level.WARNING, "Failed to update unread Conversation count", e);
 			throw new DbException("Failed to update unread Conversation count", e);
 
 		} finally {
@@ -346,9 +394,10 @@ public class H2Database implements Database {
 		Connection conn = this.getConnection();
 
 		try {
-
-			int count = SQLHelper.queryInt(conn, SQLQuery.FETCH_CONVERSATION_COUNT, new String[] { peerJID });
-			return count > 0;
+			synchronized (ConversationTable.class) {
+				int count = SQLHelper.queryInt(conn, SQLQuery.FETCH_CONVERSATION_COUNT, new String[] { peerJID });
+				return count > 0;
+			}
 
 		} finally {
 			SQLHelper.closeConnection(conn);
@@ -371,10 +420,11 @@ public class H2Database implements Database {
 							line.getMessageStatus().getValue(), line.isMarkable(), line.haveSean(),
 							line.isCsnActive() });
 
-			ps.executeUpdate();
-
+			synchronized (ChatStoreTable.class) {
+				ps.executeUpdate();
+			}
 		} catch (SQLException e) {
-			LOGGER.warning("Failed to add new chatline for userJID");
+			LOGGER.log(Level.WARNING, "Failed to add new chatline for userJID", e);
 			throw new DbException("Failed to add new chaline", e);
 
 		} finally {
@@ -392,13 +442,16 @@ public class H2Database implements Database {
 		PreparedStatement ps = null;
 
 		try {
+
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_MESSAGE_DELIVERY_STATUS,
 					new Object[] { messageStatus.getValue(), messageId });
 
-			ps.executeUpdate();
+			synchronized (ChatStoreTable.class) {
+				ps.executeUpdate();
+			}
 
 		} catch (SQLException e) {
-			LOGGER.warning("Failed to update message delivery status Conversation count");
+			LOGGER.log(Level.WARNING, "Failed to update message delivery status Conversation count", e);
 			throw new DbException("Failed to update message delivery status Conversation count", e);
 
 		} finally {
@@ -414,11 +467,13 @@ public class H2Database implements Database {
 		Connection conn = this.getConnection();
 
 		try {
+			synchronized (ChatStoreTable.class) {
+				int deliveryStatus = SQLHelper.queryInt(conn, SQLQuery.FETCH_MESSAGE_DELIVERY_STATUS,
+						new String[] { messageId });
 
-			int deliveryStatus = SQLHelper.queryInt(conn, SQLQuery.FETCH_MESSAGE_DELIVERY_STATUS,
-					new String[] { messageId });
+				return deliveryStatus != ChatLine.MessageStatus.NOT_DELIVERED_TO_SERVER.getValue();
 
-			return deliveryStatus != ChatLine.MessageStatus.NOT_DELIVERED_TO_SERVER.getValue();
+			}
 
 		} finally {
 			SQLHelper.closeConnection(conn);
@@ -433,11 +488,10 @@ public class H2Database implements Database {
 		Connection conn = this.getConnection();
 
 		try {
-
-			List<ChatLine> chatlines = SQLHelper.query(conn, SQLQuery.FETCH_UNREAD_CONVERSATION_CHAT_LINES,
-					new Object[] { pearJID }, new ChatLineRowMapper());
-
-			return chatlines;
+			synchronized (ChatStoreTable.class) {
+				return SQLHelper.query(conn, SQLQuery.FETCH_UNREAD_CONVERSATION_CHAT_LINES, new Object[] { pearJID },
+						new ChatLineRowMapper());
+			}
 
 		} finally {
 			SQLHelper.closeConnection(conn);
@@ -454,10 +508,12 @@ public class H2Database implements Database {
 		try {
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_MARK_MESSAGE_VIEWED, new Object[] { messageId });
 
-			ps.executeUpdate();
+			synchronized (ChatStoreTable.class) {
+				ps.executeUpdate();
+			}
 
 		} catch (SQLException e) {
-			LOGGER.warning("Failed to set the Message is Viewed or not");
+			LOGGER.log(Level.WARNING, "Failed to set the Message is Viewed or not", e);
 			throw new DbException("Failed to set the Message is Viewed or not ", e);
 
 		} finally {
@@ -474,11 +530,10 @@ public class H2Database implements Database {
 		Connection conn = this.getConnection();
 
 		try {
-
-			List<ChatLine> chatlines = SQLHelper.query(conn, SQLQuery.FETCH_CONVERSATION_CHAT_LINES,
-					new Object[] { pearJID }, new ChatLineRowMapper());
-
-			return chatlines;
+			synchronized (ChatStoreTable.class) {
+				return SQLHelper.query(conn, SQLQuery.FETCH_CONVERSATION_CHAT_LINES, new Object[] { pearJID },
+						new ChatLineRowMapper());
+			}
 
 		} finally {
 			SQLHelper.closeConnection(conn);
@@ -493,10 +548,12 @@ public class H2Database implements Database {
 		Connection conn = this.getConnection();
 
 		try {
+			synchronized (ChatStoreTable.class) {
+				int Count = SQLHelper.queryInt(conn, SQLQuery.FETCH_CHAT_LINE_COUNT,
+						new String[] { messageId, pearJID });
 
-			int Count = SQLHelper.queryInt(conn, SQLQuery.FETCH_CHAT_LINE_COUNT, new String[] { messageId, pearJID });
-
-			return Count > 0;
+				return Count > 0;
+			}
 
 		} finally {
 			SQLHelper.closeConnection(conn);
@@ -510,11 +567,9 @@ public class H2Database implements Database {
 		Connection conn = this.getConnection();
 
 		try {
-
-			List<ChatLine> chatlines = SQLHelper.query(conn, SQLQuery.FETCH_UNDELIVERED_CHAT_LINES, null,
-					new ChatLineRowMapper());
-
-			return chatlines;
+			synchronized (ChatStoreTable.class) {
+				return SQLHelper.query(conn, SQLQuery.FETCH_UNDELIVERED_CHAT_LINES, null, new ChatLineRowMapper());
+			}
 
 		} finally {
 			SQLHelper.closeConnection(conn);
@@ -529,13 +584,16 @@ public class H2Database implements Database {
 		PreparedStatement ps = null;
 
 		try {
+
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_INSERT_ROSTER_ITEM,
 					new Object[] { item.getJid().getBareJID(), item.getName(), 0, });
 
-			ps.executeUpdate();
+			synchronized (RosterTable.class) {
+				ps.executeUpdate();
+			}
 
 		} catch (SQLException e) {
-			LOGGER.warning("Failed to add new Item");
+			LOGGER.log(Level.WARNING, "Failed to add new Item", e);
 			throw new DbException("Failed to add new Item", e);
 
 		} finally {
@@ -553,13 +611,16 @@ public class H2Database implements Database {
 		PreparedStatement ps = null;
 
 		try {
+
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_ROSTER_ITEM,
 					new Object[] { item.getName(), item.getJid().getBareJID() });
 
-			ps.executeUpdate();
+			synchronized (RosterTable.class) {
+				ps.executeUpdate();
+			}
 
 		} catch (SQLException e) {
-			LOGGER.warning("Failed to update Roster Item");
+			LOGGER.log(Level.WARNING, "Failed to update Roster Item", e);
 			throw new DbException("Failed to update a Roster Item", e);
 
 		} finally {
@@ -576,11 +637,9 @@ public class H2Database implements Database {
 		Connection conn = this.getConnection();
 
 		try {
-
-			List<RosterItem> rosterItems = SQLHelper.query(conn, SQLQuery.FETCH_ROSTER_ITEMS, null,
-					new RosterItemRowMapper());
-
-			return rosterItems;
+			synchronized (RosterTable.class) {
+				return SQLHelper.query(conn, SQLQuery.FETCH_ROSTER_ITEMS, null, new RosterItemRowMapper());
+			}
 
 		} finally {
 			SQLHelper.closeConnection(conn);
@@ -596,13 +655,16 @@ public class H2Database implements Database {
 		PreparedStatement ps = null;
 
 		try {
+
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.DELETE_ROSTER_ITEM,
 					new Object[] { item.getJid().getBareJID() });
 
-			ps.executeUpdate();
+			synchronized (RosterTable.class) {
+				ps.executeUpdate();
+			}
 
 		} catch (SQLException e) {
-			LOGGER.warning("Failed to delete Roster Item");
+			LOGGER.log(Level.WARNING, "Failed to delete Roster Item", e);
 			throw new DbException("Failed to delete a Roster Item", e);
 
 		} finally {
@@ -620,12 +682,15 @@ public class H2Database implements Database {
 		PreparedStatement ps = null;
 
 		try {
+
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.DELETE_ROSTER_ITEM, new Object[] { jid });
 
-			ps.executeUpdate();
+			synchronized (RosterTable.class) {
+				ps.executeUpdate();
+			}
 
 		} catch (SQLException e) {
-			LOGGER.warning("Failed to delete Roster Item");
+			LOGGER.log(Level.WARNING, "Failed to delete Roster Item", e);
 			throw new DbException("Failed to delete a Roster Item", e);
 
 		} finally {
@@ -642,8 +707,10 @@ public class H2Database implements Database {
 		Connection conn = this.getConnection();
 
 		try {
+			synchronized (RosterTable.class) {
+				return SQLHelper.queryString(conn, SQLQuery.FETCH_USER_NAME, new Object[] { itemJID });
 
-			return SQLHelper.queryString(conn, SQLQuery.FETCH_USER_NAME, new Object[] { itemJID });
+			}
 
 		} finally {
 			SQLHelper.closeConnection(conn);
@@ -656,15 +723,16 @@ public class H2Database implements Database {
 		Connection conn = this.getConnection();
 
 		try {
+			synchronized (RosterTable.class) {
+				int count = SQLHelper.queryInt(conn, SQLQuery.FETCH_ROSTER_ITEM_COUNT,
+						new String[] { item.getJid().getBareJID() });
 
-			int count = SQLHelper.queryInt(conn, SQLQuery.FETCH_ROSTER_ITEM_COUNT,
-					new String[] { item.getJid().getBareJID() });
+				if (count == 0) {
+					addRosterItem(item);
 
-			if (count == 0) {
-				addRosterItem(item);
-
-			} else {
-				updateRosterItem(item);
+				} else {
+					updateRosterItem(item);
+				}
 			}
 
 		} finally {
@@ -679,10 +747,11 @@ public class H2Database implements Database {
 		Connection conn = this.getConnection();
 
 		try {
+			synchronized (RosterTable.class) {
+				int Count = SQLHelper.queryInt(conn, SQLQuery.FETCH_GROUP_COUNT, new String[] { jid });
 
-			int Count = SQLHelper.queryInt(conn, SQLQuery.FETCH_GROUP_COUNT, new String[] { jid });
-
-			return Count > 0;
+				return Count > 0;
+			}
 
 		} finally {
 			SQLHelper.closeConnection(conn);
@@ -695,15 +764,16 @@ public class H2Database implements Database {
 		Connection conn = this.getConnection();
 
 		try {
+			synchronized (RosterTable.class) {
+				int count = SQLHelper.queryInt(conn, SQLQuery.FETCH_CHAT_ROOM_COUNT,
+						new String[] { chatRoom.getRoomJID().getBareJID() });
 
-			int count = SQLHelper.queryInt(conn, SQLQuery.FETCH_CHAT_ROOM_COUNT,
-					new String[] { chatRoom.getRoomJID().getBareJID() });
+				if (count == 0) {
+					addChatRoom(chatRoom);
 
-			if (count == 0) {
-				addChatRoom(chatRoom);
-
-			} else {
-				updateChatRoom(chatRoom);
+				} else {
+					updateChatRoom(chatRoom);
+				}
 			}
 
 		} finally {
@@ -720,14 +790,17 @@ public class H2Database implements Database {
 		PreparedStatement ps = null;
 
 		try {
+
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_INSERT_CHAT_ROOM,
 					new Object[] { chatRoom.getRoomJID().getBareJID(), chatRoom.getName(), chatRoom.getSubject(),
 							chatRoom.getAccessMode().val(), 1 });
 
-			ps.executeUpdate();
+			synchronized (RosterTable.class) {
+				ps.executeUpdate();
+			}
 
 		} catch (SQLException e) {
-			LOGGER.warning("Failed to add new chatRoom");
+			LOGGER.log(Level.WARNING, "Failed to add new chatRoom", e);
 			throw new DbException("Failed to add new chatRoom", e);
 
 		} finally {
@@ -745,15 +818,18 @@ public class H2Database implements Database {
 		PreparedStatement ps = null;
 
 		try {
+
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_CHAT_ROOM,
 					new Object[] { chatRoom.getName(), chatRoom.getSubject(),
 							chatRoom.getAccessMode() != null ? chatRoom.getAccessMode().val() : null,
 							chatRoom.getRoomJID().getBareJID() });
 
-			ps.executeUpdate();
+			synchronized (RosterTable.class) {
+				ps.executeUpdate();
+			}
 
 		} catch (SQLException e) {
-			LOGGER.warning("Failed to add new chatRoom");
+			LOGGER.log(Level.WARNING, "Failed to add new chatRoom", e);
 			throw new DbException("Failed to add new chatRoom", e);
 
 		} finally {
@@ -771,13 +847,16 @@ public class H2Database implements Database {
 		PreparedStatement ps = null;
 
 		try {
+
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_CHAT_ROOM_SUBJECT,
 					new Object[] { subject, roomJID });
 
-			ps.executeUpdate();
+			synchronized (RosterTable.class) {
+				ps.executeUpdate();
+			}
 
 		} catch (SQLException e) {
-			LOGGER.warning("Failed to update Chat Room Subject");
+			LOGGER.log(Level.WARNING, "Failed to update Chat Room Subject", e);
 			throw new DbException("Failed to update Chat Room Subject", e);
 
 		} finally {
@@ -795,12 +874,15 @@ public class H2Database implements Database {
 		PreparedStatement ps = null;
 
 		try {
+
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_TRUNCATE_ROSTER, new Object[] {});
 
-			ps.executeUpdate();
+			synchronized (RosterTable.class) {
+				ps.executeUpdate();
+			}
 
 		} catch (SQLException e) {
-			LOGGER.warning("Failed to truncte roster table");
+			LOGGER.log(Level.WARNING, "Failed to truncte roster table", e);
 			throw new DbException("Failed to truncate roster table", e);
 
 		} finally {
@@ -816,8 +898,9 @@ public class H2Database implements Database {
 		Connection conn = this.getConnection();
 
 		try {
-
-			return SQLHelper.queryString(conn, SQLQuery.FETCH_CHAT_ROOM_SUBJECT, new Object[] { roomJID });
+			synchronized (RosterTable.class) {
+				return SQLHelper.queryString(conn, SQLQuery.FETCH_CHAT_ROOM_SUBJECT, new Object[] { roomJID });
+			}
 
 		} finally {
 			SQLHelper.closeConnection(conn);
@@ -832,8 +915,10 @@ public class H2Database implements Database {
 
 		try {
 
-			return SQLHelper.queryString(conn, SQLQuery.FETCH_ROOM_MEMBER_JID,
-					new Object[] { roomJID, memberNickName });
+			synchronized (ChatRoomMemberTable.class) {
+				return SQLHelper.queryString(conn, SQLQuery.FETCH_ROOM_MEMBER_JID,
+						new Object[] { roomJID, memberNickName });
+			}
 
 		} finally {
 			SQLHelper.closeConnection(conn);
@@ -847,12 +932,11 @@ public class H2Database implements Database {
 		Connection conn = getConnection();
 
 		try {
-
-			int Count = SQLHelper.queryInt(conn, SQLQuery.FETCH_CHAT_ROOM_MEMBER_COUNT,
-					new Object[] { roomJID, memberJID });
-
-			return Count == 1;
-
+			synchronized (ChatRoomMemberTable.class) {
+				int Count = SQLHelper.queryInt(conn, SQLQuery.FETCH_CHAT_ROOM_MEMBER_COUNT,
+						new Object[] { roomJID, memberJID });
+				return Count == 1;
+			}
 		} finally {
 			SQLHelper.closeConnection(conn);
 		}
@@ -866,17 +950,18 @@ public class H2Database implements Database {
 		Connection conn = getConnection();
 
 		try {
+			synchronized (ChatRoomMemberTable.class) {
+				int Count = SQLHelper.queryInt(conn, SQLQuery.FETCH_CHAT_ROOM_MEMBER_COUNT,
+						new Object[] { member.getUserJID().getBareJID(), member.getRoomJID().getBareJID() });
 
-			int Count = SQLHelper.queryInt(conn, SQLQuery.FETCH_CHAT_ROOM_MEMBER_COUNT,
-					new Object[] { member.getUserJID().getBareJID(), member.getRoomJID().getBareJID() });
+				if (Count == 0) {
 
-			if (Count == 0) {
+					addChatRoomMember(member);
 
-				addChatRoomMember(member);
+				} else {
 
-			} else {
-
-				updateChatRoomMember(member);
+					updateChatRoomMember(member);
+				}
 			}
 
 		} finally {
@@ -895,17 +980,18 @@ public class H2Database implements Database {
 		PreparedStatement ps = null;
 
 		try {
-
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_INSERT_CHAT_ROOM_MEMBER,
 					new Object[] { member.getUserJID().getBareJID(), member.getNickName(),
 							member.getAffiliation() == null ? null : member.getAffiliation().val(),
 							member.getRole() == null ? null : member.getRole().val(),
 							member.getRoomJID().getBareJID() });
 
-			ps.executeUpdate();
+			synchronized (ChatRoomMemberTable.class) {
+				ps.executeUpdate();
+			}
 
 		} catch (SQLException e) {
-			LOGGER.warning("Failed to add ChaRoomMember");
+			LOGGER.log(Level.WARNING, "Failed to add ChaRoomMember", e);
 			throw new DbException("Failed to add ChaRoomMember", e);
 
 		} finally {
@@ -928,11 +1014,12 @@ public class H2Database implements Database {
 					member.getNickName(), member.getAffiliation() == null ? null : member.getAffiliation().val(),
 					member.getRole() == null ? null : member.getRole().val(), member.getUserJID().getBareJID() });
 
-			ps.executeUpdate();
+			synchronized (ChatRoomMemberTable.class) {
+				ps.executeUpdate();
+			}
 
 		} catch (SQLException e) {
-
-			LOGGER.warning("Failed to Update ChatRoomMember");
+			LOGGER.log(Level.WARNING, "Failed to Update ChatRoomMember", e);
 			throw new DbException("Failed to Update ChatRoomMember", e);
 
 		} finally {
@@ -950,13 +1037,14 @@ public class H2Database implements Database {
 		PreparedStatement ps = null;
 
 		try {
+
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_DELETE_ALL_ROOM_MEMBER, new Object[] { roomJID });
 
-			ps.executeUpdate();
-
+			synchronized (ChatRoomMemberTable.class) {
+				ps.executeUpdate();
+			}
 		} catch (SQLException e) {
-
-			LOGGER.warning("Failed to Delete RoomMember");
+			LOGGER.log(Level.WARNING, "Failed to Delete RoomMember", e);
 			throw new DbException("Failed to Delete RoomMember", e);
 
 		} finally {
@@ -978,11 +1066,12 @@ public class H2Database implements Database {
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.DELETE_ROOM_MEMBER,
 					new Object[] { memberJID, roomJID });
 
-			ps.executeUpdate();
+			synchronized (ChatRoomMemberTable.class) {
+				ps.executeUpdate();
+			}
 
 		} catch (SQLException e) {
-
-			LOGGER.warning("Failed to Update ChaRoomMember");
+			LOGGER.log(Level.WARNING, "Failed to Update ChaRoomMember", e);
 			throw new DbException("Failed to Update ChaRoomMember", e);
 
 		} finally {
@@ -999,8 +1088,10 @@ public class H2Database implements Database {
 		Connection conn = getConnection();
 
 		try {
-			return SQLHelper.queryString(conn, SQLQuery.FETCH_ROOM_MEMBER_NICK_NAME,
-					new Object[] { memberJID, roomJId });
+			synchronized (ChatRoomMemberTable.class) {
+				return SQLHelper.queryString(conn, SQLQuery.FETCH_ROOM_MEMBER_NICK_NAME,
+						new Object[] { memberJID, roomJId });
+			}
 
 		} finally {
 			SQLHelper.closeConnection(conn);
@@ -1015,8 +1106,11 @@ public class H2Database implements Database {
 		Connection conn = getConnection();
 
 		try {
-			ChatRoom room = (ChatRoom) SQLHelper.query(conn, SQLQuery.FETCH_CHAT_ROOM_DETAILS, new Object[] { roomJID },
-					new ChatRoomRowMapper());
+			ChatRoom room;
+			synchronized (RosterTable.class) {
+				room = (ChatRoom) SQLHelper.query(conn, SQLQuery.FETCH_CHAT_ROOM_DETAILS, new Object[] { roomJID },
+						new ChatRoomRowMapper());
+			}
 
 			if (room != null) {
 				room.setMembers(getChatRoomMembers(room));
@@ -1036,8 +1130,11 @@ public class H2Database implements Database {
 		Connection conn = getConnection();
 
 		try {
+			String roomJID;
 
-			String roomJID = SQLHelper.queryString(conn, SQLQuery.FETCH_CHAT_ROOM_JID, new Object[] { roomName });
+			synchronized (RosterTable.class) {
+				roomJID = SQLHelper.queryString(conn, SQLQuery.FETCH_CHAT_ROOM_JID, new Object[] { roomName });
+			}
 
 			if (!StringUtils.isNullOrEmpty(roomJID)) {
 				try {
@@ -1064,12 +1161,18 @@ public class H2Database implements Database {
 
 		try {
 
-			List<ChatRoom> rooms = SQLHelper.query(conn, SQLQuery.FETCH_CHAT_ROOMS, new ChatRoomRowMapper());
+			List<ChatRoom> rooms = null;
 
-			for (ChatRoom room : rooms) {
+			synchronized (RosterTable.class) {
+				rooms = SQLHelper.query(conn, SQLQuery.FETCH_CHAT_ROOMS, new ChatRoomRowMapper());
+			}
 
-				room.setMembers(getChatRoomMembers(room));
+			if (rooms != null) {
+				for (ChatRoom room : rooms) {
 
+					room.setMembers(getChatRoomMembers(room));
+
+				}
 			}
 
 		} finally {
@@ -1090,7 +1193,9 @@ public class H2Database implements Database {
 			List<ChatRoom.ChatRoomMember> members = SQLHelper.query(conn, SQLQuery.FETCH_CHAT_ROOM_MEMBERS,
 					new Object[] { room.getRoomJID().getBareJID() }, new ChatRoomMemberRowMapper(room));
 
-			return new HashSet<>(members);
+			synchronized (ChatRoomMemberTable.class) {
+				return new HashSet<>(members);
+			}
 
 		} finally {
 
@@ -1110,11 +1215,13 @@ public class H2Database implements Database {
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_INSERT_PRESENCE,
 					new Object[] { userJID, presence.val(), mood, status, DateUtils.currentTimeInMiles() });
 
-			ps.executeUpdate();
+			synchronized (PresenceTable.class) {
+				ps.executeUpdate();
+			}
 
 		} catch (SQLException e) {
 
-			LOGGER.warning("Failed to Check the Presence of the user and mood and status");
+			LOGGER.log(Level.WARNING, "Failed to Check the Presence of the user and mood and status", e);
 			throw new DbException("Failed to Check the Presence of the user and mood and status", e);
 
 		} finally {
@@ -1132,15 +1239,16 @@ public class H2Database implements Database {
 		PreparedStatement ps = null;
 
 		try {
-
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_PRESENCE,
 					new Object[] { presence.val(), mood, status, DateUtils.currentTimeInMiles(), userJID });
 
-			ps.executeUpdate();
+			synchronized (PresenceTable.class) {
+				ps.executeUpdate();
+			}
 
 		} catch (SQLException e) {
 
-			LOGGER.warning("Failed to Update the Presence of the user and mood and status");
+			LOGGER.log(Level.WARNING, "Failed to Update the Presence of the user and mood and status", e);
 			throw new DbException("Failed to Update the Presence of the user and mood and status", e);
 
 		} finally {
@@ -1158,16 +1266,17 @@ public class H2Database implements Database {
 		Connection conn = getConnection();
 
 		try {
+			synchronized (PresenceTable.class) {
+				long Count = SQLHelper.queryInt(conn, SQLQuery.FETCH_PRESENCE_COUNT, new Object[] { userJID });
 
-			long Count = SQLHelper.queryInt(conn, SQLQuery.FETCH_PRESENCE_COUNT, new Object[] { userJID });
+				if (Count == 0) {
+					addPresence(userJID, presence, mood, status);
 
-			if (Count == 0) {
-				addPresence(userJID, presence, mood, status);
+				} else {
+					updatePresence(userJID, presence, mood, status);
+				}
 
-			} else {
-				updatePresence(userJID, presence, mood, status);
 			}
-
 		} finally {
 
 			SQLHelper.closeConnection(conn);
@@ -1182,8 +1291,11 @@ public class H2Database implements Database {
 		Connection conn = getConnection();
 
 		try {
-			return SQLHelper.queryForObject(conn, SQLQuery.FETCH_PRESENCE_DETAILS, new Object[] { userJID },
-					new PresenceRowMapper());
+			synchronized (PresenceTable.class) {
+
+				return SQLHelper.queryForObject(conn, SQLQuery.FETCH_PRESENCE_DETAILS, new Object[] { userJID },
+						new PresenceRowMapper());
+			}
 
 		} finally {
 			SQLHelper.closeConnection(conn);
@@ -1200,12 +1312,13 @@ public class H2Database implements Database {
 
 		try {
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_DELETE_USER_PRESENE, new Object[] { userJID });
-
-			ps.executeUpdate();
+			synchronized (PresenceTable.class) {
+				ps.executeUpdate();
+			}
 
 		} catch (SQLException e) {
 
-			LOGGER.warning("Failed to Delete User Presence");
+			LOGGER.log(Level.WARNING, "Failed to Delete User Presence", e);
 			throw new DbException("Failed to Delete User Presence", e);
 
 		} finally {
@@ -1222,14 +1335,16 @@ public class H2Database implements Database {
 		Connection conn = getConnection();
 
 		try {
-			long Count = SQLHelper.queryInt(conn, SQLQuery.FETCH_USER_PROFILE_COUNT,
-					new Object[] { userProfileData.getJabberId().getBareJID() });
+			synchronized (UserProfileTable.class) {
+				long Count = SQLHelper.queryInt(conn, SQLQuery.FETCH_USER_PROFILE_COUNT,
+						new Object[] { userProfileData.getJabberId().getBareJID() });
 
-			if (Count == 0) {
-				addUserProfile(userProfileData);
+				if (Count == 0) {
+					addUserProfile(userProfileData);
 
-			} else {
-				updateUserProfile(userProfileData);
+				} else {
+					updateUserProfile(userProfileData);
+				}
 			}
 
 		} finally {
@@ -1246,6 +1361,7 @@ public class H2Database implements Database {
 		PreparedStatement ps = null;
 
 		try {
+
 			ps = conn.prepareStatement(SQLQuery.SQL_INSERT_USER_PROFILE);
 
 			ps.setString(1, userProfileData.getJabberId().getBareJID());
@@ -1298,7 +1414,9 @@ public class H2Database implements Database {
 				ps.setString(19, null);
 			}
 
-			ps.executeUpdate();
+			synchronized (UserProfileTable.class) {
+				ps.executeUpdate();
+			}
 
 		} catch (SQLException e) {
 
@@ -1367,7 +1485,9 @@ public class H2Database implements Database {
 
 			ps.setString(19, userProfileData.getJabberId().getBareJID());
 
-			ps.executeUpdate();
+			synchronized (UserProfileTable.class) {
+				ps.executeUpdate();
+			}
 
 		} catch (SQLException e) {
 
@@ -1388,11 +1508,10 @@ public class H2Database implements Database {
 		Connection conn = getConnection();
 
 		try {
-
-			UserProfileData userProfileData = SQLHelper.queryForObject(conn, SQLQuery.FETCH_USER_PROFILE_DATA,
-					new Object[] { userJID }, new UserProfileRowMapper());
-
-			return userProfileData;
+			synchronized (UserProfileTable.class) {
+				return SQLHelper.queryForObject(conn, SQLQuery.FETCH_USER_PROFILE_DATA, new Object[] { userJID },
+						new UserProfileRowMapper());
+			}
 
 		} finally {
 			SQLHelper.closeConnection(conn);
@@ -1406,15 +1525,16 @@ public class H2Database implements Database {
 		Connection conn = getConnection();
 
 		try {
+			synchronized (UserProfileTable.class) {
+				return SQLHelper.queryForObject(conn, SQLQuery.FETCH_USER_PROFILE_AVATAR, new Object[] { userJID },
+						new RowMapper<InputStream>() {
 
-			return SQLHelper.queryForObject(conn, SQLQuery.FETCH_USER_PROFILE_AVATAR, new Object[] { userJID },
-					new RowMapper<InputStream>() {
-
-						@Override
-						public InputStream map(ResultSet rs) throws SQLException {
-							return rs.getBlob(1) == null ? null : rs.getBlob(1).getBinaryStream();
-						}
-					});
+							@Override
+							public InputStream map(ResultSet rs) throws SQLException {
+								return rs.getBlob(1) == null ? null : rs.getBlob(1).getBinaryStream();
+							}
+						});
+			}
 
 		} finally {
 			SQLHelper.closeConnection(conn);
@@ -1433,7 +1553,9 @@ public class H2Database implements Database {
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_INSERT_STORE_MEDIA,
 					new Object[] { mediaId, mediaThumb, mediaPath, contentType });
 
-			ps.executeUpdate();
+			synchronized (MediaStoreTable.class) {
+				ps.executeUpdate();
+			}
 
 			ResultSet keys = ps.getGeneratedKeys();
 
@@ -1442,7 +1564,7 @@ public class H2Database implements Database {
 
 		} catch (SQLException e) {
 
-			LOGGER.warning("Failed to Store Media");
+			LOGGER.log(Level.WARNING, "Failed to Store Media", e);
 			throw new DbException("Failed to Store media", e);
 
 		} finally {
@@ -1464,11 +1586,13 @@ public class H2Database implements Database {
 
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_UPDATE_MEDIA_PATH, new Object[] { mediaId });
 
-			ps.executeUpdate();
+			synchronized (MediaStoreTable.class) {
+				ps.executeUpdate();
+			}
 
 		} catch (SQLException e) {
 
-			LOGGER.warning("Failed to Update Media Path");
+			LOGGER.log(Level.WARNING, "Failed to Update Media Path", e);
 			throw new DbException("Failed to Update Media Path", e);
 
 		} finally {
@@ -1485,9 +1609,10 @@ public class H2Database implements Database {
 		Connection conn = getConnection();
 
 		try {
-
-			return SQLHelper.queryForObject(conn, SQLQuery.FETCH_MEDIA_DETAILS_BY_MEDIA_ID, new Object[] { mediaId },
-					new MediaRowMapper());
+			synchronized (MediaStoreTable.class) {
+				return SQLHelper.queryForObject(conn, SQLQuery.FETCH_MEDIA_DETAILS_BY_MEDIA_ID,
+						new Object[] { mediaId }, new MediaRowMapper());
+			}
 
 		} finally {
 			SQLHelper.closeConnection(conn);
@@ -1501,9 +1626,10 @@ public class H2Database implements Database {
 		Connection conn = getConnection();
 
 		try {
-
-			return SQLHelper.queryForObject(conn, SQLQuery.FETCH_MEDIA_DETAILS_BY_UUID, new Object[] { uuid },
-					new MediaRowMapper());
+			synchronized (MediaStoreTable.class) {
+				return SQLHelper.queryForObject(conn, SQLQuery.FETCH_MEDIA_DETAILS_BY_UUID, new Object[] { uuid },
+						new MediaRowMapper());
+			}
 
 		} finally {
 			SQLHelper.closeConnection(conn);
@@ -1517,8 +1643,9 @@ public class H2Database implements Database {
 		Connection conn = getConnection();
 
 		try {
-
-			return SQLHelper.queryString(conn, SQLQuery.FETCH_MEDIA_PATH_BY_MEDIA_ID, new Object[] { mediaId });
+			synchronized (MediaStoreTable.class) {
+				return SQLHelper.queryString(conn, SQLQuery.FETCH_MEDIA_PATH_BY_MEDIA_ID, new Object[] { mediaId });
+			}
 
 		} finally {
 			SQLHelper.closeConnection(conn);
@@ -1532,8 +1659,9 @@ public class H2Database implements Database {
 		Connection conn = getConnection();
 
 		try {
-
-			return SQLHelper.queryString(conn, SQLQuery.FETCH_MEDIA_PATH_BY_UUID, new Object[] { uuid });
+			synchronized (MediaStoreTable.class) {
+				return SQLHelper.queryString(conn, SQLQuery.FETCH_MEDIA_PATH_BY_UUID, new Object[] { uuid });
+			}
 
 		} finally {
 			SQLHelper.closeConnection(conn);
@@ -1549,12 +1677,13 @@ public class H2Database implements Database {
 
 		try {
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_DELETE_MEDIA, new Object[] { mediaId });
-
-			ps.executeUpdate();
+			synchronized (MediaStoreTable.class) {
+				ps.executeUpdate();
+			}
 
 		} catch (SQLException e) {
 
-			LOGGER.warning("Failed to Delete the Media");
+			LOGGER.log(Level.WARNING, "Failed to Delete the Media", e);
 			throw new DbException("Failed to Delete the Media", e);
 
 		} finally {
@@ -1575,11 +1704,13 @@ public class H2Database implements Database {
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_DELETE_MEDIA_UUID,
 					new Object[] { mediaId.toString() });
 
-			ps.executeUpdate();
+			synchronized (MediaStoreTable.class) {
+				ps.executeUpdate();
+			}
 
 		} catch (SQLException e) {
 
-			LOGGER.warning("Failed to Delete the Media");
+			LOGGER.log(Level.WARNING, "Failed to Delete the Media", e);
 			throw new DbException("Failed to Delete the Media", e);
 
 		} finally {
@@ -1599,11 +1730,13 @@ public class H2Database implements Database {
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.DELETE_FIRST_UNDELIVERED_STANZAS,
 					new Object[] { stanzaCount });
 
-			ps.executeUpdate();
+			synchronized (UndeliverStanzaTable.class) {
+				ps.executeUpdate();
+			}
 
 		} catch (SQLException e) {
 
-			LOGGER.warning("Failed to Delete First Undelivered Stanza");
+			LOGGER.log(Level.WARNING, "Failed to Delete First Undelivered Stanza", e);
 			throw new DbException("Failed to Delete First Undelivered Stanza", e);
 
 		} finally {
@@ -1624,11 +1757,13 @@ public class H2Database implements Database {
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_PERSIST_UNDELIVERD_STANZA,
 					new Object[] { ObjectUtils.serializeObject(stanza) });
 
-			ps.executeUpdate();
+			synchronized (UndeliverStanzaTable.class) {
+				ps.executeUpdate();
+			}
 
 		} catch (SQLException e) {
 
-			LOGGER.warning("Failed to Persist the Undelivered Stanza");
+			LOGGER.log(Level.WARNING, "Failed to Persist the Undelivered Stanza", e);
 			throw new DbException("Failed to Persist the Undelivered Stanza", e);
 
 		} finally {
@@ -1649,11 +1784,13 @@ public class H2Database implements Database {
 			ps = SQLHelper.createPreparedStatement(conn, SQLQuery.SQL_TRUNCATE_UNDELIVERD_STANZA_TABLE,
 					new Object[] {});
 
-			ps.executeUpdate();
+			synchronized (UndeliverStanzaTable.class) {
+				ps.executeUpdate();
+			}
 
 		} catch (SQLException e) {
 
-			LOGGER.warning("Failed to delete all the Undelivered Stanza");
+			LOGGER.log(Level.WARNING, "Failed to delete all the Undelivered Stanza", e);
 			throw new DbException("Failed to delete all the Undelivered Stanza", e);
 
 		} finally {
@@ -1670,8 +1807,9 @@ public class H2Database implements Database {
 		Connection conn = getConnection();
 
 		try {
-
-			return SQLHelper.query(conn, SQLQuery.FETCH_ALL_UNDELIVERD_STANZAS, new UndeliverStanzaRowMapper());
+			synchronized (UndeliverStanzaTable.class) {
+				return SQLHelper.query(conn, SQLQuery.FETCH_ALL_UNDELIVERD_STANZAS, new UndeliverStanzaRowMapper());
+			}
 
 		} finally {
 

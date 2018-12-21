@@ -147,25 +147,7 @@ public final class DbManager {
 	 * @throws DbException
 	 */
 	public void addOrUpdateConversation(ChatLine line) throws DbException {
-		if (this.conversationExists(line.getPeerBareJid())) {
-			Conversation conv = new Conversation(line);
-
-			if (line.getDirection() == ChatLine.Direction.RECEIVE) {
-				int unread = this.getUnreadConversationCount(line.getPeerBareJid());
-				conv.setUnreadChatLines(unread + 1);
-			}
-
-			this.updateConversation(conv);
-
-		} else {
-			Conversation conv = new Conversation(line);
-
-			if (line.getDirection() == ChatLine.Direction.RECEIVE) {
-				conv.setUnreadChatLines(1);
-			}
-
-			this.addConversation(conv);
-		}
+		this.database.addOrUpdateConversation(line);
 	}
 
 	/**

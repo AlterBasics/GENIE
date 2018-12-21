@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import abs.ixi.client.util.CollectionUtils;
@@ -30,7 +31,7 @@ public class SQLHelper {
 			return ps;
 
 		} catch (Exception e) {
-			LOGGER.warning("Failed to create PrepareStatement for query : " + sql);
+			LOGGER.log(Level.WARNING, "Failed to create PrepareStatement for query : " + sql, e);
 			throw new DbException("Failed to create PrepareStatement", e);
 		}
 
@@ -50,7 +51,7 @@ public class SQLHelper {
 			return ps;
 
 		} catch (Exception e) {
-			LOGGER.warning("Failed to create PrepareStatement for query : " + sql);
+			LOGGER.log(Level.WARNING, "Failed to create PrepareStatement for query : " + sql, e);
 			throw new DbException("Failed to create PrepareStatement", e);
 		}
 
@@ -185,7 +186,7 @@ public class SQLHelper {
 			}
 
 		} catch (SQLException e) {
-			LOGGER.warning("Failed to execute query : " + sql);
+			LOGGER.log(Level.WARNING, "Failed to execute query : " + sql, e);
 			throw new DbException("Failed to execute Query", e);
 
 		} finally {
@@ -222,7 +223,7 @@ public class SQLHelper {
 			}
 
 		} catch (SQLException e) {
-			LOGGER.warning("Failed to execute query : " + sql);
+			LOGGER.log(Level.WARNING, "Failed to execute query : " + sql, e);
 			throw new DbException("Failed to execute Query", e);
 
 		} finally {
@@ -248,7 +249,7 @@ public class SQLHelper {
 				conn.close();
 
 			} catch (SQLException e) {
-				LOGGER.warning("Failed to close database connection " + conn);
+				LOGGER.log(Level.WARNING, "Failed to close database connection " + conn, e);
 				throw new DbException("Failed to close database connection ", e);
 			}
 		}
@@ -269,7 +270,7 @@ public class SQLHelper {
 				st.close();
 
 			} catch (SQLException e) {
-				LOGGER.warning("Failed to close Statement connection " + st);
+				LOGGER.log(Level.WARNING, "Failed to close Statement connection " + st);
 				throw new DbException("Failed to close database s ", e);
 			}
 		}
@@ -290,7 +291,7 @@ public class SQLHelper {
 				rs.close();
 
 			} catch (SQLException e) {
-				LOGGER.warning("Failed to close database ResultSet " + rs);
+				LOGGER.log(Level.WARNING, "Failed to close database ResultSet " + rs, e);
 				throw new DbException("Failed to close database ResultSet ", e);
 			}
 		}
