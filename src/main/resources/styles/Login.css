@@ -28,8 +28,6 @@
     -fx-background-color: linear-gradient(to bottom, #ffe49e 0%,#ffb700 3%,#ffad00 35%,#ff9000 97%,#e27f00 100%);
     -fx-font-family: 'Open Sans', sans-serif;
     -fx-font-size: 12px;
-    border-radius: 3px;
-    cursor: pointer;
     -fx-opacity: 1;
 }
 #connectBtn:hover{

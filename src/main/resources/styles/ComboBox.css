@@ -31,6 +31,7 @@
     -fx-border-insets: -1;
     -fx-border-radius: 0 5 5 0
 }
+
 .comboFocusOut{
     -fx-border-color:transparent;
     -fx-border-insets: 0;
