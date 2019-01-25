@@ -5,9 +5,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import abs.ixi.client.ChatManager;
+import abs.ixi.client.Platform;
 import abs.ixi.client.PresenceManager;
 import abs.ixi.client.UserManager;
-import abs.ixi.client.core.Platform;
 import abs.ixi.client.core.event.Event;
 import abs.ixi.client.io.UndeliveredStanzaManager;
 import abs.ixi.client.io.XMPPStreamManager;

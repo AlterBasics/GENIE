@@ -1,6 +1,6 @@
 package abs.sf.client.genie.ui.controller;
 
-import abs.sf.client.genie.ui.Launcher;
+import abs.sf.client.genie.Launcher;
 import javafx.application.Platform;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;

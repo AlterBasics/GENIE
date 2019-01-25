@@ -1,7 +1,7 @@
 package abs.sf.client.genie.utils;
 
+import abs.ixi.client.Platform;
 import abs.ixi.client.PushNotificationService;
-import abs.ixi.client.core.Platform;
 import abs.ixi.client.util.StringUtils;
 import abs.sf.client.genie.exception.StringflowErrorException;
 import abs.sf.client.genie.managers.AppChatManager;

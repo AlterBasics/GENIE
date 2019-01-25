@@ -7,10 +7,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import abs.ixi.client.DeviceType;
+import abs.ixi.client.Platform;
 import abs.ixi.client.PushNotificationService;
 import abs.ixi.client.UserManager;
 import abs.ixi.client.core.Callback;
-import abs.ixi.client.core.Platform;
 import abs.ixi.client.io.StreamNegotiator;
 import abs.ixi.client.io.XMPPStreamManager;
 import abs.ixi.client.util.CollectionUtils;
@@ -108,12 +108,13 @@ public class AppUserManager extends UserManager {
 			throw new StringflowErrorException(errorMessage, e);
 		}
 	}
-	
+
 	/**
 	 * ChatRoom subject from cache
+	 * 
 	 * @param contactJID
 	 * @return room subject
-	 * @throws StringflowErrorException 
+	 * @throws StringflowErrorException
 	 */
 	public String getChatRoomSubject(JID roomJID) throws StringflowErrorException {
 		try {
@@ -464,7 +465,7 @@ public class AppUserManager extends UserManager {
 			throw new StringflowErrorException(errorMessage, e);
 		}
 	}
-	
+
 	/**
 	 * It will return cached user avatar from local DB. To refresh data first
 	 * use {@link #reloadUserData()}. which will reload user data from server.

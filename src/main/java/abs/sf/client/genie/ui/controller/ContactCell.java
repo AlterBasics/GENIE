@@ -3,7 +3,7 @@ package abs.sf.client.genie.ui.controller;
 import java.io.IOException;
 import java.io.InputStream;
 
-import abs.ixi.client.core.Platform;
+import abs.ixi.client.Platform;
 import abs.ixi.client.xmpp.JID;
 import abs.ixi.client.xmpp.packet.Roster.RosterItem;
 import abs.sf.client.genie.exception.StringflowErrorException;
@@ -46,7 +46,7 @@ public class ContactCell {
 		fxmlLoader.load();
 	}
 
-	private void setCellData() throws StringflowErrorException  {
+	private void setCellData() throws StringflowErrorException {
 		this.contactNameLabel.setText(rosterItem.getName());
 		// TODO: show presence later
 		this.contactStatusLabel.setText("");

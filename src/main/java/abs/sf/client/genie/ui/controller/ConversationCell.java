@@ -3,7 +3,7 @@ package abs.sf.client.genie.ui.controller;
 import java.io.IOException;
 import java.io.InputStream;
 
-import abs.ixi.client.core.Platform;
+import abs.ixi.client.Platform;
 import abs.ixi.client.xmpp.InvalidJabberId;
 import abs.ixi.client.xmpp.JID;
 import abs.sf.client.genie.exception.StringflowErrorException;

@@ -1,4 +1,4 @@
-package abs.sf.client.genie.ui;
+package abs.sf.client.genie;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -103,7 +103,7 @@ public class Launcher extends Application {
 	}
 
 	private void login() {
-		AppUserManager userManager = (AppUserManager) abs.ixi.client.core.Platform.getInstance().getUserManager();
+		AppUserManager userManager = (AppUserManager) abs.ixi.client.Platform.getInstance().getUserManager();
 
 		try {
 			userManager.loginUser(AppProperties.getInstance().getUsername(), AppProperties.getInstance().getPassword(),
@@ -212,7 +212,7 @@ public class Launcher extends Application {
 		try {
 			if (AppProperties.getInstance().isPreviouslyLoggedin()) {
 				LOGGER.info("starting background login process");
-				abs.ixi.client.core.Platform.getInstance().getUserManager().loginInBackground(
+				abs.ixi.client.Platform.getInstance().getUserManager().loginInBackground(
 						AppProperties.getInstance().getUsername(), AppProperties.getInstance().getPassword(),
 						AppProperties.getInstance().getDomainName());
 			}
