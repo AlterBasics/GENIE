@@ -9,8 +9,8 @@ import abs.ixi.client.Platform;
 import abs.ixi.client.core.Callback;
 import abs.ixi.client.io.StreamNegotiator;
 import abs.ixi.client.util.StringUtils;
+import abs.sf.client.genie.Launcher;
 import abs.sf.client.genie.exception.StringflowErrorException;
-import abs.sf.client.genie.ui.Launcher;
 import abs.sf.client.genie.ui.utils.AppProperties;
 import abs.sf.client.genie.ui.utils.JFXUtils;
 import abs.sf.client.genie.ui.utils.ResourceLoader;
@@ -85,6 +85,7 @@ public class LoginController extends APPController implements Initializable {
 			try {
 				Platform.getInstance().login(userName, password, AppProperties.getInstance().getDomainName(),
 						new Callback<StreamNegotiator.NegotiationResult, Exception>() {
+					
 							@Override
 							public void onSuccess(StreamNegotiator.NegotiationResult result) {
 

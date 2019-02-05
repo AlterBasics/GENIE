@@ -20,7 +20,7 @@ import com.messages.bubble.BubbledLabel;
 import com.traynotifications.animations.AnimationType;
 import com.traynotifications.notification.TrayNotification;
 
-import abs.sf.client.genie.ui.Launcher;
+import abs.sf.client.genie.Launcher;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;

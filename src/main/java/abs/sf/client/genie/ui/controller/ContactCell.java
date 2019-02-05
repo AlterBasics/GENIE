@@ -46,7 +46,7 @@ public class ContactCell {
 		fxmlLoader.load();
 	}
 
-	private void setCellData() throws StringflowErrorException  {
+	private void setCellData() throws StringflowErrorException {
 		this.contactNameLabel.setText(rosterItem.getName());
 		// TODO: show presence later
 		this.contactStatusLabel.setText("");

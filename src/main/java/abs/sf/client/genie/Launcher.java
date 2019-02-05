@@ -1,4 +1,4 @@
-package abs.sf.client.genie.ui;
+package abs.sf.client.genie;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
