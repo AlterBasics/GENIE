@@ -464,14 +464,20 @@ public class AppChatManager extends ChatManager {
 						String memberJID = DbManager.getInstance().getChatRoomMemberJID(chatLine.getPeerBareJid(),
 								memberNickName);
 
-						String userName = DbManager.getInstance().getRosterItemName(memberJID);
-
-						if (StringUtils.isNullOrEmpty(userName)) {
+						if (StringUtils.isNullOrEmpty(memberJID)) {
 							chatLine.setPeerName(memberNickName);
 
 						} else {
-							chatLine.setPeerName(userName);
+							String userName = DbManager.getInstance().getRosterItemName(memberJID);
+
+							if (StringUtils.isNullOrEmpty(userName)) {
+								chatLine.setPeerName(memberNickName);
+
+							} else {
+								chatLine.setPeerName(userName);
+							}
 						}
+
 					}
 				}
 

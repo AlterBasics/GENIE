@@ -10,7 +10,7 @@ import abs.sf.client.genie.managers.AppUserManager;
 import abs.sf.client.genie.ui.utils.AppProperties;
 import abs.sf.client.genie.ui.utils.JFXUtils;
 import abs.sf.client.genie.ui.utils.ResourceLoader;
-import abs.sf.client.genie.utils.SDKLoader;
+import abs.sf.client.genie.utils.GenieSDKInitializer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Parent;
@@ -28,16 +28,15 @@ public class Launcher extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		pStage = primaryStage;
 
-		loadStringflowSDK();
-
 		setupPrimaryStage();
 
 		Parent root;
 		if (AppProperties.getInstance().isPreviouslyLoggedin()) {
+			loadStringflowSDK(true);
 			login();
 			root = ResourceLoader.getInstance().loadLoadingView();
 		} else {
-			createDatabaseSchema();
+			loadStringflowSDK(false);
 			root = ResourceLoader.getInstance().loadLoginController();
 		}
 
@@ -48,18 +47,6 @@ public class Launcher extends Application {
 
 		pStage.show();
 
-	}
-
-	private void createDatabaseSchema() throws StringflowErrorException {
-		try {
-
-			SDKLoader.createDatabaseSchema(AppProperties.getInstance().getH2DatabaseFilePath());
-
-		} catch (StringflowErrorException e) {
-			LOGGER.log(Level.WARNING, "Failed to create datatbase Schema", e);
-			JFXUtils.showStringflowErrorAlert(e.getMessage());
-			throw e;
-		}
 	}
 
 	private void setupPrimaryStage() {
@@ -89,25 +76,23 @@ public class Launcher extends Application {
 		return pStage;
 	}
 
-	private void loadStringflowSDK() throws StringflowErrorException {
+	private void loadStringflowSDK(boolean isAlreadyLoggedIn) throws Exception {
 		try {
-			SDKLoader.loadSDK(AppProperties.getInstance().getXMPPServerIP(),
+			abs.ixi.client.Platform.initialize(new GenieSDKInitializer(AppProperties.getInstance().getXMPPServerIP(),
 					AppProperties.getInstance().getXMPPServerPort(), AppProperties.getInstance().getMediaServerIP(),
-					AppProperties.getInstance().getMediaServerPort());
-
-		} catch (StringflowErrorException e) {
-			LOGGER.log(Level.WARNING, "Stringflow Error while loading Stringflow SDK", e);
+					AppProperties.getInstance().getMediaServerPort(), isAlreadyLoggedIn,
+					AppProperties.getInstance().getH2DatabaseFilePath()));
+		} catch (Exception e) {
+			LOGGER.log(Level.WARNING, "Failed to load Stringflow SDK", e);
 			JFXUtils.showStringflowErrorAlert(e.getMessage());
 			throw e;
 		}
 	}
 
 	private void login() {
-		AppUserManager userManager = (AppUserManager) abs.ixi.client.core.Platform.getInstance().getUserManager();
-
 		try {
-			userManager.loginUser(AppProperties.getInstance().getUsername(), AppProperties.getInstance().getPassword(),
-					AppProperties.getInstance().getDomainName(),
+			abs.ixi.client.Platform.getInstance().login(AppProperties.getInstance().getUsername(),
+					AppProperties.getInstance().getDomainName(), AppProperties.getInstance().getPassword(),
 					new Callback<StreamNegotiator.NegotiationResult, Exception>() {
 						@Override
 						public void onSuccess(StreamNegotiator.NegotiationResult result) {
@@ -129,8 +114,6 @@ public class Launcher extends Application {
 								JFXUtils.showAlertOnApplicationThread(failureMesssage, AlertType.WARNING);
 
 							}
-
-							showChatBaseView();
 
 						}
 
@@ -155,7 +138,7 @@ public class Launcher extends Application {
 			AppProperties.getInstance().removeUsername();
 			AppProperties.getInstance().removePassword();
 			AppProperties.getInstance().removeLoginStatus();
-			SDKLoader.unloadSdk();
+			GenieSDKInitializer.unloadSdk();
 			loadStringflowSDK();
 		} catch (Throwable e) {
 			LOGGER.log(Level.WARNING, "Failed to reset App " + e.getMessage(), e);
@@ -208,18 +191,4 @@ public class Launcher extends Application {
 
 	}
 
-	private void initiateBackgroundLogin() {
-		try {
-			if (AppProperties.getInstance().isPreviouslyLoggedin()) {
-				LOGGER.info("starting background login process");
-				abs.ixi.client.core.Platform.getInstance().getUserManager().loginInBackground(
-						AppProperties.getInstance().getUsername(), AppProperties.getInstance().getPassword(),
-						AppProperties.getInstance().getDomainName());
-			}
-
-		} catch (StringflowErrorException e) {
-			LOGGER.log(Level.WARNING, "Failed to initiate background login process", e);
-			JFXUtils.showStringflowErrorAlert(e.getMessage());
-		}
-	}
 }

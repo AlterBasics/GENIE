@@ -1,7 +1,7 @@
 package abs.sf.client.genie.utils;
 
+import abs.ixi.client.Platform;
 import abs.ixi.client.PushNotificationService;
-import abs.ixi.client.core.Platform;
 import abs.ixi.client.util.StringUtils;
 import abs.sf.client.genie.exception.StringflowErrorException;
 import abs.sf.client.genie.managers.AppChatManager;
@@ -12,7 +12,6 @@ public class SFSDKProperties {
 	private static final String ROSTER_VERSION = "roster_version";
 	private static final String DEVIICE_TOKEN = "device_token";
 	private static final String NOTIFICATION_SERVICE = "notification_service";
-	private static final String DOMAIN_NAME = "domain_name";
 	private static final String IS_CHAT_MARKERS_ENABLED = "is_chat_markers_enabled";
 	private static final String IS_MESSAGE_DELIVERY_RECEIPT_ENABLED = "is_message_delivery_receipt_enabled";
 	private static final String IS_CHAT_STATE_NOTIFICATION_ENABLED = "is_chat_state_notification_enabled";
@@ -86,15 +85,6 @@ public class SFSDKProperties {
 		this.sfProperties.getEditor().putString(NOTIFICATION_SERVICE, service.name())
 				.putString(DEVIICE_TOKEN, deviceToken).apply();
 
-	}
-
-	public void setDomainName(String domainName) {
-		System.out.println("SAVING FROPERTY domain name>>>>>>>>>>>>> " + domainName);
-		this.sfProperties.getEditor().putString(DOMAIN_NAME, domainName).apply();
-	}
-
-	public String getDomainName() {
-		return this.get(DOMAIN_NAME);
 	}
 
 	/**

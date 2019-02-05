@@ -7,7 +7,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import abs.ixi.client.core.Platform;
+import abs.ixi.client.Platform;
 import abs.ixi.client.util.StringUtils;
 import abs.ixi.client.xmpp.InvalidJabberId;
 import abs.ixi.client.xmpp.JID;

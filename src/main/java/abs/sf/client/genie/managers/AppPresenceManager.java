@@ -3,9 +3,9 @@ package abs.sf.client.genie.managers;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import abs.ixi.client.Platform;
 import abs.ixi.client.PresenceManager;
 import abs.ixi.client.core.Packet;
-import abs.ixi.client.core.Platform;
 import abs.ixi.client.io.XMPPStreamManager;
 import abs.ixi.client.xmpp.JID;
 import abs.ixi.client.xmpp.packet.Presence;

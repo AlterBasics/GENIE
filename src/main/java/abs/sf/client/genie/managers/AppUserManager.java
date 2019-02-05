@@ -7,11 +7,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import abs.ixi.client.DeviceType;
+import abs.ixi.client.Platform;
 import abs.ixi.client.PushNotificationService;
 import abs.ixi.client.UserManager;
 import abs.ixi.client.core.Callback;
-import abs.ixi.client.core.Platform;
-import abs.ixi.client.io.StreamNegotiator;
+import abs.ixi.client.core.ResponseCorrelator;
 import abs.ixi.client.io.XMPPStreamManager;
 import abs.ixi.client.util.CollectionUtils;
 import abs.ixi.client.util.StringUtils;
@@ -23,14 +23,14 @@ import abs.ixi.client.xmpp.packet.UserProfileData;
 import abs.sf.client.genie.db.DbManager;
 import abs.sf.client.genie.db.exception.DbException;
 import abs.sf.client.genie.exception.StringflowErrorException;
-import abs.sf.client.genie.utils.SDKLoader;
+import abs.sf.client.genie.utils.GenieSDKInitializer;
 import abs.sf.client.genie.utils.SFSDKProperties;
 
 public class AppUserManager extends UserManager {
 	private static final Logger LOGGER = Logger.getLogger(AppUserManager.class.getName());
 
-	public AppUserManager(XMPPStreamManager streamManager) {
-		super(streamManager);
+	public AppUserManager(XMPPStreamManager streamManager, ResponseCorrelator responseCorrelator) {
+		super(streamManager, responseCorrelator);
 	}
 
 	/**
@@ -108,12 +108,13 @@ public class AppUserManager extends UserManager {
 			throw new StringflowErrorException(errorMessage, e);
 		}
 	}
-	
+
 	/**
 	 * ChatRoom subject from cache
+	 * 
 	 * @param contactJID
 	 * @return room subject
-	 * @throws StringflowErrorException 
+	 * @throws StringflowErrorException
 	 */
 	public String getChatRoomSubject(JID roomJID) throws StringflowErrorException {
 		try {
@@ -464,7 +465,7 @@ public class AppUserManager extends UserManager {
 			throw new StringflowErrorException(errorMessage, e);
 		}
 	}
-	
+
 	/**
 	 * It will return cached user avatar from local DB. To refresh data first
 	 * use {@link #reloadUserData()}. which will reload user data from server.
@@ -483,41 +484,6 @@ public class AppUserManager extends UserManager {
 			LOGGER.log(Level.WARNING, errorMessage, e);
 			throw new StringflowErrorException(errorMessage, e);
 		}
-	}
-
-	/**
-	 * It will return cached user avtar from local DB. To refresh data first use
-	 * {@link #reloadUserData(JID)}. which will reload user data from server.
-	 *
-	 * @param useeJID
-	 * @return avatar
-	 */
-	// public Bitmap getUserAvatar(JID useeJID) {
-	// byte[] avtarBytes =
-	// DbManager.getInstance().getUserAvatarBytes(useeJID.getBareJID());
-	//
-	// if (avtarBytes != null) {
-	// return BitmapFactory.decodeByteArray(avtarBytes, 0, avtarBytes.length);
-	// }
-	//
-	// return null;
-	// }
-
-	/**
-	 * After Sdk loading call this method to login.
-	 *
-	 * @param userName
-	 * @param password
-	 * @param domain
-	 * @param callback
-	 * @throws StringflowErrorException
-	 */
-	public void loginUser(final String userName, final String password, final String domain,
-			final Callback<StreamNegotiator.NegotiationResult, Exception> callback) throws StringflowErrorException {
-
-		SFSDKProperties.getInstance().setDomainName(domain);
-
-		this.login(userName, password, domain, callback);
 	}
 
 	/**
@@ -555,7 +521,7 @@ public class AppUserManager extends UserManager {
 	 */
 	public void shutdownSDK() throws StringflowErrorException {
 		Platform.getInstance().shutdown();
-		SDKLoader.unloadSdk();
+		GenieSDKInitializer.unloadSdk();
 	}
 
 }

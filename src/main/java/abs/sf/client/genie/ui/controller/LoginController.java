@@ -5,11 +5,11 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import abs.ixi.client.Platform;
 import abs.ixi.client.core.Callback;
 import abs.ixi.client.io.StreamNegotiator;
 import abs.ixi.client.util.StringUtils;
 import abs.sf.client.genie.exception.StringflowErrorException;
-import abs.sf.client.genie.managers.AppUserManager;
 import abs.sf.client.genie.ui.Launcher;
 import abs.sf.client.genie.ui.utils.AppProperties;
 import abs.sf.client.genie.ui.utils.JFXUtils;
@@ -82,10 +82,8 @@ public class LoginController extends APPController implements Initializable {
 		boolean validated = validateInputs(userName, password);
 
 		if (validated) {
-			AppUserManager userManager = (AppUserManager) abs.ixi.client.core.Platform.getInstance().getUserManager();
-
 			try {
-				userManager.loginUser(userName, password, AppProperties.getInstance().getDomainName(),
+				Platform.getInstance().login(userName, password, AppProperties.getInstance().getDomainName(),
 						new Callback<StreamNegotiator.NegotiationResult, Exception>() {
 							@Override
 							public void onSuccess(StreamNegotiator.NegotiationResult result) {

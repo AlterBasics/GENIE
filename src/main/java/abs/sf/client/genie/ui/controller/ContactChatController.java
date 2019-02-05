@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import abs.ixi.client.core.Platform;
+import abs.ixi.client.Platform;
 import abs.ixi.client.util.StringUtils;
 import abs.ixi.client.xmpp.JID;
 import abs.sf.client.genie.exception.StringflowErrorException;
