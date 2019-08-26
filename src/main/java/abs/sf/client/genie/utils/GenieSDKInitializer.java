@@ -23,7 +23,7 @@ import abs.sf.client.genie.event.handlers.RosterReceiveHandler;
 import abs.sf.client.genie.event.handlers.RosterUpdateHandler;
 import abs.sf.client.genie.event.handlers.StreamRestartHandler;
 import abs.sf.client.genie.event.handlers.StreamStartHandler;
-import abs.sf.client.genie.exception.StringflowErrorException;
+import abs.sf.client.genie.exception.StringflowException;
 import abs.sf.client.genie.managers.AppChatManager;
 import abs.sf.client.genie.managers.AppPresenceManager;
 import abs.sf.client.genie.managers.AppUserManager;
@@ -68,7 +68,7 @@ public class GenieSDKInitializer extends JavaSDKInitializer {
 
 			this.chatManager = new AppChatManager(streamManager);
 
-		} catch (StringflowErrorException e) {
+		} catch (StringflowException e) {
 			LOGGER.log(Level.SEVERE, "Failed to create ChatManager", e);
 			throw new InitializationErrorException(e);
 		}
@@ -83,7 +83,7 @@ public class GenieSDKInitializer extends JavaSDKInitializer {
 
 				this.createDatabaseSchema(this.h2DbFilePath);
 
-			} catch (StringflowErrorException e) {
+			} catch (StringflowException e) {
 				LOGGER.log(Level.SEVERE, "Failed to create Db Schema", e);
 				throw new InitializationErrorException(e);
 			}
@@ -118,20 +118,20 @@ public class GenieSDKInitializer extends JavaSDKInitializer {
 				((AppChatManager) this.chatManager).new MessageAckHandler());
 	}
 
-	private void createDatabaseSchema(final String h2DbFilePath) throws StringflowErrorException {
+	private void createDatabaseSchema(final String h2DbFilePath) throws StringflowException {
 		LOGGER.log(Level.INFO, "Initiating db schema using db file path : " + h2DbFilePath);
 
 		try {
 			SFSDKProperties.getInstance().setH2DbFilePath(h2DbFilePath);
 			DbManager.getInstance().createDatabaseSchema();
 
-		} catch (StringflowErrorException e) {
+		} catch (StringflowException e) {
 			LOGGER.log(Level.WARNING, "Failed to create db schema", e);
 			throw e;
 
 		} catch (DbException e) {
 			LOGGER.log(Level.WARNING, "Failed to create db schema", e);
-			throw new StringflowErrorException(e.getMessage(), e);
+			throw new StringflowException(e.getMessage(), e);
 		}
 
 	}

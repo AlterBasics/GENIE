@@ -6,7 +6,7 @@ import java.io.InputStream;
 import abs.ixi.client.Platform;
 import abs.ixi.client.xmpp.InvalidJabberId;
 import abs.ixi.client.xmpp.JID;
-import abs.sf.client.genie.exception.StringflowErrorException;
+import abs.sf.client.genie.exception.StringflowException;
 import abs.sf.client.genie.managers.AppUserManager;
 import abs.sf.client.genie.messaging.Conversation;
 import abs.sf.client.genie.ui.utils.ResourceLoader;
@@ -57,7 +57,7 @@ public class ConversationCell {
 		fxmlLoader.load();
 	}
 
-	private void setCellData() throws StringflowErrorException, InvalidJabberId {
+	private void setCellData() throws StringflowException, InvalidJabberId {
 		this.contactNameLabel.setText(conversation.getPeerName());
 
 		if (!conversation.isTyping()) {

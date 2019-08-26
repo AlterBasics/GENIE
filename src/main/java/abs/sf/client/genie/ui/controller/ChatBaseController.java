@@ -13,7 +13,7 @@ import abs.ixi.client.xmpp.InvalidJabberId;
 import abs.ixi.client.xmpp.JID;
 import abs.ixi.client.xmpp.packet.Roster.RosterItem;
 import abs.ixi.client.xmpp.packet.UserProfileData;
-import abs.sf.client.genie.exception.StringflowErrorException;
+import abs.sf.client.genie.exception.StringflowException;
 import abs.sf.client.genie.managers.AppChatManager;
 import abs.sf.client.genie.managers.AppUserManager;
 import abs.sf.client.genie.messaging.ChatLine;
@@ -132,7 +132,7 @@ public class ChatBaseController implements Initializable, ChatListener {
 				this.userProfileImageView.setImage(new Image(profileStream));
 			}
 
-		} catch (StringflowErrorException e) {
+		} catch (StringflowException e) {
 			LOGGER.log(Level.WARNING, "Failed to setup user data due to Stringflow error : " + e.getMessage(), e);
 			JFXUtils.showStringflowErrorAlert(e.getMessage());
 		}
@@ -188,7 +188,7 @@ public class ChatBaseController implements Initializable, ChatListener {
 			});
 		} catch (
 
-		StringflowErrorException e) {
+		StringflowException e) {
 			LOGGER.log(Level.WARNING, "failed to setup contact list view" + e);
 			JFXUtils.showAlert("Failed to setup contact list view due to " + e.getMessage(), AlertType.WARNING);
 		}
@@ -266,7 +266,7 @@ public class ChatBaseController implements Initializable, ChatListener {
 
 		} catch (
 
-		StringflowErrorException e) {
+		StringflowException e) {
 			LOGGER.log(Level.WARNING, "failed to setup conversation list view" + e);
 			JFXUtils.showAlert("Failed to setup conversation list view due to " + e.getMessage(), AlertType.WARNING);
 		}
@@ -278,7 +278,7 @@ public class ChatBaseController implements Initializable, ChatListener {
 			List<Conversation> conversationsList = chatManager.getAllConversations();
 
 			this.conversationsObservableList.setAll(conversationsList);
-		} catch (StringflowErrorException e) {
+		} catch (StringflowException e) {
 			LOGGER.log(Level.WARNING, "failed to refresh conversation list view" + e);
 			JFXUtils.showAlert("Failed to refresh conversation list view due to " + e.getMessage(), AlertType.WARNING);
 		}
@@ -291,7 +291,7 @@ public class ChatBaseController implements Initializable, ChatListener {
 
 			List<RosterItem> rosterItemList = userManager.getRosterItemList();
 			this.contactsObservableList.setAll(rosterItemList);
-		} catch (StringflowErrorException e) {
+		} catch (StringflowException e) {
 			LOGGER.log(Level.WARNING, "failed to refresh conversation list view" + e);
 			JFXUtils.showAlert("Failed to refresh conversation list view due to " + e.getMessage(), AlertType.WARNING);
 		}

@@ -11,7 +11,7 @@ import abs.ixi.client.xmpp.JID;
 import abs.ixi.client.xmpp.packet.Presence;
 import abs.sf.client.genie.db.DbManager;
 import abs.sf.client.genie.db.exception.DbException;
-import abs.sf.client.genie.exception.StringflowErrorException;
+import abs.sf.client.genie.exception.StringflowException;
 import abs.sf.client.genie.messaging.UserPresence;
 
 public class AppPresenceManager extends PresenceManager {
@@ -49,7 +49,7 @@ public class AppPresenceManager extends PresenceManager {
 		}
 	}
 
-	public UserPresence getUserPresence(JID userJID) throws StringflowErrorException {
+	public UserPresence getUserPresence(JID userJID) throws StringflowException {
 		try {
 			return DbManager.getInstance().getPresenceDetails(userJID.getBareJID());
 
@@ -58,7 +58,7 @@ public class AppPresenceManager extends PresenceManager {
 					+ e.getMessage();
 
 			LOGGER.log(Level.WARNING, errorMessage, e);
-			throw new StringflowErrorException(errorMessage, e);
+			throw new StringflowException(errorMessage, e);
 		}
 	}
 }

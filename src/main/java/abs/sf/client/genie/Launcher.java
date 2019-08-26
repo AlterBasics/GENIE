@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 
 import abs.ixi.client.core.Callback;
 import abs.ixi.client.io.StreamNegotiator;
-import abs.sf.client.genie.exception.StringflowErrorException;
+import abs.sf.client.genie.exception.StringflowException;
 import abs.sf.client.genie.managers.AppUserManager;
 import abs.sf.client.genie.ui.utils.AppProperties;
 import abs.sf.client.genie.ui.utils.JFXUtils;
@@ -62,7 +62,7 @@ public class Launcher extends Application {
 
 			pStage.setTitle(AppProperties.getInstance().getApplicationName());
 
-		} catch (StringflowErrorException e) {
+		} catch (StringflowException e) {
 
 			JFXUtils.showStringflowErrorAlert(e.getMessage());
 		}
@@ -126,7 +126,7 @@ public class Launcher extends Application {
 						}
 					});
 
-		} catch (StringflowErrorException e) {
+		} catch (StringflowException e) {
 			LOGGER.log(Level.WARNING, "Stringflow error during login", e);
 			JFXUtils.showStringflowErrorAlert(e.getMessage());
 		}

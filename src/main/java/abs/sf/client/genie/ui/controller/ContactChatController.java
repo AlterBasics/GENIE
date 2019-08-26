@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 import abs.ixi.client.Platform;
 import abs.ixi.client.util.StringUtils;
 import abs.ixi.client.xmpp.JID;
-import abs.sf.client.genie.exception.StringflowErrorException;
+import abs.sf.client.genie.exception.StringflowException;
 import abs.sf.client.genie.managers.AppChatManager;
 import abs.sf.client.genie.managers.AppPresenceManager;
 import abs.sf.client.genie.managers.AppUserManager;
@@ -80,7 +80,7 @@ public class ContactChatController {
 	private void sendReadReceiptforAllUnreadMessage() {
 		try {
 			chatManager.sendAllUnReadMessageReadReceipt(contactJID);
-		} catch (StringflowErrorException e) {
+		} catch (StringflowException e) {
 			LOGGER.log(Level.WARNING,
 					"Failed to send message read receipt for all unread messages with error " + e.getMessage(), e);
 
@@ -95,7 +95,7 @@ public class ContactChatController {
 	private void markNoUnreadConversation() {
 		try {
 			chatManager.markNoUnreadConversation(contactJID);
-		} catch (StringflowErrorException e) {
+		} catch (StringflowException e) {
 			LOGGER.log(Level.WARNING, "Failed to mark no unread conversationd with error " + e.getMessage(), e);
 
 			JFXUtils.showAlert("Failed to mark no unread conversationd with error " + e.getMessage(),
@@ -131,7 +131,7 @@ public class ContactChatController {
 
 				chatManager.sendTextMessage(msg, this.contactJID, this.isGroup);
 
-			} catch (StringflowErrorException e) {
+			} catch (StringflowException e) {
 				LOGGER.log(Level.WARNING, "Failed to send Message to " + this.contactJID + " due to " + e.getMessage(),
 						e);
 
@@ -182,7 +182,7 @@ public class ContactChatController {
 		setChatLineListView();
 	}
 
-	private void setChatLineListView() throws StringflowErrorException {
+	private void setChatLineListView() throws StringflowException {
 		List<ChatLine> allChatLines = chatManager.getAllConversationChatLines(this.contactJID, this.isGroup);
 
 		this.chatObservableList.setAll(allChatLines);
@@ -241,7 +241,7 @@ public class ContactChatController {
 			scrollChatListViewAtEnd();
 			try {
 				chatManager.sendMessageReadReceipt(line);
-			} catch (StringflowErrorException e) {
+			} catch (StringflowException e) {
 				LOGGER.log(Level.WARNING, "Failed to send message read receipt for messageId " + line.getMessageId()
 						+ " with error " + e.getMessage(), e);
 
@@ -251,7 +251,7 @@ public class ContactChatController {
 
 			try {
 				chatManager.markNoUnreadConversation(this.contactJID);
-			} catch (StringflowErrorException e) {
+			} catch (StringflowException e) {
 				LOGGER.log(Level.WARNING, "Failed to mark no unread conversationd with error " + e.getMessage(), e);
 
 				JFXUtils.showAlert("Failed to mark no unread conversationd with error " + e.getMessage(),

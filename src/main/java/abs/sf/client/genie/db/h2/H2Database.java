@@ -51,7 +51,7 @@ import abs.sf.client.genie.db.object.PresenceTable;
 import abs.sf.client.genie.db.object.RosterTable;
 import abs.sf.client.genie.db.object.UndeliverStanzaTable;
 import abs.sf.client.genie.db.object.UserProfileTable;
-import abs.sf.client.genie.exception.StringflowErrorException;
+import abs.sf.client.genie.exception.StringflowException;
 import abs.sf.client.genie.messaging.ChatLine;
 import abs.sf.client.genie.messaging.ChatLine.MessageStatus;
 import abs.sf.client.genie.messaging.Conversation;
@@ -98,7 +98,7 @@ public class H2Database implements Database {
 				throw new DbException("H2 Database file path not found");
 			}
 
-		} catch (StringflowErrorException e) {
+		} catch (StringflowException e) {
 			throw new DbException("Failed to get db file Path due  to " + e.getMessage(), e);
 		}
 	}

@@ -22,7 +22,7 @@ import abs.ixi.client.xmpp.packet.Roster;
 import abs.ixi.client.xmpp.packet.UserProfileData;
 import abs.sf.client.genie.db.DbManager;
 import abs.sf.client.genie.db.exception.DbException;
-import abs.sf.client.genie.exception.StringflowErrorException;
+import abs.sf.client.genie.exception.StringflowException;
 import abs.sf.client.genie.utils.GenieSDKInitializer;
 import abs.sf.client.genie.utils.SFSDKProperties;
 
@@ -38,9 +38,9 @@ public class AppUserManager extends UserManager {
 	 *
 	 * @param jid
 	 * @return
-	 * @throws StringflowErrorException
+	 * @throws StringflowException
 	 */
-	public boolean checkIsChatRoom(JID jid) throws StringflowErrorException {
+	public boolean checkIsChatRoom(JID jid) throws StringflowException {
 		try {
 			return DbManager.getInstance().isRosterGroup(jid.getBareJID());
 
@@ -49,7 +49,7 @@ public class AppUserManager extends UserManager {
 					+ " of a group due to database operations failure";
 
 			LOGGER.log(Level.WARNING, errorMessage, e);
-			throw new StringflowErrorException(errorMessage, e);
+			throw new StringflowException(errorMessage, e);
 		}
 	}
 
@@ -59,9 +59,9 @@ public class AppUserManager extends UserManager {
 	 * @param userJID
 	 * @param groupJID
 	 * @return
-	 * @throws StringflowErrorException
+	 * @throws StringflowException
 	 */
-	public boolean checkIsChatRoomMember(JID userJID, JID groupJID) throws StringflowErrorException {
+	public boolean checkIsChatRoomMember(JID userJID, JID groupJID) throws StringflowException {
 		try {
 			return DbManager.getInstance().isChatRoomMember(groupJID, userJID);
 
@@ -71,16 +71,16 @@ public class AppUserManager extends UserManager {
 
 			LOGGER.log(Level.WARNING, errorMessage, e);
 
-			throw new StringflowErrorException(errorMessage + " due to database operations failure", e);
+			throw new StringflowException(errorMessage + " due to database operations failure", e);
 		}
 	}
 
 	/**
 	 * @return All user contact members and groups list in the form of
 	 *         {@link abs.ixi.client.xmpp.packet.Roster.RosterItem}'s list.
-	 * @throws StringflowErrorException
+	 * @throws StringflowException
 	 */
-	public List<Roster.RosterItem> getRosterItemList() throws StringflowErrorException {
+	public List<Roster.RosterItem> getRosterItemList() throws StringflowException {
 		try {
 
 			return DbManager.getInstance().getRosterList();
@@ -89,7 +89,7 @@ public class AppUserManager extends UserManager {
 			String errorMessage = "Failed to get Roster Items list due to database operations failure";
 
 			LOGGER.log(Level.WARNING, errorMessage, e);
-			throw new StringflowErrorException(errorMessage, e);
+			throw new StringflowException(errorMessage, e);
 		}
 	}
 
@@ -97,7 +97,7 @@ public class AppUserManager extends UserManager {
 	 * @param roomJID
 	 * @return all details of given {@link JID}'s group.
 	 */
-	public ChatRoom getChatRoomDetails(JID roomJID) throws StringflowErrorException {
+	public ChatRoom getChatRoomDetails(JID roomJID) throws StringflowException {
 		try {
 			return DbManager.getInstance().getChatRoomDetails(roomJID.getBareJID());
 
@@ -105,7 +105,7 @@ public class AppUserManager extends UserManager {
 			String errorMessage = "Failed to get chatRoom Details due to database operations failure";
 
 			LOGGER.log(Level.WARNING, errorMessage, e);
-			throw new StringflowErrorException(errorMessage, e);
+			throw new StringflowException(errorMessage, e);
 		}
 	}
 
@@ -114,9 +114,9 @@ public class AppUserManager extends UserManager {
 	 * 
 	 * @param contactJID
 	 * @return room subject
-	 * @throws StringflowErrorException
+	 * @throws StringflowException
 	 */
-	public String getChatRoomSubject(JID roomJID) throws StringflowErrorException {
+	public String getChatRoomSubject(JID roomJID) throws StringflowException {
 		try {
 			return DbManager.getInstance().getChatRoomSubject(roomJID.getBareJID());
 
@@ -124,16 +124,16 @@ public class AppUserManager extends UserManager {
 			String errorMessage = "Failed to get chatRoom subject due to database operations failure";
 
 			LOGGER.log(Level.WARNING, errorMessage, e);
-			throw new StringflowErrorException(errorMessage, e);
+			throw new StringflowException(errorMessage, e);
 		}
 	}
 
 	/**
 	 * @param itemJID
 	 * @return Actual name of given {@link JID}'s user.
-	 * @throws StringflowErrorException
+	 * @throws StringflowException
 	 */
-	public String getRosterItemName(JID itemJID) throws StringflowErrorException {
+	public String getRosterItemName(JID itemJID) throws StringflowException {
 		try {
 			return DbManager.getInstance().getRosterItemName(itemJID.getBareJID());
 
@@ -141,7 +141,7 @@ public class AppUserManager extends UserManager {
 			String errorMessage = "Failed to get Roster Item name due to database operations failure";
 
 			LOGGER.log(Level.WARNING, errorMessage, e);
-			throw new StringflowErrorException(errorMessage, e);
+			throw new StringflowException(errorMessage, e);
 		}
 	}
 
@@ -175,9 +175,9 @@ public class AppUserManager extends UserManager {
 	 * @param groupName
 	 * @param members group members list
 	 * @return
-	 * @throws StringflowErrorException
+	 * @throws StringflowException
 	 */
-	public boolean createPrivateGroup(String groupName, List<JID> members) throws StringflowErrorException {
+	public boolean createPrivateGroup(String groupName, List<JID> members) throws StringflowException {
 		try {
 			String chatRoomName = generateChatRoomName(groupName);
 
@@ -203,7 +203,7 @@ public class AppUserManager extends UserManager {
 			String errorMessage = "Failed to Create private group with name " + groupName;
 
 			LOGGER.log(Level.WARNING, errorMessage, e);
-			throw new StringflowErrorException(errorMessage, e);
+			throw new StringflowException(errorMessage, e);
 		}
 
 	}
@@ -216,9 +216,9 @@ public class AppUserManager extends UserManager {
 	 * @param groupName
 	 * @param members group members list
 	 * @return
-	 * @throws StringflowErrorException
+	 * @throws StringflowException
 	 */
-	public boolean createPublicGroup(String groupName, List<JID> members) throws StringflowErrorException {
+	public boolean createPublicGroup(String groupName, List<JID> members) throws StringflowException {
 
 		try {
 			String chatRoomName = generateChatRoomName(groupName);
@@ -244,7 +244,7 @@ public class AppUserManager extends UserManager {
 			String errorMessage = "Failed to Create public group with name " + groupName;
 
 			LOGGER.log(Level.WARNING, errorMessage, e);
-			throw new StringflowErrorException(errorMessage, e);
+			throw new StringflowException(errorMessage, e);
 		}
 	}
 
@@ -416,15 +416,15 @@ public class AppUserManager extends UserManager {
 	 * server.
 	 *
 	 * @return
-	 * @throws StringflowErrorException
+	 * @throws StringflowException
 	 */
-	public UserProfileData getCachedUserProfileData() throws StringflowErrorException {
+	public UserProfileData getCachedUserProfileData() throws StringflowException {
 		try {
 			return DbManager.getInstance().getUserProfileData(Platform.getInstance().getUserJID().getBareJID());
 		} catch (DbException e) {
 			String errorMessage = "Failed to get user profile data due to database operation failure";
 			LOGGER.log(Level.WARNING, errorMessage, e);
-			throw new StringflowErrorException(errorMessage, e);
+			throw new StringflowException(errorMessage, e);
 		}
 	}
 
@@ -434,15 +434,15 @@ public class AppUserManager extends UserManager {
 	 * user data from server.
 	 *
 	 * @return
-	 * @throws StringflowErrorException
+	 * @throws StringflowException
 	 */
-	public UserProfileData getCachedUserProfileData(JID userJID) throws StringflowErrorException {
+	public UserProfileData getCachedUserProfileData(JID userJID) throws StringflowException {
 		try {
 			return DbManager.getInstance().getUserProfileData(userJID.getBareJID());
 		} catch (DbException e) {
 			String errorMessage = "Failed to get user profile data due to database operation failure";
 			LOGGER.log(Level.WARNING, errorMessage, e);
-			throw new StringflowErrorException(errorMessage, e);
+			throw new StringflowException(errorMessage, e);
 		}
 	}
 
@@ -452,9 +452,9 @@ public class AppUserManager extends UserManager {
 	 *
 	 * @param useeJID
 	 * @return avatar
-	 * @throws StringflowErrorException
+	 * @throws StringflowException
 	 */
-	public InputStream getUserAvatar(JID userJID) throws StringflowErrorException {
+	public InputStream getUserAvatar(JID userJID) throws StringflowException {
 		try {
 
 			return DbManager.getInstance().getUserAvatar(userJID.getBareJID());
@@ -462,7 +462,7 @@ public class AppUserManager extends UserManager {
 		} catch (DbException e) {
 			String errorMessage = "Failed to get user Avatar due to database operation failure";
 			LOGGER.log(Level.WARNING, errorMessage, e);
-			throw new StringflowErrorException(errorMessage, e);
+			throw new StringflowException(errorMessage, e);
 		}
 	}
 
@@ -472,9 +472,9 @@ public class AppUserManager extends UserManager {
 	 *
 	 * @param useeJID
 	 * @return avatar
-	 * @throws StringflowErrorException
+	 * @throws StringflowException
 	 */
-	public InputStream getUserAvatar(String userJID) throws StringflowErrorException {
+	public InputStream getUserAvatar(String userJID) throws StringflowException {
 		try {
 
 			return DbManager.getInstance().getUserAvatar(userJID);
@@ -482,16 +482,16 @@ public class AppUserManager extends UserManager {
 		} catch (DbException e) {
 			String errorMessage = "Failed to get user Avatar due to database operation failure";
 			LOGGER.log(Level.WARNING, errorMessage, e);
-			throw new StringflowErrorException(errorMessage, e);
+			throw new StringflowException(errorMessage, e);
 		}
 	}
 
 	/**
 	 * Discard Device Token
 	 * 
-	 * @throws StringflowErrorException
+	 * @throws StringflowException
 	 */
-	private void discardDeviceToken() throws StringflowErrorException {
+	private void discardDeviceToken() throws StringflowException {
 		PushNotificationService notificationSrevice = SFSDKProperties.getInstance().getNotificationService();
 
 		if (notificationSrevice != null) {
@@ -507,9 +507,9 @@ public class AppUserManager extends UserManager {
 	 * This is used to logout user. It will handle all tasks required at sdk
 	 * level.
 	 * 
-	 * @throws StringflowErrorException
+	 * @throws StringflowException
 	 */
-	public void logoutUser() throws StringflowErrorException {
+	public void logoutUser() throws StringflowException {
 		this.discardDeviceToken();
 		this.shutdownSDK();
 	}
@@ -517,9 +517,9 @@ public class AppUserManager extends UserManager {
 	/**
 	 * Shutdown all android sdk.
 	 * 
-	 * @throws StringflowErrorException
+	 * @throws StringflowException
 	 */
-	public void shutdownSDK() throws StringflowErrorException {
+	public void shutdownSDK() throws StringflowException {
 		Platform.getInstance().shutdown();
 		GenieSDKInitializer.unloadSdk();
 	}

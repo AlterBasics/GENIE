@@ -1,7 +1,7 @@
 package abs.sf.client.genie.ui.utils;
 
 import abs.ixi.client.util.StringUtils;
-import abs.sf.client.genie.exception.StringflowErrorException;
+import abs.sf.client.genie.exception.StringflowException;
 import abs.sf.client.genie.utils.SFProperties;
 
 public class AppProperties {
@@ -13,19 +13,19 @@ public class AppProperties {
 	/**
 	 * Restricting access to local
 	 * 
-	 * @throws StringflowErrorException
+	 * @throws StringflowException
 	 * 
 	 */
-	private AppProperties() throws StringflowErrorException {
+	private AppProperties() throws StringflowException {
 		this.properties = new SFProperties(APP_PROPERTIES_RESOURCE);
 	}
 
 	/**
 	 * Returns the singleton instance of {@code genieAppProperties}
 	 * 
-	 * @throws StringflowErrorException
+	 * @throws StringflowException
 	 */
-	public static AppProperties getInstance() throws StringflowErrorException {
+	public static AppProperties getInstance() throws StringflowException {
 		if (instance == null) {
 			synchronized (AppProperties.class) {
 				if (instance == null) {

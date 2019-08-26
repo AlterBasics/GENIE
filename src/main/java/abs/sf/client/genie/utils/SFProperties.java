@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import abs.ixi.client.util.TaskExecutor;
-import abs.sf.client.genie.exception.StringflowErrorException;
+import abs.sf.client.genie.exception.StringflowException;
 
 /**
  * Wrapper around {@link Properties}. For proper handling of properties
@@ -22,7 +22,7 @@ public class SFProperties {
 	private Properties properties;
 	private Editor editor;
 
-	public SFProperties(String propertiesResource) throws StringflowErrorException {
+	public SFProperties(String propertiesResource) throws StringflowException {
 		try {
 			this.propertiesResource = propertiesResource;
 			this.loadProperties();
@@ -31,7 +31,7 @@ public class SFProperties {
 		} catch (IOException e) {
 			LOGGER.log(Level.WARNING, "Failed to load properties from file " + propertiesResource, e);
 			e.printStackTrace();
-			throw new StringflowErrorException("Failed to load properties from file " + propertiesResource, e);
+			throw new StringflowException("Failed to load properties from file " + propertiesResource, e);
 		}
 
 	}
@@ -243,9 +243,9 @@ public class SFProperties {
 		 * It starts an asynchronous commit to disk and you will be notified for
 		 * any failures.
 		 * 
-		 * @throws StringflowErrorException
+		 * @throws StringflowException
 		 */
-		public void commit() throws StringflowErrorException {
+		public void commit() throws StringflowException {
 			LOGGER.info("COMMITING PROPERTIES for file >>>>>>>>>>>>>>> : " + propertiesResource);
 			try (OutputStream output = new FileOutputStream(
 					getClass().getClassLoader().getResource(propertiesResource).getPath())) {
@@ -257,7 +257,7 @@ public class SFProperties {
 			} catch (IOException e) {
 				LOGGER.log(Level.INFO, "Failed to save properties in property file : " + propertiesResource, e);
 				e.printStackTrace();
-				throw new StringflowErrorException("Failed to save properties in property file : " + propertiesResource,
+				throw new StringflowException("Failed to save properties in property file : " + propertiesResource,
 						e);
 			}
 		}
@@ -272,7 +272,7 @@ public class SFProperties {
 				try {
 					commit();
 
-				} catch (StringflowErrorException e) {
+				} catch (StringflowException e) {
 					LOGGER.log(Level.INFO, "Failed to save properties in property file : " + propertiesResource, e);
 				}
 			});

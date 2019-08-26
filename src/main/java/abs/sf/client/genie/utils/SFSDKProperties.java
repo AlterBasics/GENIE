@@ -3,7 +3,7 @@ package abs.sf.client.genie.utils;
 import abs.ixi.client.Platform;
 import abs.ixi.client.PushNotificationService;
 import abs.ixi.client.util.StringUtils;
-import abs.sf.client.genie.exception.StringflowErrorException;
+import abs.sf.client.genie.exception.StringflowException;
 import abs.sf.client.genie.managers.AppChatManager;
 
 public class SFSDKProperties {
@@ -25,18 +25,18 @@ public class SFSDKProperties {
 	/**
 	 * Restricting access to local
 	 * 
-	 * @throws StringflowErrorException
+	 * @throws StringflowException
 	 */
-	private SFSDKProperties() throws StringflowErrorException {
+	private SFSDKProperties() throws StringflowException {
 		this.sfProperties = new SFProperties(SDK_PROPERTIES_RESOURCE);
 	}
 
 	/**
 	 * Returns the singleton instance of {@code SFSDKProperties}
 	 * 
-	 * @throws StringflowErrorException
+	 * @throws StringflowException
 	 */
-	public static SFSDKProperties getInstance() throws StringflowErrorException {
+	public static SFSDKProperties getInstance() throws StringflowException {
 		if (instance == null) {
 			synchronized (SFSDKProperties.class) {
 				if (instance == null) {
@@ -48,7 +48,7 @@ public class SFSDKProperties {
 		return instance;
 	}
 
-	public void setH2DbFilePath(String h2DbFilePath) throws StringflowErrorException {
+	public void setH2DbFilePath(String h2DbFilePath) throws StringflowException {
 		this.sfProperties.getEditor().putString(H2_DB_FILE_PATH, h2DbFilePath).commit();
 	}
 
